@@ -1,0 +1,63 @@
+{
+	// Use IntelliSense to learn about possible attributes.
+	// Hover to view descriptions of existing attributes.
+	// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"type": "lldb",
+			"request": "launch",
+			"name": "Debug executable 'sonic1'",
+			"stdio": [
+				null,
+				null,
+				"${workspaceFolder}/sonic1/log.txt",
+			],
+			"cargo": {
+				"args": [
+					"build",
+					"--manifest-path",
+					"sonic1/Cargo.toml",
+					"--bin=sonic1",
+					"--package=sonic1"
+				],
+				"filter": {
+					"name": "sonic1",
+					"kind": "bin"
+				}
+			},
+			"args": [
+				"--test",
+			],
+			"cwd": "${workspaceFolder}/sonic1",
+			"env": {
+				"RUST_BACKTRACE": "1",
+			},
+		},
+		{
+			"type": "lldb",
+			"request": "launch",
+			"name": "Debug executable 'asmconverter'",
+			"cargo": {
+				"args": [
+					"build",
+					"--manifest-path",
+					"asmconverter/Cargo.toml",
+					"--bin=asmconverter",
+					"--package=asmconverter"
+				],
+				"filter": {
+					"name": "asmconverter",
+					"kind": "bin"
+				}
+			},
+			"args": [
+				// "--test",
+			],
+			"cwd": "${workspaceFolder}/asmconverter",
+			"env": {
+				"RUST_BACKTRACE": "1",
+			},
+		},
+	]
+}

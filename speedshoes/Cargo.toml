@@ -1,0 +1,11 @@
+[package]
+name = "speedshoes"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+dlopen2 = { version = "0.7.0", features = ["symbor"] }
+itertools = "0.13.0"
+libc = "0.2.164"
+r68k-emu = { git = "https://github.com/foreverWIP/r68k.git" }
+r68k-tools = { git = "https://github.com/foreverWIP/r68k.git" }

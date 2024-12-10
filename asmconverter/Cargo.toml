@@ -1,0 +1,9 @@
+[package]
+name = "asmconverter"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+itertools = "0.13.0"
+r68k-tools = { git = "https://github.com/foreverWIP/r68k.git" }
+sonic1 = { version = "0.1.0", path = "../sonic1" }
