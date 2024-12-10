@@ -1,4 +1,4 @@
-#define CHECK_STUFF(loc) 1
+// #define CHECK_STUFF(loc) 1
 #include "../system.h"
 #include "../opcodes.h"
 
