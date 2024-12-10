@@ -5,7 +5,7 @@
 ROMFUNC(rom_14A58) {
 	u8 switchindex = 0;
 	DEF_ROMLOC(14A58): move_toreg_32(0x0, &D0); // MOVEQ.L	$00,D0
-	DEF_ROMLOC(14A5A): move_toreg_8(read_8(A0 + 0x24), &D0); switchindex = D0; // MOVE.B	36(A0),D0
+	DEF_ROMLOC(14A5A): move_toreg_8(read_8(A0 + 0x24), &D0); switchindex = D0 / 2; // MOVE.B	36(A0),D0
 	DEF_ROMLOC(14A5E): move_toreg_16(read_16(0x14A66 + (s16)(D0 & 0xffff)), &D1); // MOVE.W	6(PC,D0),D1
 	// DEF_ROMLOC(14A62): goto rom_14A66 + (s16)(D1 & 0xffff); // JMP	2(PC,D1)
 	DEF_ROMLOC(14A62):

@@ -1,4 +1,4 @@
-// #define CHECK_STUFF(loc) 1
+#define CHECK_STUFF(loc) 1
 #include "../opcodes.h"
 #include "../system.h"
 
@@ -10,15 +10,15 @@ ROMFUNC(rom_1436C) {
 	// DEF_ROMLOC(14376): goto rom_1437A + (s16)(D1 & 0xffff); // JMP	2(PC,D1)
 	DEF_ROMLOC(14376):
 		switch (switchindex) {
-			case 0: rom_1438C();
-			case 1: rom_143E4();
-			case 2: rom_143F0();
-			case 3: rom_14452();
-			case 4: rom_14466();
-			case 5: rom_145F0();
-			case 6: rom_1446C();
-			case 7: rom_14452();
-			case 8: rom_14466();
+			case 0: rom_1438C(); break;
+			case 1: rom_143E4(); break;
+			case 2: rom_143F0(); break;
+			case 3: rom_14452(); break;
+			case 4: rom_14466(); break;
+			case 5: rom_145F0(); break;
+			case 6: rom_1446C(); break;
+			case 7: rom_14452(); break;
+			case 8: rom_14466(); break;
 		}
 }
 ROMFUNC(rom_1438C) {
