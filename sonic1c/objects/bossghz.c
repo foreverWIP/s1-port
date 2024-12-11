@@ -13,7 +13,7 @@ ROMFUNC(rom_17EAC) {
 			case 0: rom_17EC8(); break;
 			case 1: rom_17F36(); break;
 			case 2: rom_181D0(); break;
-			case 3: rom_181D0(); break;
+			case 3: rom_18222(); break;
 		}
 }
 ROMFUNC(rom_17EC2) {
