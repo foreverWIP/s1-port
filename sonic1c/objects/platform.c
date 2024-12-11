@@ -2,7 +2,6 @@
 #include "../opcodes.h"
 #include "../system.h"
 
-
 ROMFUNC(rom_84B0) {
   u8 switchindex = 0;
   DEF_ROMLOC(84B0) : move_toreg_32(0x0, &D0); // MOVEQ.L	$00,D0
@@ -400,6 +399,3 @@ ROMFUNC(rom_8756) {
 ROMFUNC(rom_8774) {
   DEF_ROMLOC(8774) : rom_DCCE(); // BRA.W	$DCCE
 }
-/*ROMFUNC(rom_8826) {
-        DEF_ROMLOC(8826): return; // RTS
-}*/
