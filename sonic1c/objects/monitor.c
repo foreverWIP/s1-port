@@ -93,7 +93,7 @@ ROMFUNC(rom_A814) {
 	DEF_ROMLOC(A8CE): if (!CCR_EQ) goto rom_A8EC; // BNE.B	$A8EC
 	DEF_ROMLOC(A8D0): bset_tomem_8(0x5, A1 + 0x22); // BSET.B	#$05,34(A1)
 	DEF_ROMLOC(A8D6): bset_tomem_8(0x5, A0 + 0x22); // BSET.B	#$05,34(A0)
-	rom_A8F8(); // BRA.B	$A8F8
+	rom_A8F8(); return; // BRA.B	$A8F8
 	DEF_ROMLOC(A8DE): btst_tomem_8(0x5, A0 + 0x22); // BTST.B	#$05,34(A0)
 	DEF_ROMLOC(A8E4): if (CCR_EQ) {rom_A8F8();return;} // BEQ.B	$A8F8
 	DEF_ROMLOC(A8E6): move_tomem_16(0x1, A1 + 0x1C); // MOVE.W	#$0001,28(A1)

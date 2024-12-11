@@ -229,7 +229,7 @@ ROMFUNC(rom_18100) {
 	DEF_ROMLOC(18100): sub_tomem_16(0x1, A0 + 0x3C); // SUBQ.W	#$01,60(A0)
 	DEF_ROMLOC(18104): if (CCR_MI) goto rom_1810C; // BMI.B	$1810C
 	DEF_ROMLOC(18106): rom_18050(); // BSR.W	$18050
-	rom_18122(); // BRA.B	$18122
+	rom_18122(); return; // BRA.B	$18122
 	DEF_ROMLOC(1810C): bchg_tomem_8(0x0, A0 + 0x22); // BCHG.B	#$00,34(A0)
 	DEF_ROMLOC(18112): move_tomem_16(0x3F, A0 + 0x3C); // MOVE.W	#$003F,60(A0)
 	DEF_ROMLOC(18118): sub_tomem_8(0x2, A0 + 0x25); // SUBQ.B	#$02,37(A0)
@@ -242,7 +242,7 @@ ROMFUNC(rom_18122) {
 ROMFUNC(rom_18126) {
 	DEF_ROMLOC(18126): sub_tomem_16(0x1, A0 + 0x3C); // SUBQ.W	#$01,60(A0)
 	DEF_ROMLOC(1812A): if (CCR_MI) goto rom_18130; // BMI.B	$18130
-	rom_1800C(); // BRA.W	$1800C
+	rom_1800C(); return; // BRA.W	$1800C
 	DEF_ROMLOC(18130): bset_tomem_8(0x0, A0 + 0x22); // BSET.B	#$00,34(A0)
 	DEF_ROMLOC(18136): bclr_tomem_8(0x7, A0 + 0x22); // BCLR.B	#$07,34(A0)
 	DEF_ROMLOC(1813C): clr_mem_16(A0 + 0x10); // CLR.W	16(A0)
@@ -286,7 +286,7 @@ ROMFUNC(rom_181A2) {
 	DEF_ROMLOC(181BC): tst_mem_8(A0 + 0x1); // TST.B	1(A0)
 	DEF_ROMLOC(181C0): if (CCR_PL) goto rom_181CA; // BPL.B	$181CA
 	DEF_ROMLOC(181C2): rom_18050(); // BSR.W	$18050
-	rom_17F92(); // BRA.W	$17F92
+	rom_17F92(); return; // BRA.W	$17F92
 	DEF_ROMLOC(181CA): {rom_DCCE();return;} // JMP	$0000DCCE
 }
 ROMFUNC(rom_181D0) {
@@ -316,7 +316,7 @@ ROMFUNC(rom_181D0) {
 	DEF_ROMLOC(1820E): move_tomem_8(0x6, A0 + 0x1C); // MOVE.B	#$06,28(A0)
 	DEF_ROMLOC(18214): tst_mem_8(A0 + 0x1); // TST.B	1(A0)
 	DEF_ROMLOC(18218): if (CCR_PL) goto rom_1821C; // BPL.B	$1821C
-	DEF_ROMLOC(1821A): rom_18256(); // BRA.B	$18256
+	DEF_ROMLOC(1821A): rom_18256(); return; // BRA.B	$18256
 	DEF_ROMLOC(1821C): {rom_DCCE();return;} // JMP	$0000DCCE
 }
 ROMFUNC(rom_18222) {
@@ -331,7 +331,7 @@ ROMFUNC(rom_18222) {
 	DEF_ROMLOC(18242): move_toreg_16(read_16(A1 + 0x10), &D0); // MOVE.W	16(A1),D0
 	DEF_ROMLOC(18246): if (CCR_EQ) goto rom_1824E; // BEQ.B	$1824E
 	DEF_ROMLOC(18248): move_tomem_8(0x8, A0 + 0x1C); // MOVE.B	#$08,28(A0)
-	DEF_ROMLOC(1824E): rom_18256(); // BRA.B	$18256
+	DEF_ROMLOC(1824E): rom_18256(); return; // BRA.B	$18256
 	DEF_ROMLOC(18250): {rom_DCCE();return;} // JMP	$0000DCCE
 }
 ROMFUNC(rom_18256) {
