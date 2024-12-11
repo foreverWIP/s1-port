@@ -7,12 +7,12 @@ ROMFUNC(rom_AD26) {
   u8 switchindex = 0;
   DEF_ROMLOC(AD26) : move_toreg_32(0x0, &D0); // MOVEQ.L	$00,D0
   DEF_ROMLOC(AD28) : move_toreg_8(read_8(A0 + 0x24), &D0);
-  switchindex = D0; // MOVE.B	36(A0),D0
+  switchindex = D0 / 2; // MOVE.B	36(A0),D0
   DEF_ROMLOC(AD2C)
       : move_toreg_16(read_16(0xAD38 + (s16)(D0 & 0xffff)),
                       &D1); // MOVE.W	10(PC,D0),D1
   // DEF_ROMLOC(AD30): rom_AD38 + (s16)(D1 & 0xffff)(); // JSR	6(PC,D1)
-  DEF_ROMLOC(AD30) : switch (switchindex / 2) {
+  DEF_ROMLOC(AD30) : switch (switchindex) {
   case 0:
     rom_AD3E();
     break;

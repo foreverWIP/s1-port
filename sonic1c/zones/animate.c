@@ -105,9 +105,9 @@ ROMFUNC(rom_1C8C8) {
 	DEF_ROMLOC(1C932): add_tomem_8(0x1, 0xFFFFF7B2); // ADDQ.B	#$01,$F7B2
 	DEF_ROMLOC(1C936): move_toreg_8(read_8(0xFFFFFE68), &D3); // MOVE.B	$FE68,D3
 	DEF_ROMLOC(1C93A): move_toreg_16(0x3, &D2); // MOVE.W	#$0003,D2
-	DEF_ROMLOC(1C93E): move_toreg_16(D3, &D0); // MOVE.W	D3,D0
+	DEF_ROMLOC(1C93E): move_toreg_16(D3, &D0); switchindex = D0; // MOVE.W	D3,D0
 	DEF_ROMLOC(1C940): add_toreg_16(D0, &D0); // ADD.W	D0,D0
-	DEF_ROMLOC(1C942): and_toreg_16(0x1E, &D0); switchindex = (D0 & 0xff) / 2; // ANDI.W	#$001E,D0
+	DEF_ROMLOC(1C942): and_toreg_16(0x1E, &D0); // ANDI.W	#$001E,D0
 	DEF_ROMLOC(1C946): move_toreg_32(0x1CB84, &A3); // LEA.L	$0001CB84,A3
 	DEF_ROMLOC(1C94C): move_toreg_16(read_16((s32)A3 + (s8)0x0 + (s16)D0), &D0); // MOVE.W	0(A3,D0),D0
 	DEF_ROMLOC(1C950): move_toreg_32((s32)A3 + (s8)0x0 + (s16)D0, &A3); // LEA.L	0(A3,D0),A3
