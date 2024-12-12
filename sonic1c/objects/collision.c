@@ -396,7 +396,7 @@ ROMFUNC(rom_102B8) {
   DEF_ROMLOC(10316) : bset_tomem_8(0x3, A0 + 0x22);     // BSET.B	#$03,34(A0)
   DEF_ROMLOC(1031C) : return;                           // RTS
 }
-/*ROMFUNC(rom_15642) {
+ROMFUNC(rom_15642) {
 	DEF_ROMLOC(15642): add_toreg_16(read_16(A0 + 0x8), &D3); // ADD.W	8(A0),D3
 	DEF_ROMLOC(15646): move_toreg_16(read_16(A0 + 0xC), &D2); // MOVE.W	12(A0),D2
 	DEF_ROMLOC(1564A): move_toreg_32(0xFFFFF768, &A4); // LEA.L	$F768,A4
@@ -409,12 +409,9 @@ ROMFUNC(rom_102B8) {
 	DEF_ROMLOC(15664): btst_toreg_32(0x0, &D3); // BTST.L	#$00,D3
 	DEF_ROMLOC(15668): if (CCR_EQ) goto rom_1566E; // BEQ.B	$1566E
 	DEF_ROMLOC(1566A): move_toreg_8(0xFFFFFFC0, &D3); // MOVE.B	#$C0,D3
-	rom_1566E(); // Detected flow into next function
-}*/
-/*ROMFUNC(rom_1566E) {
 	DEF_ROMLOC(1566E): return; // RTS
-}*/
-/*ROMFUNC(rom_15706) {
+}
+ROMFUNC(rom_15706) {
 	DEF_ROMLOC(15706): move_toreg_16(read_16(A0 + 0xC), &D2); // MOVE.W	12(A0),D2
 	DEF_ROMLOC(1570A): move_toreg_16(read_16(A0 + 0x8), &D3); // MOVE.W	8(A0),D3
 	DEF_ROMLOC(1570E): move_toreg_32(0x0, &D0); // MOVEQ.L	$00,D0
@@ -431,12 +428,9 @@ ROMFUNC(rom_102B8) {
 	DEF_ROMLOC(15732): btst_toreg_32(0x0, &D3); // BTST.L	#$00,D3
 	DEF_ROMLOC(15736): if (CCR_EQ) goto rom_1573C; // BEQ.B	$1573C
 	DEF_ROMLOC(15738): move_toreg_8(0xFFFFFF80, &D3); // MOVE.B	#$80,D3
-	rom_1573C(); // Detected flow into next function
-}*/
-/*ROMFUNC(rom_1573C) {
 	DEF_ROMLOC(1573C): return; // RTS
-}*/
-/*ROMFUNC(rom_157D4) {
+}
+ROMFUNC(rom_157D4) {
 	DEF_ROMLOC(157D4): add_toreg_16(read_16(A0 + 0x8), &D3); // ADD.W	8(A0),D3
 	DEF_ROMLOC(157D8): move_toreg_16(read_16(A0 + 0xC), &D2); // MOVE.W	12(A0),D2
 	DEF_ROMLOC(157DC): move_toreg_32(0xFFFFF768, &A4); // LEA.L	$F768,A4
@@ -449,8 +443,5 @@ ROMFUNC(rom_102B8) {
 	DEF_ROMLOC(157F6): btst_toreg_32(0x0, &D3); // BTST.L	#$00,D3
 	DEF_ROMLOC(157FA): if (CCR_EQ) goto rom_15800; // BEQ.B	$15800
 	DEF_ROMLOC(157FC): move_toreg_8(0x40, &D3); // MOVE.B	#$40,D3
-	rom_15800(); // Detected flow into next function
-}*/
-/*ROMFUNC(rom_15800) {
 	DEF_ROMLOC(15800): return; // RTS
-}*/
+}
