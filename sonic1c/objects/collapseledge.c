@@ -98,13 +98,20 @@ ROMFUNC(rom_8998) {
 	DEF_ROMLOC(8998): rom_DCCE(); // BSR.W	$DCCE
 	DEF_ROMLOC(899C): return; // RTS
 }
-/*ROMFUNC(rom_899E) {
+ROMFUNC(rom_899E) {
+	u8 switchindex = 0;
 	DEF_ROMLOC(899E): move_toreg_32(0x0, &D0); // MOVEQ.L	$00,D0
-	DEF_ROMLOC(89A0): move_toreg_8(read_8(A0 + 0x24), &D0); // MOVE.B	36(A0),D0
+	DEF_ROMLOC(89A0): move_toreg_8(read_8(A0 + 0x24), &D0); switchindex = D0 / 2; // MOVE.B	36(A0),D0
 	DEF_ROMLOC(89A4): move_toreg_16(read_16(0x89AC + (s16)(D0 & 0xffff)), &D1); // MOVE.W	6(PC,D0),D1
-	DEF_ROMLOC(89A8): goto rom_89AC + (s16)(D1 & 0xffff); // JMP	2(PC,D1)
-}*/
-/*ROMFUNC(rom_89B8) {
+	// DEF_ROMLOC(89A8): goto rom_89AC + (s16)(D1 & 0xffff); // JMP	2(PC,D1)
+	DEF_ROMLOC(89A8):
+		switch (switchindex) {
+			case 0: rom_89B8(); break;
+			case 1: rom_8A44(); break;
+			case 2: rom_8ACA(); break;
+		}
+}
+ROMFUNC(rom_89B8) {
 	DEF_ROMLOC(89B8): add_tomem_8(0x2, A0 + 0x24); // ADDQ.B	#$02,36(A0)
 	DEF_ROMLOC(89BC): move_tomem_32(0x8DC4, A0 + 0x4); // MOVE.L	#$00008DC4,4(A0)
 	DEF_ROMLOC(89C4): move_tomem_16(0x42B8, A0 + 0x2); // MOVE.W	#$42B8,2(A0)
@@ -120,12 +127,12 @@ ROMFUNC(rom_8998) {
 	DEF_ROMLOC(89F6): move_tomem_8(0x7, A0 + 0x38); // MOVE.B	#$07,56(A0)
 	DEF_ROMLOC(89FC): move_tomem_8(0x44, A0 + 0x19); // MOVE.B	#$44,25(A0)
 	rom_8A02(); // Detected flow into next function
-}*/
-/*ROMFUNC(rom_8A02) {
+}
+ROMFUNC(rom_8A02) {
 	DEF_ROMLOC(8A02): tst_mem_8(A0 + 0x3A); // TST.B	58(A0)
 	DEF_ROMLOC(8A06): if (CCR_EQ) goto rom_8A14; // BEQ.B	$8A14
 	DEF_ROMLOC(8A08): tst_mem_8(A0 + 0x38); // TST.B	56(A0)
-	DEF_ROMLOC(8A0C): if (CCR_EQ) goto rom_8AD0; // BEQ.W	$8AD0
+	DEF_ROMLOC(8A0C): if (CCR_EQ) {rom_8AD0();return;} // BEQ.W	$8AD0
 	DEF_ROMLOC(8A10): sub_tomem_8(0x1, A0 + 0x38); // SUBQ.B	#$01,56(A0)
 	DEF_ROMLOC(8A14): move_toreg_16(0x20, &D1); // MOVE.W	#$0020,D1
 	DEF_ROMLOC(8A18): rom_7ACA(); // BSR.W	$7ACA
@@ -138,31 +145,32 @@ ROMFUNC(rom_8998) {
 	DEF_ROMLOC(8A34): sub_toreg_16(read_16(A0 + 0x8), &D0); // SUB.W	8(A0),D0
 	DEF_ROMLOC(8A38): if (CCR_CC) goto rom_8A40; // BCC.B	$8A40
 	DEF_ROMLOC(8A3A): bset_tomem_8(0x0, A0 + 0x1); // BSET.B	#$00,1(A0)
-	rom_FD38(); // BRA.W	$FD38
-}*/
-/*ROMFUNC(rom_8A44) {
-	DEF_ROMLOC(8A44): tst_mem_8(A0 + 0x38); // TST.B	56(A0)
-	DEF_ROMLOC(8A48): if (CCR_EQ) goto rom_8AD6; // BEQ.W	$8AD6
-	DEF_ROMLOC(8A4C): move_tomem_8(0x1, A0 + 0x3A); // MOVE.B	#$01,58(A0)
-	DEF_ROMLOC(8A52): sub_tomem_8(0x1, A0 + 0x38); // SUBQ.B	#$01,56(A0)
-	rom_8A56(); // Detected flow into next function
-}*/
-/*ROMFUNC(rom_8A56) {
+	DEF_ROMLOC(8A40): rom_FD38(); return; // BRA.W	$FD38
+}
+ROMFUNC(rom_8A56) {
 	DEF_ROMLOC(8A56): move_toreg_16(0x20, &D1); // MOVE.W	#$0020,D1
 	DEF_ROMLOC(8A5A): rom_7C3E(); // BSR.W	$7C3E
 	DEF_ROMLOC(8A5E): move_toreg_16(read_16(A0 + 0x8), &D2); // MOVE.W	8(A0),D2
 	DEF_ROMLOC(8A62): rom_81AC(); // BSR.W	$81AC
-	rom_FD38(); // BRA.W	$FD38
-}*/
-/*ROMFUNC(rom_8A6A) {
+	rom_FD38(); return; // BRA.W	$FD38
+}
+ROMFUNC(rom_8A44) {
+	DEF_ROMLOC(8A44): tst_mem_8(A0 + 0x38); // TST.B	56(A0)
+	DEF_ROMLOC(8A48): if (CCR_EQ) {rom_8AD6();return;} // BEQ.W	$8AD6
+	DEF_ROMLOC(8A4C): move_tomem_8(0x1, A0 + 0x3A); // MOVE.B	#$01,58(A0)
+	DEF_ROMLOC(8A52): sub_tomem_8(0x1, A0 + 0x38); // SUBQ.B	#$01,56(A0)
+	// DEF_ROMLOC(8A56): move_toreg_16(0x20, &D1); // MOVE.W	#$0020,D1
+	// DEF_ROMLOC(8A5A): rom_7C3E(); // BSR.W	$7C3E
+	// DEF_ROMLOC(8A5E): move_toreg_16(read_16(A0 + 0x8), &D2); // MOVE.W	8(A0),D2
+	// DEF_ROMLOC(8A62): rom_81AC(); // BSR.W	$81AC
+	// rom_FD38(); return; // BRA.W	$FD38
+	rom_8A56();
 	DEF_ROMLOC(8A6A): tst_mem_8(A0 + 0x38); // TST.B	56(A0)
 	DEF_ROMLOC(8A6E): if (CCR_EQ) goto rom_8ABA; // BEQ.B	$8ABA
 	DEF_ROMLOC(8A70): tst_mem_8(A0 + 0x3A); // TST.B	58(A0)
 	DEF_ROMLOC(8A74): if (!CCR_EQ) goto rom_8A80; // BNE.W	$8A80
 	DEF_ROMLOC(8A78): sub_tomem_8(0x1, A0 + 0x38); // SUBQ.B	#$01,56(A0)
-	rom_DC92(); // BRA.W	$DC92
-}*/
-/*ROMFUNC(rom_8A80) {
+	rom_DC92(); return; // BRA.W	$DC92
 	DEF_ROMLOC(8A80): sub_tomem_8(0x1, A0 + 0x38); // SUBQ.B	#$01,56(A0)
 	DEF_ROMLOC(8A84): rom_8A56(); // BSR.W	$8A56
 	DEF_ROMLOC(8A88): move_toreg_32(0xFFFFD000, &A1); // LEA.L	$D000,A1
@@ -173,43 +181,32 @@ ROMFUNC(rom_8998) {
 	DEF_ROMLOC(8A9A): bclr_tomem_8(0x3, A1 + 0x22); // BCLR.B	#$03,34(A1)
 	DEF_ROMLOC(8AA0): bclr_tomem_8(0x5, A1 + 0x22); // BCLR.B	#$05,34(A1)
 	DEF_ROMLOC(8AA6): move_tomem_8(0x1, A1 + 0x1D); // MOVE.B	#$01,29(A1)
-	rom_8AAC(); // Detected flow into next function
-}*/
-/*ROMFUNC(rom_8AAC) {
 	DEF_ROMLOC(8AAC): move_tomem_8(0x0, A0 + 0x3A); // MOVE.B	#$00,58(A0)
 	DEF_ROMLOC(8AB2): move_tomem_8(0x6, A0 + 0x24); // MOVE.B	#$06,36(A0)
-	rom_8AB8(); // Detected flow into next function
-}*/
-/*ROMFUNC(rom_8AB8) {
 	DEF_ROMLOC(8AB8): return; // RTS
-}*/
-/*ROMFUNC(rom_8ABA) {
 	DEF_ROMLOC(8ABA): rom_DC40(); // BSR.W	$DC40
 	DEF_ROMLOC(8ABE): rom_DC92(); // BSR.W	$DC92
 	DEF_ROMLOC(8AC2): tst_mem_8(A0 + 0x1); // TST.B	1(A0)
-	DEF_ROMLOC(8AC6): if (CCR_PL) goto rom_8ACA; // BPL.B	$8ACA
+	DEF_ROMLOC(8AC6): if (CCR_PL) {rom_8ACA();return;} // BPL.B	$8ACA
 	DEF_ROMLOC(8AC8): return; // RTS
-}*/
-/*ROMFUNC(rom_8ACA) {
+}
+ROMFUNC(rom_8ACA) {
 	DEF_ROMLOC(8ACA): rom_DCCE(); // BSR.W	$DCCE
 	DEF_ROMLOC(8ACE): return; // RTS
-}*/
-/*ROMFUNC(rom_8AD0) {
+}
+ROMFUNC(rom_8AD0) {
 	DEF_ROMLOC(8AD0): move_tomem_8(0x0, A0 + 0x3A); // MOVE.B	#$00,58(A0)
-	rom_8AD6(); // Detected flow into next function
-}*/
-/*ROMFUNC(rom_8AD6) {
+	rom_8AD6();
+}
+ROMFUNC(rom_8AD6) {
 	DEF_ROMLOC(8AD6): move_toreg_32(0x8B98, &A4); // LEA.L	$00008B98,A4
 	DEF_ROMLOC(8ADC): btst_tomem_8(0x0, A0 + 0x28); // BTST.B	#$00,40(A0)
 	DEF_ROMLOC(8AE2): if (CCR_EQ) goto rom_8AEA; // BEQ.B	$8AEA
 	DEF_ROMLOC(8AE4): move_toreg_32(0x8BA0, &A4); // LEA.L	$00008BA0,A4
-	rom_8AEA(); // Detected flow into next function
-}*/
-/*ROMFUNC(rom_8AEA) {
 	DEF_ROMLOC(8AEA): move_toreg_32(0x7, &D1); // MOVEQ.L	$07,D1
 	DEF_ROMLOC(8AEC): add_tomem_8(0x1, A0 + 0x1A); // ADDQ.B	#$01,26(A0)
 	rom_8B04(); // BRA.B	$8B04
-}*/
+}
 ROMFUNC(rom_8AF2) {
 	DEF_ROMLOC(8AF2): move_tomem_8(0x0, A0 + 0x3A); // MOVE.B	#$00,58(A0)
 	rom_8AF8(); // Detected flow into next function
