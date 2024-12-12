@@ -416,6 +416,65 @@ impl System {
         self.emu_machine_instructions_ran
     }
 
+    fn call_function(&mut self, target_pc: Option<u32>, opcode_raw: u16) -> Result<bool, String> {
+        let (next_addr, opcode) = self
+            .get_instruction(self.core.pc)
+            .map(|(pc, op)| (pc.0, op))
+            .unwrap();
+
+        let sub_addr = calculate_sub_address(&opcode, &self.core).unwrap();
+        /*let msg = format!(
+            "calling subroutine {} -> {}",
+            self.get_symbol(self.core.pc),
+            self.get_symbol(next_addr.0),
+        );
+        self.print_nested(msg);*/
+        if let Some(target_pc) = target_pc {
+            if self.core.pc == target_pc {
+                return Ok(false);
+            }
+        }
+        match &mut self.script_engine {
+            Some(_) => {
+                if self.script_engine.as_ref().unwrap().hook_exists(sub_addr) {
+                    let checkmem = self
+                        .script_engine
+                        .as_mut()
+                        .unwrap()
+                        .call_hook(&mut self.core, sub_addr)
+                        .unwrap();
+                    unsafe {
+                        if let Some(msg) = (&raw const DESYNC_SCRIPT_MESSAGE).as_ref().unwrap() {
+                            return Err(msg.clone());
+                        }
+                    }
+                    while self.core.pc != next_addr {
+                        self.run_emu_instruction();
+                        self.emu_machine_instructions_ran += 1;
+                    }
+                    self.check_accuracy(checkmem)?;
+                    self.script_engine
+                        .as_mut()
+                        .unwrap()
+                        .sync_emu_with_script(&mut self.core);
+                    Ok(sub_addr == self.vblank_addr)
+                } else {
+                    self.unimplemented_subs_frame.insert(sub_addr);
+                    self.run_emu_instruction();
+                    self.script_machine_instructions_ran += 1;
+                    self.emu_machine_instructions_ran += 1;
+                    Ok(opcode_raw == 0b0100_1110_0111_0011)
+                }
+            }
+            None => {
+                self.run_emu_instruction();
+                self.script_machine_instructions_ran += 1;
+                self.emu_machine_instructions_ran += 1;
+                Ok(opcode_raw == 0b0100_1110_0111_0011)
+            }
+        }
+    }
+
     fn run_instruction(
         &mut self,
         call_hooks: bool,
@@ -425,62 +484,7 @@ impl System {
         let is_call = ((opcode_raw & 0b1111_1111_1100_0000) == 0b0100_1110_1000_0000)
             || ((opcode_raw & 0b1111_1111_0000_0000) == 0b0110_0001_0000_0000);
         if is_call && call_hooks {
-            let (next_addr, opcode) = self
-                .get_instruction(self.core.pc)
-                .map(|(pc, op)| (pc.0, op))
-                .unwrap();
-            let sub_addr = calculate_sub_address(&opcode, &self.core).unwrap();
-            /*let msg = format!(
-                "calling subroutine {} -> {}",
-                self.get_symbol(self.core.pc),
-                self.get_symbol(next_addr.0),
-            );
-            self.print_nested(msg);*/
-            if let Some(target_pc) = target_pc {
-                if self.core.pc == target_pc {
-                    return Ok(false);
-                }
-            }
-            match &mut self.script_engine {
-                Some(_) => {
-                    if self.script_engine.as_ref().unwrap().hook_exists(sub_addr) {
-                        let checkmem = self
-                            .script_engine
-                            .as_mut()
-                            .unwrap()
-                            .call_hook(&mut self.core, sub_addr)
-                            .unwrap();
-                        unsafe {
-                            if let Some(msg) = (&raw const DESYNC_SCRIPT_MESSAGE).as_ref().unwrap()
-                            {
-                                return Err(msg.clone());
-                            }
-                        }
-                        while self.core.pc != next_addr {
-                            self.run_emu_instruction();
-                            self.emu_machine_instructions_ran += 1;
-                        }
-                        self.check_accuracy(checkmem)?;
-                        self.script_engine
-                            .as_mut()
-                            .unwrap()
-                            .sync_emu_with_script(&mut self.core);
-                        Ok(sub_addr == self.vblank_addr)
-                    } else {
-                        self.unimplemented_subs_frame.insert(sub_addr);
-                        self.run_emu_instruction();
-                        self.script_machine_instructions_ran += 1;
-                        self.emu_machine_instructions_ran += 1;
-                        Ok(opcode_raw == 0b0100_1110_0111_0011)
-                    }
-                }
-                None => {
-                    self.run_emu_instruction();
-                    self.script_machine_instructions_ran += 1;
-                    self.emu_machine_instructions_ran += 1;
-                    Ok(opcode_raw == 0b0100_1110_0111_0011)
-                }
-            }
+            self.call_function(target_pc, opcode_raw)
         } else {
             self.run_emu_instruction();
             self.script_machine_instructions_ran += 1;
