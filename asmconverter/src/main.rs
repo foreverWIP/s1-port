@@ -624,7 +624,7 @@ fn main() -> Result<(), String> {
         write_line(&mut outfile, &"}*/")?;
     }
     let map_time_end = Instant::now();
-    const FUNCSFILE: &str = "../sonic1c/funcs.c";
+    const FUNCSFILE: &str = "../sonic1c/funcs.gen.c";
     prep_file(FUNCSFILE);
     let mut outfile_disk = File::options()
         .create(true)
