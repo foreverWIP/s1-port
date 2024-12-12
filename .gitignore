@@ -23,6 +23,8 @@ Cargo.lock
 tcc/
 nativelibs/
 
+sonic1c/funcs.gen.c
+sonic1c/opcodes.gen.h
 
 sonic1/*.exe
 sonic1/*.def
