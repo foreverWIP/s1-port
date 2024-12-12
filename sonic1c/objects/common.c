@@ -271,43 +271,35 @@ ROMFUNC(rom_7BDA) {
   rom_7AF2();                                  // BRA.W	$7AF2
 }
 ROMFUNC(rom_DC40) {
-  DEF_ROMLOC(DC40)
-      : move_toreg_32(read_32(A0 + 0x8), &D2); // MOVE.L	8(A0),D2
-  DEF_ROMLOC(DC44)
-      : move_toreg_32(read_32(A0 + 0xC), &D3); // MOVE.L	12(A0),D3
-  DEF_ROMLOC(DC48)
-      : move_toreg_16(read_16(A0 + 0x10), &D0); // MOVE.W	16(A0),D0
-  DEF_ROMLOC(DC4C) : ext_reg_32(&D0);           // EXT.L	D0
-  DEF_ROMLOC(DC4E) : asl_toreg_32(0x8, &D0);    // ASL.L	#$08,D0
-  DEF_ROMLOC(DC50) : add_toreg_32(D0, &D2);     // ADD.L	D0,D2
-  DEF_ROMLOC(DC52)
-      : move_toreg_16(read_16(A0 + 0x12), &D0);     // MOVE.W	18(A0),D0
-  DEF_ROMLOC(DC56) : add_tomem_16(0x38, A0 + 0x12); // ADDI.W	#$0038,18(A0)
-  DEF_ROMLOC(DC5C) : ext_reg_32(&D0);               // EXT.L	D0
-  DEF_ROMLOC(DC5E) : asl_toreg_32(0x8, &D0);        // ASL.L	#$08,D0
-  DEF_ROMLOC(DC60) : add_toreg_32(D0, &D3);         // ADD.L	D0,D3
-  DEF_ROMLOC(DC62) : move_tomem_32(D2, A0 + 0x8);   // MOVE.L	D2,8(A0)
-  DEF_ROMLOC(DC66) : move_tomem_32(D3, A0 + 0xC);   // MOVE.L	D3,12(A0)
-  DEF_ROMLOC(DC6A) : return;                        // RTS
+  DEF_ROMLOC(DC40): move_toreg_32(read_32(A0 + 0x8), &D2); // MOVE.L	8(A0),D2
+  DEF_ROMLOC(DC44): move_toreg_32(read_32(A0 + 0xC), &D3); // MOVE.L	12(A0),D3
+  DEF_ROMLOC(DC48): move_toreg_16(read_16(A0 + 0x10), &D0); // MOVE.W	16(A0),D0
+  DEF_ROMLOC(DC4C): ext_reg_32(&D0);           // EXT.L	D0
+  DEF_ROMLOC(DC4E): asl_toreg_32(0x8, &D0);    // ASL.L	#$08,D0
+  DEF_ROMLOC(DC50): add_toreg_32(D0, &D2);     // ADD.L	D0,D2
+  DEF_ROMLOC(DC52): move_toreg_16(read_16(A0 + 0x12), &D0);     // MOVE.W	18(A0),D0
+  DEF_ROMLOC(DC56): add_tomem_16(0x38, A0 + 0x12); // ADDI.W	#$0038,18(A0)
+  DEF_ROMLOC(DC5C): ext_reg_32(&D0);               // EXT.L	D0
+  DEF_ROMLOC(DC5E): asl_toreg_32(0x8, &D0);        // ASL.L	#$08,D0
+  DEF_ROMLOC(DC60): add_toreg_32(D0, &D3);         // ADD.L	D0,D3
+  DEF_ROMLOC(DC62): move_tomem_32(D2, A0 + 0x8);   // MOVE.L	D2,8(A0)
+  DEF_ROMLOC(DC66): move_tomem_32(D3, A0 + 0xC);   // MOVE.L	D3,12(A0)
+  DEF_ROMLOC(DC6A): return;                        // RTS
 }
 ROMFUNC(rom_DC6C) {
-  DEF_ROMLOC(DC6C)
-      : move_toreg_32(read_32(A0 + 0x8), &D2); // MOVE.L	8(A0),D2
-  DEF_ROMLOC(DC70)
-      : move_toreg_32(read_32(A0 + 0xC), &D3); // MOVE.L	12(A0),D3
-  DEF_ROMLOC(DC74)
-      : move_toreg_16(read_16(A0 + 0x10), &D0); // MOVE.W	16(A0),D0
-  DEF_ROMLOC(DC78) : ext_reg_32(&D0);           // EXT.L	D0
-  DEF_ROMLOC(DC7A) : asl_toreg_32(0x8, &D0);    // ASL.L	#$08,D0
-  DEF_ROMLOC(DC7C) : add_toreg_32(D0, &D2);     // ADD.L	D0,D2
-  DEF_ROMLOC(DC7E)
-      : move_toreg_16(read_16(A0 + 0x12), &D0);   // MOVE.W	18(A0),D0
-  DEF_ROMLOC(DC82) : ext_reg_32(&D0);             // EXT.L	D0
-  DEF_ROMLOC(DC84) : asl_toreg_32(0x8, &D0);      // ASL.L	#$08,D0
-  DEF_ROMLOC(DC86) : add_toreg_32(D0, &D3);       // ADD.L	D0,D3
-  DEF_ROMLOC(DC88) : move_tomem_32(D2, A0 + 0x8); // MOVE.L	D2,8(A0)
-  DEF_ROMLOC(DC8C) : move_tomem_32(D3, A0 + 0xC); // MOVE.L	D3,12(A0)
-  DEF_ROMLOC(DC90) : return;                      // RTS
+  DEF_ROMLOC(DC6C): move_toreg_32(read_32(A0 + 0x8), &D2); // MOVE.L	8(A0),D2
+  DEF_ROMLOC(DC70): move_toreg_32(read_32(A0 + 0xC), &D3); // MOVE.L	12(A0),D3
+  DEF_ROMLOC(DC74): move_toreg_16(read_16(A0 + 0x10), &D0); // MOVE.W	16(A0),D0
+  DEF_ROMLOC(DC78): ext_reg_32(&D0);           // EXT.L	D0
+  DEF_ROMLOC(DC7A): asl_toreg_32(0x8, &D0);    // ASL.L	#$08,D0
+  DEF_ROMLOC(DC7C): add_toreg_32(D0, &D2);     // ADD.L	D0,D2
+  DEF_ROMLOC(DC7E): move_toreg_16(read_16(A0 + 0x12), &D0);   // MOVE.W	18(A0),D0
+  DEF_ROMLOC(DC82): ext_reg_32(&D0);             // EXT.L	D0
+  DEF_ROMLOC(DC84): asl_toreg_32(0x8, &D0);      // ASL.L	#$08,D0
+  DEF_ROMLOC(DC86): add_toreg_32(D0, &D3);       // ADD.L	D0,D3
+  DEF_ROMLOC(DC88): move_tomem_32(D2, A0 + 0x8); // MOVE.L	D2,8(A0)
+  DEF_ROMLOC(DC8C): move_tomem_32(D3, A0 + 0xC); // MOVE.L	D3,12(A0)
+  DEF_ROMLOC(DC90): return;                      // RTS
 }
 ROMFUNC(rom_DC92) {
   DEF_ROMLOC(DC92) : move_toreg_32(0xFFFFAC00, &A1); // LEA.L	$AC00,A1
