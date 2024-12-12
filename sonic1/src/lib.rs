@@ -216,6 +216,7 @@ fn symbol_syntax_filter(s: &str) -> bool {
     !s.starts_with("v_")
         && !s.starts_with("z")
         && ((s.starts_with("Newt_Action"))
+            || (s.starts_with("Bas_Action"))
             || (s.starts_with("Plat_Move"))
             || (s.starts_with("Debug_"))
             || (s == "ReactToItem.proximity")
