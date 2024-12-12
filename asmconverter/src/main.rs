@@ -637,7 +637,7 @@ fn main() -> Result<(), String> {
                 .as_bytes(),
         )
         .map_err(|e| e.to_string())?;
-    const OPSHEADERFILE: &str = "../sonic1c/opcodes.h";
+    const OPSHEADERFILE: &str = "../sonic1c/opcodes.gen.h";
     prep_file(OPSHEADERFILE);
     // XNZVC
     fs::write(
