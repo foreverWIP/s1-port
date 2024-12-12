@@ -334,12 +334,7 @@ ROMFUNC(rom_301A) {
 	DEF_ROMLOC(3446): move_tomem_32(D0, 0xFFFFFE26); // MOVE.L	D0,$FE26
 	DEF_ROMLOC(344A): move_tomem_32(0x1388, 0xFFFFFFC0); // MOVE.L	#$00001388,$FFC0
 	DEF_ROMLOC(3452): return; // RTS
-}
-ROMFUNC(rom_3454) {
-	DEF_ROMLOC(3454): or_toreg_8(0x0, &D0); // ORI.B	#$00,D0
-	DEF_ROMLOC(3458): sub_toreg_8(0x0, &D0); // SUBI.B	#$00,D0
-	rom_345C(); // Detected flow into next function
-}
+}*/
 ROMFUNC(rom_345C) {
 	DEF_ROMLOC(345C): move_toreg_8(read_8(0xFFFFF605), &D1); // MOVE.B	$F605,D1
 	DEF_ROMLOC(3460): and_toreg_8(0x3, &D1); // ANDI.B	#$03,D1
@@ -450,4 +445,4 @@ ROMFUNC(rom_3582) {
 	DEF_ROMLOC(3596): move_tomem_16(D0, A6); // MOVE.W	D0,(A6)
 	DEF_ROMLOC(3598): dec_reg_16(&D2); if ((D2 & 0xffff) != 0xffff) goto rom_3584; // DBF.W	D2,$3584
 	DEF_ROMLOC(359C): return; // RTS
-}*/
+}
