@@ -371,6 +371,7 @@ u32 divu(u32 src, u32 dst, u8 bits, bool setflags) {
 }
 
 u32 divs(u32 src, u32 dst, u8 bits, bool setflags) {
+  src = (s32)((s16)src);
   if ((dst == 0x80000000) && ((s32)src == -1)) {
     SET_FLAG_N(0);
     SET_FLAG_V(0);
@@ -789,9 +790,7 @@ void lsr_toreg_8(u32 src, u32 *dst) { BINOP_TOREG_8(lsr); }
 void move_sr_toreg_16(u32 sr, u32 *dst) {
   SETWORD(*dst, move(sr, *dst, 16, false));
 }
-void move_tomem_16(u32 src, u32 dst) {
-  BINOP_TOMEM_16(move);
-}
+void move_tomem_16(u32 src, u32 dst) { BINOP_TOMEM_16(move); }
 void move_tomem_32(u32 src, u32 dst) { BINOP_TOMEM_32(move); }
 void move_tomem_8(u32 src, u32 dst) { BINOP_TOMEM_8(move); }
 void move_toreg_16(u32 src, u32 *dst) {
@@ -804,7 +803,8 @@ void move_toreg_16(u32 src, u32 *dst) {
 }
 void move_toreg_32(u32 src, u32 *dst) { BINOP_TOREG_32(move); }
 void move_toreg_8(u32 src, u32 *dst) { BINOP_TOREG_8(move); }
-void move_tosr_16(u32 src, u32 *sr) { SETBYTE(*sr, move(src, *sr, 8, false)); }
+void move_toccr_8(u32 src, u32 *sr) { SETBYTE(*sr, move(src, *sr, 8, false)); }
+void move_tosr_16(u32 src, u32 *sr) { SETWORD(*sr, move(src, *sr, 16, false)); }
 void muls_toreg_16(u32 src, u32 *dst) {
   u32 res = (u32)(((s32)((s16)src)) * ((s32)((s16)*dst)));
   SET_FLAG_Z(res == 0);

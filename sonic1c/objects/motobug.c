@@ -1,7 +1,6 @@
-// #define CHECK_STUFF(loc) 1
+// #define CHECK_STUFF 1
 #include "../opcodes.h"
 #include "../system.h"
-
 
 ROMFUNC(rom_FCA6) {
   u8 switchindex = 0;

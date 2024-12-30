@@ -3,6 +3,7 @@ use std::{
     collections::{HashMap, HashSet},
     fmt::Display,
     fs,
+    panic::set_hook,
     rc::Rc,
     sync::{LazyLock, OnceLock, RwLock},
 };
@@ -44,6 +45,47 @@ impl Default for Input {
             c: false,
             start: false,
         }
+    }
+}
+impl Display for Input {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_fmt(format_args!(
+            "{}{}{}{}{}{}{}{}",
+            if self.up { "^" } else { " " },
+            if self.down { "v" } else { " " },
+            if self.left { "<" } else { " " },
+            if self.right { ">" } else { " " },
+            if self.a { "a" } else { " " },
+            if self.b { "b" } else { " " },
+            if self.c { "c" } else { " " },
+            if self.start { "s" } else { " " },
+        ))
+    }
+}
+impl From<u8> for Input {
+    fn from(value: u8) -> Self {
+        Self {
+            up: ((value >> 7) & 1) != 0,
+            down: ((value >> 6) & 1) != 0,
+            left: ((value >> 5) & 1) != 0,
+            right: ((value >> 4) & 1) != 0,
+            a: ((value >> 3) & 1) != 0,
+            b: ((value >> 2) & 1) != 0,
+            c: ((value >> 1) & 1) != 0,
+            start: ((value >> 0) & 1) != 0,
+        }
+    }
+}
+impl From<Input> for u8 {
+    fn from(value: Input) -> Self {
+        (if value.up { 0x80 } else { 0 })
+            | (if value.down { 0x40 } else { 0 })
+            | (if value.left { 0x20 } else { 0 })
+            | (if value.right { 0x10 } else { 0 })
+            | (if value.a { 0x08 } else { 0 })
+            | (if value.b { 0x04 } else { 0 })
+            | (if value.c { 0x02 } else { 0 })
+            | (if value.start { 0x01 } else { 0 })
     }
 }
 
@@ -108,40 +150,61 @@ fn calculate_sub_address(opcode: &OpcodeInstance, core: &SpeedShoesCore) -> Opti
     })
 }
 
-pub fn synchronize_script(pc: u32, checkmem: bool) -> bool {
+pub fn synchronize_script(pc: u32) -> bool {
     unsafe {
         if DESYNC_SCRIPT_MESSAGE.is_some() {
             return false;
         }
     }
     let our_system = unsafe { OUR_SYSTEM_GLOBAL.unwrap().as_mut().unwrap() };
-    /*let msg = format!(
-        "synchronizing emu to script {} -> {}",
-        our_system.get_symbol(our_system.core.pc),
-        our_system.get_symbol(pc)
-    );
-    our_system.print_nested(msg);*/
+    if !our_system.test_mode {
+        return true;
+    }
+    our_system.last_script_pc = pc;
     let mut inst_sync_counter = 0;
-    const MAX_SYNC_INSTS: usize = 896_040 / 1024;
-    let mut sync_pcs = Vec::with_capacity(MAX_SYNC_INSTS / 32);
-    our_system.catching_up_to_script = true;
-    while our_system.core.pc != pc {
-        our_system.run_instruction(false, Some(pc));
-        sync_pcs.push(our_system.core.pc);
+    const MAX_SYNC_INSTS: usize = 896_040 * 60;
+    our_system.sync_pcs.fill(0);
+    /*{
+        let msg = format!("script pc: {}", our_system.get_symbol(pc),);
+        our_system.print_nested(&msg);
+    }*/
+    while our_system.core.as_ref().unwrap().pc != pc {
+        let pc_before = our_system.core.as_ref().unwrap().pc;
+        our_system.run_emu_instruction();
+        let pc_after = our_system.core.as_ref().unwrap().pc;
+        /*if !(0x1438..0x2160).contains(&pc_before)
+            && !(0x132AC..0x15DF6).contains(&pc_before)
+            && !(0x9B6E..0xE14C).contains(&pc_before)
+            && !(0x626E..0x73B6).contains(&pc_before)
+            && !(0x1B59A..0x1B7AA).contains(&pc_before)
+            && !(0xB88..0x11B6).contains(&pc_before)
+            && !(0x1C7DA..0x1D104).contains(&pc_before)
+            && !(0xADA2..0xAE4E).contains(&pc_before)
+            && !(0xFD38..0xFD70).contains(&pc_before)
+        {
+            let msg = format!(
+                "{} -> {}",
+                our_system.get_symbol(pc_before),
+                our_system.get_symbol(pc_after),
+            );
+            our_system.print_nested(&msg);
+        }*/
+        if inst_sync_counter < our_system.sync_pcs.len() {
+            our_system.sync_pcs[inst_sync_counter] = our_system.core.as_ref().unwrap().pc;
+        }
         our_system.emu_machine_instructions_ran += 1;
         inst_sync_counter += 1;
-        if inst_sync_counter == MAX_SYNC_INSTS {
+        if inst_sync_counter >= MAX_SYNC_INSTS {
+            assert_eq!(
+                our_system.core.as_ref().unwrap().pc,
+                pc,
+                "{}",
+                comma_separated(our_system.sync_pcs.iter())
+            );
             break;
         }
     }
-    our_system.catching_up_to_script = false;
-    assert_eq!(
-        our_system.core.pc,
-        pc,
-        "{}",
-        comma_separated(sync_pcs.iter())
-    );
-    let ret = match our_system.check_accuracy(checkmem) {
+    match our_system.check_accuracy() {
         Ok(_) => true,
         Err(msg) => {
             unsafe {
@@ -149,16 +212,14 @@ pub fn synchronize_script(pc: u32, checkmem: bool) -> bool {
             }
             false
         }
-    };
-    if !ret {
-        return ret;
     }
-    our_system
-        .script_engine
-        .as_mut()
-        .unwrap()
-        .sync_emu_with_script(&mut our_system.core);
-    ret
+}
+
+#[derive(Clone, Copy, Default)]
+pub struct AccuracyCheckOptions {
+    pub check_regs: bool,
+    pub check_mem: bool,
+    pub check_sr: bool,
 }
 
 pub struct System {
@@ -167,21 +228,22 @@ pub struct System {
     symbol_cache: HashMap<u32, String>,
     script_machine_instructions_ran: u64,
     emu_machine_instructions_ran: u64,
+    currently_executing_function: u32,
+    sync_pcs: Vec<u32>,
+    trace_log: Vec<String>,
     initial_pc: u32,
+    last_script_pc: u32,
     initial_sp: u32,
     vblank_addr: u32,
-    catching_up_to_script: bool,
     rom_backup: MemoryVec,
+    pub last_frame_ram: Option<Vec<u8>>,
     pub vdp: Rc<RefCell<Vdp>>,
-    pub(crate) core: SpeedShoesCore,
-    script_engine: Option<Box<ScriptEngine>>,
+    pub(crate) core: Option<SpeedShoesCore>,
+    script_engine: Box<ScriptEngine>,
     pub unimplemented_subs_frame: HashSet<u32>,
     unimplemented_subs_total: HashSet<u32>,
-    pub fb_plane_a_low: Box<[u32]>,
-    pub fb_plane_b: Box<[u32]>,
-    pub fb_plane_s_low: Box<[u32]>,
-    pub fb_plane_a_high: Box<[u32]>,
-    pub fb_plane_s_high: Box<[u32]>,
+    test_mode: bool,
+    accuracy_check_options: AccuracyCheckOptions,
 }
 
 impl Drop for System {
@@ -206,10 +268,34 @@ impl Drop for System {
 }
 
 impl System {
-    fn print_nested(&self, msg: String) {
-        println!(
+    pub fn fb_plane_a_low(&self) -> &Box<[u32]> {
+        &self.script_engine.bus.fb_plane_a_low
+    }
+    pub fn fb_plane_b(&self) -> &Box<[u32]> {
+        &self.script_engine.bus.fb_plane_b
+    }
+    pub fn fb_plane_s_low(&self) -> &Box<[u32]> {
+        &self.script_engine.bus.fb_plane_s_low
+    }
+    pub fn fb_plane_a_high(&self) -> &Box<[u32]> {
+        &self.script_engine.bus.fb_plane_a_high
+    }
+    pub fn fb_plane_s_high(&self) -> &Box<[u32]> {
+        &self.script_engine.bus.fb_plane_s_high
+    }
+
+    fn print_nested(&mut self, msg: &str) {
+        /*self.trace_log.push(format!(
             "{}",
             "  ".repeat((self.initial_sp - self.core.ssp()) as usize / 4) + &msg
+        ));*/
+        println!(
+            "{}",
+            "  ".repeat(
+                (self.initial_sp - self.core.as_ref().map(|c| c.ssp()).unwrap_or_default())
+                    as usize
+                    / 4
+            ) + &msg
         );
     }
 
@@ -263,54 +349,69 @@ impl System {
         }
     }
 
-    fn check_accuracy(&self, checkmem: bool) -> Result<(), String> {
-        let script_engine = self.script_engine.as_ref().unwrap();
-        let emu_reg_state = self.core.get_reg_state();
-        let script_reg_state = script_engine.get_reg_state();
+    fn check_accuracy(&mut self) -> Result<(), String> {
+        if !self.test_mode {
+            return Ok(());
+        }
+        let emu_reg_state = self.core.as_ref().unwrap().get_reg_state();
+        let script_reg_state = self.script_engine.get_reg_state();
         let emu_ram = self.ram();
-        let script_ram = script_engine.ram();
+        let script_ram = self.script_engine.ram();
         let mut ram_differences: Vec<String> = Vec::new();
         let mut reg_differences: Vec<String> = Vec::new();
-        for i in 0..17 {
-            if i == 15 {
-                continue;
-            }
-            let mut emu_reg = emu_reg_state[i];
-            let mut script_reg = script_reg_state[i];
-            if (8..16).contains(&i) {
-                emu_reg &= 0xff_ffff;
-                script_reg &= 0xff_ffff;
-            }
-            if emu_reg != script_reg {
-                reg_differences.push(format!(
-                    "{:?}: expected {:#010X}, got {:#010X}",
-                    SystemEmulatorRegister::from(i),
-                    emu_reg,
-                    script_reg,
-                ))
+        if self.accuracy_check_options.check_regs {
+            for i in 0..17 {
+                if i == 15 {
+                    continue;
+                }
+                if i == 16 && !self.accuracy_check_options.check_sr {
+                    continue;
+                }
+                let mut emu_reg = emu_reg_state[i];
+                let mut script_reg = script_reg_state[i];
+                if (8..16).contains(&i) {
+                    emu_reg &= 0xff_ffff;
+                    script_reg &= 0xff_ffff;
+                }
+                if emu_reg != script_reg {
+                    reg_differences.push(format!(
+                        "{:?}: expected {:#010X}, got {:#010X}",
+                        SystemEmulatorRegister::from(i),
+                        emu_reg,
+                        script_reg,
+                    ))
+                }
             }
         }
-        // if checkmem || !reg_differences.is_empty() {
-        {
+        if self.accuracy_check_options.check_mem {
             let emu_ram_u64 = emu_ram.borrow().as_ptr() as *const u64;
             let script_ram_u64 = script_ram.borrow().as_ptr() as *const u64;
             let mut differing_u64s = Vec::new();
+            let mut contiguous = true;
             unsafe {
                 for i in 0..0x2000 {
                     // skip over sound driver ram & stack
                     if (0x1E00..0x1EB8).contains(&i) || (0x1F98..0x1FC0).contains(&i) {
                         continue;
                     }
-                    if *emu_ram_u64.add(i) != *script_ram_u64.add(i) {
+                    if *emu_ram_u64.add(i) != (*script_ram_u64.add(i)) {
                         differing_u64s.push(i);
                     }
                 }
+                let mut last_diff = differing_u64s.get(0).map(|d| *d).unwrap_or_default();
                 for diff in differing_u64s {
-                    let emu_u64 = (*emu_ram_u64.add(diff)).to_be_bytes();
-                    let script_u64 = (*script_ram_u64.add(diff)).to_be_bytes();
+                    let last_contiguous = contiguous;
+                    contiguous = diff.abs_diff(last_diff) == 1;
+                    last_diff = diff;
+                    if contiguous {
+                        if !last_contiguous {
+                            ram_differences.push("...".to_string());
+                        }
+                        continue;
+                    }
                     for i in 0..8 {
-                        let control_u8 = emu_u64[i];
-                        let our_u8 = script_u64[i];
+                        let control_u8 = emu_ram.borrow()[(diff * 8) + i];
+                        let our_u8 = script_ram.borrow()[(diff * 8) + i];
                         if control_u8 != our_u8 {
                             ram_differences.push(format!(
                                 "ram_{:X}: expected {:#X}, got {:#X}",
@@ -341,9 +442,13 @@ impl System {
         }
 
         if !ram_differences.is_empty() || !reg_differences.is_empty() {
+            fs::write("lastram.bin", self.ram().borrow().as_slice());
             return Err(format!(
-                "Simulation mismatch at pc {:#X}:\n{}",
-                self.core.pc(),
+                "Simulation mismatch at pc {} (calling function {}):\nFirst {} PCs ran: {}\n{}",
+                self.get_symbol(self.core.as_ref().unwrap().pc()),
+                self.get_symbol(self.currently_executing_function),
+                self.sync_pcs.len(),
+                comma_separated(self.sync_pcs.iter()),
                 reg_differences.join("\n") + "\n" + &ram_differences.join("\n"),
             ));
         } else {
@@ -357,55 +462,66 @@ impl System {
         symbol_map: Option<HashMap<u32, String>>,
         use_scripts: bool,
         test_mode: bool,
+        accuracy_check_options: AccuracyCheckOptions,
     ) -> Result<System, String> {
         unsafe {
             DESYNC_SCRIPT_MESSAGE = None;
         }
         let rom = Rc::new(rom_things.0.clone());
-        let ram = Rc::new(RefCell::new(vec![0u8; SYSTEM_RAM_SIZE]));
-        let vdp = Rc::new(RefCell::new(Vdp::new(rom.clone(), ram.clone())));
+        let ram = match fs::read("lastram.bin") {
+            Ok(r) => r,
+            Err(_) => vec![0u8; SYSTEM_RAM_SIZE],
+        };
+        let our_ram = Rc::new(RefCell::new(ram.clone()));
+        let vdp = Rc::new(RefCell::new(Vdp::new(rom.clone(), our_ram.clone())));
         let sp_addr = u32::from_be_bytes(rom[0..4].try_into().unwrap());
         let pc_addr = u32::from_be_bytes(rom[4..8].try_into().unwrap());
 
-        let mut core = SpeedShoesCore::new("sonic1", rom, ram, vdp.clone()).unwrap();
-        core.reset();
+        let mut core = if test_mode {
+            Some({
+                let mut ret =
+                    SpeedShoesCore::new("sonic1", rom.clone(), our_ram, vdp.clone()).unwrap();
+                ret.reset();
+                ret
+            })
+        } else {
+            None
+        };
 
         // core.set_reg(SystemEmulatorRegister::A7, sp_addr);
         // core.pc = pc_addr;
 
-        let mut ret = System {
+        Ok(System {
             id: name,
             symbol_map: symbol_map.unwrap_or_default(),
             symbol_cache: HashMap::new(),
             script_machine_instructions_ran: 0,
             emu_machine_instructions_ran: 0,
+            currently_executing_function: pc_addr,
+            sync_pcs: vec![0; 16],
+            trace_log: Vec::new(),
             initial_pc: pc_addr,
+            last_script_pc: 0,
             initial_sp: sp_addr,
             vblank_addr: rom_things.1,
-            catching_up_to_script: false,
             rom_backup: MemoryVec::new8(PC(0), rom_things.0.clone()),
-            fb_plane_a_low: vec![0u32; (GAME_WIDTH * GAME_HEIGHT) as usize].into_boxed_slice(),
-            fb_plane_b: vec![0u32; (GAME_WIDTH * GAME_HEIGHT) as usize].into_boxed_slice(),
-            fb_plane_s_low: vec![0u32; (GAME_WIDTH * GAME_HEIGHT) as usize].into_boxed_slice(),
-            fb_plane_a_high: vec![0u32; (GAME_WIDTH * GAME_HEIGHT) as usize].into_boxed_slice(),
-            fb_plane_s_high: vec![0u32; (GAME_WIDTH * GAME_HEIGHT) as usize].into_boxed_slice(),
+            last_frame_ram: None,
             vdp,
             core,
-            script_engine: None,
+            script_engine: Box::new(ScriptEngine::new(
+                name,
+                rom,
+                Rc::new(RefCell::new(ram.clone())),
+            )?),
             unimplemented_subs_frame: HashSet::new(),
             unimplemented_subs_total: HashSet::new(),
-        };
-        let script_engine = if use_scripts {
-            Some(Box::new(ScriptEngine::new(name, ret.core.mem.rom.clone())?))
-        } else {
-            None
-        };
-        ret.script_engine = script_engine;
-        Ok(ret)
+            test_mode,
+            accuracy_check_options,
+        })
     }
 
     fn ram(&self) -> Rc<RefCell<Vec<u8>>> {
-        self.core.ram().clone()
+        self.core.as_ref().unwrap().ram().clone()
     }
 
     pub fn script_machine_instructions_ran(&self) -> u64 {
@@ -418,61 +534,50 @@ impl System {
 
     fn call_function(&mut self, target_pc: Option<u32>, opcode_raw: u16) -> Result<bool, String> {
         let (next_addr, opcode) = self
-            .get_instruction(self.core.pc)
+            .get_instruction(self.core.as_ref().unwrap().pc)
             .map(|(pc, op)| (pc.0, op))
             .unwrap();
 
-        let sub_addr = calculate_sub_address(&opcode, &self.core).unwrap();
-        /*let msg = format!(
-            "calling subroutine {} -> {}",
-            self.get_symbol(self.core.pc),
-            self.get_symbol(next_addr.0),
-        );
-        self.print_nested(msg);*/
+        let sub_addr = calculate_sub_address(&opcode, &self.core.as_ref().unwrap()).unwrap();
+        let prev_executing_function = self.currently_executing_function;
+        self.currently_executing_function = sub_addr;
         if let Some(target_pc) = target_pc {
-            if self.core.pc == target_pc {
+            if self.core.as_ref().unwrap().pc == target_pc {
                 return Ok(false);
             }
         }
-        match &mut self.script_engine {
-            Some(_) => {
-                if self.script_engine.as_ref().unwrap().hook_exists(sub_addr) {
-                    let checkmem = self
-                        .script_engine
-                        .as_mut()
-                        .unwrap()
-                        .call_hook(&mut self.core, sub_addr)
-                        .unwrap();
-                    unsafe {
-                        if let Some(msg) = (&raw const DESYNC_SCRIPT_MESSAGE).as_ref().unwrap() {
-                            return Err(msg.clone());
-                        }
-                    }
-                    while self.core.pc != next_addr {
-                        self.run_emu_instruction();
-                        self.emu_machine_instructions_ran += 1;
-                    }
-                    self.check_accuracy(checkmem)?;
-                    self.script_engine
-                        .as_mut()
-                        .unwrap()
-                        .sync_emu_with_script(&mut self.core);
-                    Ok(sub_addr == self.vblank_addr)
-                } else {
-                    self.unimplemented_subs_frame.insert(sub_addr);
-                    self.run_emu_instruction();
-                    self.script_machine_instructions_ran += 1;
-                    self.emu_machine_instructions_ran += 1;
-                    Ok(opcode_raw == 0b0100_1110_0111_0011)
+        let result = if self.script_engine.hook_exists(sub_addr) {
+            self.script_engine
+                .call_hook(&mut self.core.as_mut().unwrap(), sub_addr)
+                .unwrap();
+            unsafe {
+                if let Some(msg) = (&raw const DESYNC_SCRIPT_MESSAGE).as_ref().unwrap() {
+                    return Err(msg.clone());
                 }
             }
-            None => {
+            self.sync_pcs.fill(0);
+            let mut inst_sync_counter = 0;
+            while self.core.as_ref().unwrap().pc != next_addr {
+                if inst_sync_counter < self.sync_pcs.len() {
+                    self.sync_pcs[inst_sync_counter] = self.core.as_ref().unwrap().pc;
+                }
                 self.run_emu_instruction();
-                self.script_machine_instructions_ran += 1;
                 self.emu_machine_instructions_ran += 1;
-                Ok(opcode_raw == 0b0100_1110_0111_0011)
+                inst_sync_counter += 1;
             }
-        }
+            self.check_accuracy()?;
+            self.script_engine
+                .sync_emu_with_script(&mut self.core.as_mut().unwrap());
+            Ok(sub_addr == self.vblank_addr)
+        } else {
+            self.unimplemented_subs_frame.insert(sub_addr);
+            self.run_emu_instruction();
+            self.script_machine_instructions_ran += 1;
+            self.emu_machine_instructions_ran += 1;
+            Ok(opcode_raw == 0b0100_1110_0111_0011)
+        };
+        self.currently_executing_function = prev_executing_function;
+        result
     }
 
     fn run_instruction(
@@ -480,7 +585,8 @@ impl System {
         call_hooks: bool,
         target_pc: Option<u32>,
     ) -> Result<bool, String> {
-        let opcode_raw = self.core.read_16(self.core.pc);
+        let pc = self.core.as_ref().unwrap().pc;
+        let opcode_raw = self.core.as_mut().unwrap().read_16(pc);
         let is_call = ((opcode_raw & 0b1111_1111_1100_0000) == 0b0100_1110_1000_0000)
             || ((opcode_raw & 0b1111_1111_0000_0000) == 0b0110_0001_0000_0000);
         if is_call && call_hooks {
@@ -502,98 +608,114 @@ impl System {
         self.emu_machine_instructions_ran = 0;
         self.script_machine_instructions_ran = 0;
         self.unimplemented_subs_frame.clear(); // will be populated over the frame
-        self.core.set_input(input); // controller input
-
-        loop {
-            // we check for error conditions before running
-            // any instructions, just in case we ended up
-            // in a very weird state
-
-            // stop on 68k exception
-            if self.exception_encountered() {
-                return Err(match self.core.pc {
-                    _ => "Exception hit!",
-                }
-                .to_string()
-                    + &format!(" pc = {:X}", self.core.pc));
-            }
-
-            // check for error from script check
-            unsafe {
-                if let Some(msg) = &DESYNC_SCRIPT_MESSAGE {
-                    return Err(msg.clone());
-                }
-            }
-
-            // actually run the instruction
-            if self.run_instruction(true, None)? {
-                break;
-            }
+        if let Some(core) = self.core.as_mut() {
+            core.set_input(input); // controller input
         }
 
-        // accumulate our unimplemented subroutines
-        for sub in &self.unimplemented_subs_frame {
-            self.unimplemented_subs_total.insert(*sub);
+        if let Some(ram) = &self.last_frame_ram {
+            let ram = ram.clone();
+            set_hook(Box::new(move |phi| {
+                fs::write("lastram.bin", &ram);
+            }));
+        }
+
+        self.last_script_pc = 0;
+        self.script_engine.run_frame(input)?;
+
+        if self.test_mode {
+            let mut prev_pc = self.core.as_ref().unwrap().pc;
+            let mut already_synced = true;
+            loop {
+                // we check for error conditions before running
+                // any instructions, just in case we ended up
+                // in a very weird state
+
+                // stop on 68k exception
+                if self.exception_encountered() {
+                    return Err(match self.core.as_ref().unwrap().pc {
+                        _ => "Exception hit!",
+                    }
+                    .to_string()
+                        + &format!(" pc = {:X}", self.core.as_ref().unwrap().pc));
+                }
+
+                // check for error from script check
+                unsafe {
+                    if let Some(msg) = &DESYNC_SCRIPT_MESSAGE {
+                        return Err(msg.clone());
+                    }
+                }
+
+                // actually run the instruction
+                /*if self.run_instruction(true, None)? {
+                    break;
+                }*/
+
+                if prev_pc == 0xB6C {
+                    break;
+                }
+                self.run_emu_instruction();
+                already_synced = false;
+                prev_pc = self.core.as_ref().unwrap().pc;
+            }
+
+            if !already_synced {
+                self.check_accuracy()?;
+            }
+
+            if let Some(ram) = &mut self.last_frame_ram {
+                ram.copy_from_slice(&self.core.as_ref().unwrap().ram().borrow());
+            } else {
+                self.last_frame_ram = Some(self.core.as_ref().unwrap().ram().borrow().clone());
+            }
+
+            // accumulate our unimplemented subroutines
+            for sub in &self.unimplemented_subs_frame {
+                self.unimplemented_subs_total.insert(*sub);
+            }
         }
         Ok(())
     }
 
     fn run_emu_instruction(&mut self) {
-        let pc_before = self.core.pc;
-        let sp_before = self.core.dar[15];
-        self.core.execute1();
-        if self.exception_encountered() {
-            panic!();
-        }
-        /*let pc_after = self.core.pc;
-        {
+        let pc_before = self.core.as_ref().unwrap().pc;
+        let sp_before = self.core.as_ref().unwrap().dar[15];
+        self.core.as_mut().unwrap().execute1();
+        let pc_after = self.core.as_ref().unwrap().pc;
+        /*{
             let msg = format!(
                 "{} -> {}",
                 self.get_symbol(pc_before),
                 self.get_symbol(pc_after),
             );
-            self.print_nested(msg);
+            self.print_nested(&msg);
         }*/
     }
 
     fn exception_encountered(&self) -> bool {
-        (0x3B8..0x5F0).contains(&self.core.pc)
+        (0x3B8..0x5F0).contains(&self.core.as_ref().unwrap().pc)
     }
 
     pub fn reset(&mut self) -> Result<(), String> {
-        self.core.sr_to_flags(0);
-        self.core.reset();
-        if let Some(script_engine) = &mut self.script_engine {
-            _ = script_engine
-                .reset(&mut self.core)
-                .map_err(|e| println!("{}", e));
+        unsafe {
+            OUR_SYSTEM_GLOBAL = Some(self);
         }
+        if let Some(core) = self.core.as_mut() {
+            core.sr_to_flags(0);
+            core.reset();
+        }
+        _ = self.script_engine.reset().map_err(|e| println!("{}", e));
         Ok(())
     }
 
     pub fn render(&mut self) -> Result<(), String> {
-        let vdp = self.vdp();
-        if vdp.as_ref().borrow().display_enabled() {
-            self.fb_plane_s_high.fill(0);
-            self.fb_plane_s_low.fill(0);
-            for y in 0usize..224 {
-                let fb_range =
-                    (y * GAME_WIDTH as usize)..((y * GAME_WIDTH as usize) + GAME_WIDTH as usize);
-                vdp.as_ref().borrow_mut().render_screen_line(
-                    y as u16,
-                    &mut self.fb_plane_b[fb_range.clone()],
-                    &mut self.fb_plane_a_low[fb_range.clone()],
-                    &mut self.fb_plane_s_low[fb_range.clone()],
-                    &mut self.fb_plane_a_high[fb_range.clone()],
-                    &mut self.fb_plane_s_high[fb_range],
-                );
-            }
-        }
+        // self.core.mem.render()?;
+        self.script_engine.bus.render()?;
         Ok(())
     }
 
     pub fn bg_color(&self) -> u32 {
-        self.vdp.as_ref().borrow().bg_color()
+        self.script_engine.bus.vdp.borrow().bg_color()
     }
 
     fn vdp(&self) -> Rc<RefCell<Vdp>> {

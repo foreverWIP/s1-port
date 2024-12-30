@@ -1,7 +1,6 @@
-// #define CHECK_STUFF(loc) 1
+// #define CHECK_STUFF 1
 #include "../opcodes.h"
 #include "../system.h"
-
 
 ROMFUNC(rom_E862) {
   u8 switchindex = 0;
@@ -25,9 +24,8 @@ ROMFUNC(rom_E862) {
   }
 }
 ROMFUNC(rom_E876) {
-  DEF_ROMLOC(E876) : add_tomem_8(0x2, A0 + 0x24); // ADDQ.B	#$02,36(A0)
-  DEF_ROMLOC(E87A)
-      : move_tomem_32(0xE8DE, A0 + 0x4);              // MOVE.L	#$0000E8DE,4(A0)
+  DEF_ROMLOC(E876) : add_tomem_8(0x2, A0 + 0x24);     // ADDQ.B	#$02,36(A0)
+  DEF_ROMLOC(E87A) : move_tomem_32(0xE8DE, A0 + 0x4); // MOVE.L	#$0000E8DE,4(A0)
   DEF_ROMLOC(E882) : move_tomem_16(0x434C, A0 + 0x2); // MOVE.W	#$434C,2(A0)
   DEF_ROMLOC(E888) : or_tomem_8(0x4, A0 + 0x1);       // ORI.B	#$04,1(A0)
   DEF_ROMLOC(E88E) : move_tomem_8(0x8, A0 + 0x19);    // MOVE.B	#$08,25(A0)
@@ -49,10 +47,9 @@ ROMFUNC(rom_E8AE) {
   rom_E8BA(); // Detected flow into next function
 }
 ROMFUNC(rom_E8BA) {
-  DEF_ROMLOC(E8BA) : rom_DC92(); // BSR.W	$DC92
-  DEF_ROMLOC(E8BE)
-      : move_toreg_16(read_16(A0 + 0x8), &D0);      // MOVE.W	8(A0),D0
-  DEF_ROMLOC(E8C2) : and_toreg_16(0xFFFFFF80, &D0); // ANDI.W	#$FF80,D0
+  DEF_ROMLOC(E8BA) : rom_DC92();                            // BSR.W	$DC92
+  DEF_ROMLOC(E8BE) : move_toreg_16(read_16(A0 + 0x8), &D0); // MOVE.W	8(A0),D0
+  DEF_ROMLOC(E8C2) : and_toreg_16(0xFFFFFF80, &D0);         // ANDI.W	#$FF80,D0
   DEF_ROMLOC(E8C6)
       : move_toreg_16(read_16(0xFFFFF700), &D1);    // MOVE.W	$F700,D1
   DEF_ROMLOC(E8CA) : sub_toreg_16(0x80, &D1);       // SUBI.W	#$0080,D1

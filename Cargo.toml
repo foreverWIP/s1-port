@@ -3,4 +3,4 @@ members = ["asmconverter","sonic1", "speedshoes"]
 resolver = "1"
 
 [profile.release]
-debug = true
+# debug = true

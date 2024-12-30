@@ -478,7 +478,12 @@ fn try_disassemble_block<'dis>(
                 ));
                 cur_pc = new_pc;
             }
-            Err(_) => break,
+            Err(_) => {
+                if func.name == "GameProgram" {
+                    println!("break");
+                }
+                break;
+            }
         };
     }
     if instructions.len() > 0 {
@@ -499,7 +504,8 @@ fn try_disassemble_block<'dis>(
 fn main() -> Result<(), String> {
     unsafe {
         SKIP_AREAS = Some(vec![
-            0x0..0xB10,
+            0x0..0x200,
+            0x396..0xB10,
             0x412E..0x4170,
             0x41C8..0x4208,
             0x4A48..0x4BF0,
@@ -564,6 +570,7 @@ fn main() -> Result<(), String> {
     }
 
     println!("Mapping functions...");
+    let mut num_romlocs = 0usize;
     let map_time_start = Instant::now();
     for func in disassembled_instructions {
         let func_start = func.instructions[0].0;
@@ -591,6 +598,7 @@ fn main() -> Result<(), String> {
                         opcode.2
                     ),
                 )?;
+                num_romlocs += 1;
             } else {
                 write_line(
                     &mut outfile,
@@ -609,6 +617,7 @@ fn main() -> Result<(), String> {
                         opcode.2
                     ),
                 )?;
+                num_romlocs += 1;
             }
         }
         if func.flow == FunctionFlow::FlowIntoNextInstruction {
@@ -683,6 +692,7 @@ fn main() -> Result<(), String> {
 
         println!("{} unique suboperations", unique_subops.len());
     }
+    println!("~{} individual instructions", num_romlocs);
     println!(
         "Disassembled all instructions in {:?}",
         dis_time_end - dis_time_start

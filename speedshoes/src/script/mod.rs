@@ -1,3 +1,4 @@
+use std::borrow::Borrow;
 use std::cell::RefCell;
 use std::cmp::Ordering;
 use std::collections::HashMap;
@@ -11,9 +12,9 @@ use crate::emu::SystemEmulator;
 use crate::emu::{SpeedShoesBus, SpeedShoesCore};
 use crate::system::{synchronize_script, Input, System};
 use crate::vdp::Vdp;
-use crate::DataSize;
+use crate::{DataSize, GAME_HEIGHT, GAME_WIDTH};
 
-type VoidCFunc = fn() -> ();
+type VoidCFunc = extern "C" fn() -> ();
 
 #[repr(C)]
 struct FFIInfo {
@@ -24,7 +25,7 @@ struct FFIInfo {
     write_8_cb: fn(emu: &mut ScriptEngine, loc: u32, value: u8) -> (),
     write_16_cb: fn(emu: &mut ScriptEngine, loc: u32, value: u16) -> (),
     write_32_cb: fn(emu: &mut ScriptEngine, loc: u32, value: u32) -> (),
-    sync_cb: fn(pc: u32, bool) -> bool,
+    sync_cb: fn(pc: u32) -> bool,
 }
 
 pub(crate) struct ScriptEngine {
@@ -32,11 +33,16 @@ pub(crate) struct ScriptEngine {
     lib: Option<dlopen2::symbor::Library>,
     hooks: HashMap<u32, *const u8>,
     regs: Vec<*mut u32>,
-    bus: Box<SpeedShoesBus>,
+    pub(crate) bus: Box<SpeedShoesBus>,
+    last_state_ram: Rc<RefCell<Vec<u8>>>,
 }
 
 impl ScriptEngine {
-    pub fn new(libname: &str, rom: Rc<Vec<u8>>) -> Result<Self, String> {
+    pub fn new(
+        libname: &str,
+        rom: Rc<Vec<u8>>,
+        last_state_ram: Rc<RefCell<Vec<u8>>>,
+    ) -> Result<Self, String> {
         let ram = Rc::new(RefCell::new(vec![0u8; 0x1_0000]));
         let vdp = Vdp::new(rom.clone(), ram.clone());
         let bus = SpeedShoesBus {
@@ -44,6 +50,11 @@ impl ScriptEngine {
             rom,
             ram,
             vdp: Rc::new(RefCell::new(vdp)),
+            fb_plane_a_low: vec![0u32; (GAME_WIDTH * GAME_HEIGHT) as usize].into_boxed_slice(),
+            fb_plane_b: vec![0u32; (GAME_WIDTH * GAME_HEIGHT) as usize].into_boxed_slice(),
+            fb_plane_s_low: vec![0u32; (GAME_WIDTH * GAME_HEIGHT) as usize].into_boxed_slice(),
+            fb_plane_a_high: vec![0u32; (GAME_WIDTH * GAME_HEIGHT) as usize].into_boxed_slice(),
+            fb_plane_s_high: vec![0u32; (GAME_WIDTH * GAME_HEIGHT) as usize].into_boxed_slice(),
             current_input: Input::default(),
             input_th_toggle: false,
         };
@@ -53,6 +64,7 @@ impl ScriptEngine {
             hooks: HashMap::new(),
             regs: Vec::new(),
             bus: Box::new(bus),
+            last_state_ram,
         })
     }
 
@@ -84,7 +96,7 @@ impl ScriptEngine {
         self.bus.write_memory(loc, value as u32, DataSize::Long);
     }
 
-    pub fn reset(&mut self, emu: &mut SpeedShoesCore) -> Result<(), String> {
+    pub fn reset(&mut self) -> Result<(), String> {
         {
             if self.lib.is_some() {
                 self.lib = None;
@@ -135,15 +147,24 @@ impl ScriptEngine {
                 .reference_mut::<u32>("speedshoes__sr")
                 .map_err(|e| e.to_string())?;
             self.regs.push(reg_ref);
+
+            let reset = lib
+                .symbol::<VoidCFunc>("reset_game")
+                .map_err(|e| e.to_string())?;
+            reset();
         }
+        self.bus
+            .ram
+            .borrow_mut()
+            .copy_from_slice(&self.last_state_ram.as_ref().borrow());
         Ok(())
     }
 
-    pub fn get_reg_state(&self) -> Vec<u32> {
-        let mut ret = Vec::new();
+    pub fn get_reg_state(&self) -> [u32; 17] {
+        let mut ret = [0; 17];
         unsafe {
-            for reg in &self.regs {
-                ret.push(**reg);
+            for i in 0..self.regs.len() {
+                ret[i] = *self.regs[i];
             }
         }
         ret
@@ -163,9 +184,12 @@ impl ScriptEngine {
                 *script_reg = emu_reg;
             }
         }
-        self.bus.ram.borrow_mut()[..0xFCC0].copy_from_slice(&emu.ram().borrow()[..0xFCC0]);
-        self.bus.ram.borrow_mut()[0xFE00..].copy_from_slice(&emu.ram().borrow()[0xFE00..]);
-        self.bus.current_input = emu.mem.current_input;
+        // self.bus.ram.borrow_mut()[..0xFCC0].copy_from_slice(&emu.ram().borrow()[..0xFCC0]);
+        // self.bus.ram.borrow_mut()[0xFE00..].copy_from_slice(&emu.ram().borrow()[0xFE00..]);
+        self.bus
+            .ram
+            .borrow_mut()
+            .copy_from_slice(&emu.ram().as_ref().borrow());
     }
 
     pub fn sync_emu_with_script(&mut self, emu: &mut SpeedShoesCore) {
@@ -180,37 +204,17 @@ impl ScriptEngine {
                 emu.set_reg(i.into(), reg_after);
             }
         }
-        emu.mem.ram.borrow_mut()[..0xFCC0].copy_from_slice(&self.bus.ram.borrow()[..0xFCC0]);
-        emu.mem.ram.borrow_mut()[0xFE00..].copy_from_slice(&self.bus.ram.borrow()[0xFE00..]);
-        emu.mem.current_input = self.bus.current_input;
+        emu.mem.ram.borrow_mut()[..0xFCC0]
+            .copy_from_slice(&self.bus.ram.as_ref().borrow()[..0xFCC0]);
+        emu.mem.ram.borrow_mut()[0xFE00..]
+            .copy_from_slice(&self.bus.ram.as_ref().borrow()[0xFE00..]);
     }
 
-    fn call_hook_internal(&mut self, hook: *const u8, loc: u32, emu: &mut SpeedShoesCore) -> bool {
+    fn call_hook_internal(&mut self, hook: *const u8, loc: u32, emu: &mut SpeedShoesCore) {
         unsafe {
-            let wrotemem = self
-                .lib
-                .as_ref()
-                .unwrap()
-                .reference_mut::<bool>("speedshoes__wrotemem")
-                .unwrap();
-            *wrotemem = false;
             self.sync_script_with_emu(emu);
             let code = std::mem::transmute::<*const u8, VoidCFunc>(hook);
             code();
-            let wrotemem = self
-                .lib
-                .as_ref()
-                .unwrap()
-                .reference::<bool>("speedshoes__wrotemem")
-                .unwrap();
-            let vblank_end = self
-                .lib
-                .as_ref()
-                .unwrap()
-                .reference_mut::<bool>("speedshoes__vblank_end")
-                .unwrap();
-            *vblank_end = false;
-            *wrotemem
         }
     }
 
@@ -220,7 +224,7 @@ impl ScriptEngine {
         unsafe { lib.symbol::<*const u8>(&func_name).is_ok() }
     }
 
-    pub fn call_hook(&mut self, emu: &mut SpeedShoesCore, loc: u32) -> Result<bool, ()> {
+    pub fn call_hook(&mut self, emu: &mut SpeedShoesCore, loc: u32) -> Result<(), ()> {
         let lib = &self.lib;
         if lib.is_none() {
             panic!("script library not loaded!");
@@ -234,5 +238,18 @@ impl ScriptEngine {
         let bind_func = unsafe { lib.symbol::<*const u8>(&func_name).map_err(|e| ())? };
         self.hooks.insert(loc, *bind_func);
         Ok(self.call_hook_internal(*bind_func, loc, emu))
+    }
+
+    pub fn run_frame(&mut self, input: Input) -> Result<(), String> {
+        self.bus.current_input = input;
+        let lib = self.lib.as_ref().unwrap();
+        unsafe {
+            let run_game_frame = lib
+                .symbol::<VoidCFunc>("run_game_frame")
+                .map_err(|e| e.to_string())?;
+            run_game_frame();
+        }
+        self.bus.render()?;
+        Ok(())
     }
 }

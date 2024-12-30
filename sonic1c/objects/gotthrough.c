@@ -1,6 +1,7 @@
-// #define CHECK_STUFF(loc) 1
+// #define CHECK_STUFF 1
 #include "../system.h"
 #include "../opcodes.h"
+#include "../game.h"
 
 ROMFUNC(rom_CC00) {
 	u8 switchindex = 0;
@@ -117,12 +118,12 @@ ROMFUNC(rom_CD3C) {
 	DEF_ROMLOC(CD56): move_tomem_16(D0, 0xFFFFFE10); // MOVE.W	D0,$FE10
 	DEF_ROMLOC(CD5A): tst_reg_16(&D0); // TST.W	D0
 	DEF_ROMLOC(CD5C): if (!CCR_EQ) goto rom_CD66; // BNE.B	$CD66
-	DEF_ROMLOC(CD5E): move_tomem_8(0x0, 0xFFFFF600); // MOVE.B	#$00,$F600
+	DEF_ROMLOC(CD5E): SET_GM_SEGA();
 	goto rom_CD7E; // BRA.B	$CD7E
 	DEF_ROMLOC(CD66): clr_mem_8(0xFFFFFE30); // CLR.B	$FE30
 	DEF_ROMLOC(CD6A): tst_mem_8(0xFFFFF7CD); // TST.B	$F7CD
 	DEF_ROMLOC(CD6E): if (CCR_EQ) goto rom_CD78; // BEQ.B	$CD78
-	DEF_ROMLOC(CD70): move_tomem_8(0x10, 0xFFFFF600); // MOVE.B	#$10,$F600
+	DEF_ROMLOC(CD70): SET_GM_SPECIAL();
 	goto rom_CD7E; // BRA.B	$CD7E
 	DEF_ROMLOC(CD78): move_tomem_16(0x1, 0xFFFFFE02); // MOVE.W	#$0001,$FE02
 	DEF_ROMLOC(CD7E): rom_DC92(); // BRA.W	$DC92

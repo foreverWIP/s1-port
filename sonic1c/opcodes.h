@@ -80,6 +80,7 @@ extern void move_tomem_8(u32 src, u32 dst);
 extern void move_toreg_16(u32 src, u32 *dst);
 extern void move_toreg_32(u32 src, u32 *dst);
 extern void move_toreg_8(u32 src, u32 *dst);
+extern void move_toccr_8(u32 src, u32 *sr);
 extern void move_tosr_16(u32 src, u32 *sr);
 extern void muls_toreg_16(u32 src, u32 *dst);
 extern void mulu_toreg_16(u32 src, u32 *dst);

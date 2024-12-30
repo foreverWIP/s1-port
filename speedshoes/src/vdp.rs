@@ -676,7 +676,7 @@ impl Vdp {
                 ),
             );
             let fb_primary = &mut *screen_buf_low;
-            let mut pixel_y = ((y + scroll_y) % 8) as u8;
+            let mut pixel_y = ((y.wrapping_add(scroll_y)) % 8) as u8;
             if cur_cell.vertical_flip {
                 pixel_y = 8 - pixel_y - 1;
             }
@@ -767,7 +767,7 @@ impl Vdp {
             } else {
                 (&mut *screen_buf_low, &mut *screen_buf_high)
             };
-            let mut pixel_y = ((y + scroll_y) % 8) as u8;
+            let mut pixel_y = ((y.wrapping_add(scroll_y)) % 8) as u8;
             if cur_cell.vertical_flip {
                 pixel_y = 8 - pixel_y - 1;
             }

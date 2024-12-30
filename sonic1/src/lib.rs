@@ -12,8 +12,14 @@ pub fn patch_rom(rom: &mut Vec<u8>) {
         rom[at] = 0x4e;
         rom[at + 1] = 0x75;
     }
-    // skips checksum check
-    rom[0x30e..0x310].copy_from_slice(&u16::to_be_bytes(0x602e));
+    // skip checksum check
+    // 33E
+    rom[0x300] = 0x4e;
+    rom[0x301] = 0xf9;
+    rom[0x302] = 0x00;
+    rom[0x303] = 0x00;
+    rom[0x304] = 0x03;
+    rom[0x305] = 0x3e;
     // skip some initialization already handled by emulator
     rom[0x206] = 0b01001110;
     rom[0x207] = 0b11111001;
@@ -119,7 +125,8 @@ pub fn get_data_defs() -> Vec<DataDef> {
         return Vec::new();
     }
     let mut SKIP_AREAS = vec![
-        0x0..0xB10,
+        0x0..0x200,
+        0x396..0xB10,
         0x412E..0x4170,
         0x41C8..0x4208,
         0x4A48..0x4BF0,
@@ -215,9 +222,9 @@ fn symbol_value_filter(v: u32, SKIP_AREAS: &Vec<Range<u32>>) -> bool {
 fn symbol_syntax_filter(s: &str) -> bool {
     !s.starts_with("v_")
         && !s.starts_with("z")
-        && ((s.starts_with("Newt_Action"))
-            || (s.starts_with("Bas_Action"))
-            || (s.starts_with("Plat_Move"))
+        && ((s.contains("_Move"))
+            || (s.contains("_Action"))
+            || (s.contains("_Types"))
             || (s.starts_with("Debug_"))
             || (s == "ReactToItem.proximity")
             || (!s.contains(".")))

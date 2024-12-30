@@ -6,7 +6,7 @@ use r68k_emu::{
     ram::{AddressBus, ADDRBUS_MASK},
 };
 
-use crate::{system::Input, vdp::Vdp, DataSize};
+use crate::{system::Input, vdp::Vdp, DataSize, GAME_HEIGHT, GAME_WIDTH};
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub enum SystemEmulatorDataSize {
@@ -74,10 +74,10 @@ pub trait SystemEmulator {
         Self: Sized;
     fn reset(&mut self) -> Result<(), String>;
     fn get_reg(&self, reg: SystemEmulatorRegister) -> u32;
-    fn get_reg_state(&self) -> Vec<u32> {
-        let mut ret = Vec::new();
+    fn get_reg_state(&self) -> [u32; 17] {
+        let mut ret = [0; 17];
         for i in 0..17 {
-            ret.push(self.get_reg(i.try_into().unwrap()));
+            ret[i] = self.get_reg(i.try_into().unwrap());
         }
         ret
     }
@@ -160,6 +160,11 @@ impl SystemEmulator for SpeedShoesCore {
                 rom: rom.clone(),
                 ram,
                 vdp,
+                fb_plane_a_low: vec![0u32; (GAME_WIDTH * GAME_HEIGHT) as usize].into_boxed_slice(),
+                fb_plane_b: vec![0u32; (GAME_WIDTH * GAME_HEIGHT) as usize].into_boxed_slice(),
+                fb_plane_s_low: vec![0u32; (GAME_WIDTH * GAME_HEIGHT) as usize].into_boxed_slice(),
+                fb_plane_a_high: vec![0u32; (GAME_WIDTH * GAME_HEIGHT) as usize].into_boxed_slice(),
+                fb_plane_s_high: vec![0u32; (GAME_WIDTH * GAME_HEIGHT) as usize].into_boxed_slice(),
                 current_input: Input::default(),
                 input_th_toggle: false,
             },
@@ -223,6 +228,11 @@ pub struct SpeedShoesBus {
     pub(crate) rom: Rc<Vec<u8>>,
     pub(crate) ram: Rc<RefCell<Vec<u8>>>,
     pub(crate) vdp: Rc<RefCell<Vdp>>,
+    pub fb_plane_a_low: Box<[u32]>,
+    pub fb_plane_b: Box<[u32]>,
+    pub fb_plane_s_low: Box<[u32]>,
+    pub fb_plane_a_high: Box<[u32]>,
+    pub fb_plane_s_high: Box<[u32]>,
     pub(crate) current_input: Input,
     pub(crate) input_th_toggle: bool,
 }
@@ -301,14 +311,15 @@ impl SpeedShoesBus {
                 0
             }
         };
-        /*if address == 0x129E {
-            println!("{} {:X} = {:X}", self.id, address, ret);
+        /*if match_addr == 0xa1_0003 {
+            println!("{} read_{} {:X} = {:X}", self.id, size, address, ret);
         }*/
         ret
     }
 
     pub fn write_memory(&mut self, address: u32, value: u32, size: DataSize) {
-        /*if (0xfffc..0xffff).contains(&(address & 0xffff)) {
+        /*if address == 0xFFF602 || address == 0xFFF603 || address == 0xFFF604 || address == 0xFFF605
+        {
             println!("{} write_{} {:#X} -> {:#X}", self.id, size, value, address);
         }*/
         let mut match_addr: usize = (address & ADDRBUS_MASK) as usize;
@@ -381,6 +392,26 @@ impl SpeedShoesBus {
         } else if match_addr == 0xa1_0003 {
             self.input_th_toggle = (value & 0x40) != 0;
         }
+    }
+
+    pub fn render(&mut self) -> Result<(), String> {
+        if self.vdp.as_ref().borrow().display_enabled() {
+            self.fb_plane_s_high.fill(0);
+            self.fb_plane_s_low.fill(0);
+            for y in 0usize..224 {
+                let fb_range =
+                    (y * GAME_WIDTH as usize)..((y * GAME_WIDTH as usize) + GAME_WIDTH as usize);
+                self.vdp.as_ref().borrow_mut().render_screen_line(
+                    y as u16,
+                    &mut self.fb_plane_b[fb_range.clone()],
+                    &mut self.fb_plane_a_low[fb_range.clone()],
+                    &mut self.fb_plane_s_low[fb_range.clone()],
+                    &mut self.fb_plane_a_high[fb_range.clone()],
+                    &mut self.fb_plane_s_high[fb_range],
+                );
+            }
+        }
+        Ok(())
     }
 }
 

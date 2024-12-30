@@ -1,9 +1,10 @@
 #pragma once
 
-#ifndef DEBUG_EMU
-#define DEBUG_EMU 0
+#ifndef CHECK_STUFF
+#define CHECK_STUFF 0
 #endif
 
+#include <setjmp.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -32,42 +33,18 @@ extern void speedshoes__write_8(u32 loc, u8 value);
 extern void speedshoes__write_16(u32 loc, u16 value);
 extern void speedshoes__write_32(u32 loc, u32 value);
 
-extern void speedshoes__synchronize(u32 pc);
+extern bool speedshoes__synchronize(u32 pc);
 extern void speedshoes__callemu(u32 loc);
 
-#if DEBUG_EMU
-#define read_8(loc)                                                            \
-  (speedshoes__readbuf = speedshoes__read_8(loc),                              \
-   print("read_8(0x%06x) = 0x%02x", loc, speedshoes__readbuf),                 \
-   speedshoes__readbuf)
-#define read_16(loc)                                                           \
-  (speedshoes__readbuf = speedshoes__read_16(loc),                             \
-   print("read_16(0x%06x) = 0x%04x", loc, speedshoes__readbuf),                \
-   speedshoes__readbuf)
-#define read_32(loc)                                                           \
-  (speedshoes__readbuf = speedshoes__read_32(loc),                             \
-   print("read_32(0x%06x) = 0x%08x", loc, speedshoes__readbuf),                \
-   speedshoes__readbuf)
-#define write_8(loc, value)                                                    \
-  printf("write8(0x%06x, 0x%02x)\n", loc, value);                              \
-  speedshoes__write_8(loc, value)
-#define write_16(loc, value)                                                   \
-  printf("write16(0x%06x, 0x%04x)\n", loc, value);                             \
-  speedshoes__write_16(loc, value)
-#define write_32(loc, value)                                                   \
-  printf("write32(0x%06x, 0x%08x)\n", loc, value);                             \
-  speedshoes__write_32(loc, value)
-#else
-#define read_8 speedshoes__read_8
-#define read_16 speedshoes__read_16
-#define read_32 speedshoes__read_32
-#define write_8 speedshoes__write_8
-#define write_16 speedshoes__write_16
-#define write_32 speedshoes__write_32
-#endif
+#define read_8(loc) speedshoes__read_8(loc)
+#define read_16(loc) speedshoes__read_16(loc)
+#define read_32(loc) speedshoes__read_32(loc)
+#define write_8(loc, value) speedshoes__write_8(loc, value)
+#define write_16(loc, value) speedshoes__write_16(loc, value)
+#define write_32(loc, value) speedshoes__write_32(loc, value)
 
-#include "romlocs.h"
 #include "object.h"
+#include "romlocs.h"
 
 extern EXPORT u32 speedshoes__d0;
 extern EXPORT u32 speedshoes__d1;
@@ -87,9 +64,7 @@ extern EXPORT u32 speedshoes__a6;
 extern EXPORT u32 speedshoes__a7;
 extern EXPORT u32 speedshoes__sr;
 extern EXPORT u32 speedshoes__readbuf;
-extern EXPORT bool speedshoes__wrotemem;
-extern EXPORT bool speedshoes__desynched;
-extern bool speedshoes__vblank_end;
+extern jmp_buf speedshoes__desync_jumpbuf;
 
 #define D0 speedshoes__d0
 #define D1 speedshoes__d1
@@ -117,19 +92,11 @@ extern void print(const char *msg, ...);
 #define PRINTVAL(val) print(#val " = 0x%X", val)
 #define PRINTREG(reg) print(#reg " = 0x%X", reg)
 
-#if (defined CHECK_STUFF)
+#if CHECK_STUFF
 #define DEF_ROMLOC(loc)                                                        \
-  /*if (speedshoes__vblank_end) {                                                \
-    print("hit end of vblank!");                                               \
-    return;                                                                    \
-  }*/                                                                            \
-  rom_##loc : if (speedshoes__desynched) { return; }                           \
-  /*print("script pc before checking stuff: %X", 0x##loc);*/                   \
-  if (CHECK_STUFF(0x##loc)) {                                                  \
-    speedshoes__synchronize(0x##loc);                                          \
-    if (speedshoes__desynched) {                                               \
-      return;                                                                  \
-    }                                                                          \
+  rom_##loc : print("synching to romloc " #loc);                               \
+  if (!speedshoes__synchronize(0x##loc)) {                                     \
+    longjmp(speedshoes__desync_jumpbuf, 1);                                    \
   }                                                                            \
   rom_##loc##_colon
 #else

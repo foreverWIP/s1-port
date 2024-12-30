@@ -9,6 +9,7 @@ use std::{
     io::Write,
     num::NonZeroU32,
     ops::Range,
+    panic::set_hook,
     path::{Path, PathBuf},
     rc::Rc,
 };
@@ -17,6 +18,7 @@ use glow::{HasContext, NativeProgram, NativeTexture, PixelUnpackData};
 use imgui::{Context, Image, TextureId, Ui};
 use imgui_glow_renderer::{AutoRenderer, Renderer};
 use imgui_sdl2_support::SdlPlatform;
+use itertools::Itertools;
 use plane_texture::PlaneTexture;
 use sdl2::{
     audio::AudioSpecDesired,
@@ -26,7 +28,7 @@ use sdl2::{
 };
 use sonic1::{get_data_defs, patch_rom, read_as_symbols};
 use speedshoes::{
-    system::{self, Input, System},
+    system::{self, AccuracyCheckOptions, Input, System},
     DataSize, GAME_HEIGHT, GAME_WIDTH,
 };
 
@@ -37,6 +39,8 @@ const ROM_PATH: &str = if cfg!(debug_assertions) {
 };
 
 const REV01_MD5: &str = "09dadb5071eb35050067a32462e39c5f";
+
+const REPRO_INPUTS_PATH: &str = "repro_inputs.bin";
 
 // Create a new glow context.
 fn glow_context(window: &Window) -> glow::Context {
@@ -61,13 +65,20 @@ fn main() -> Result<(), String> {
 
     // patch our rom to work better with the engine
     patch_rom(&mut rom);
-    run_window(rom, test_mode)
+    run_window(
+        rom,
+        test_mode,
+        fs::read(REPRO_INPUTS_PATH)
+            .and_then(|bs| Ok(bs.iter().map(|b| (*b).into()).collect_vec()))
+            .unwrap_or_default(),
+    )
 }
 
 fn run_simulation(
     game: &mut Option<Sonic1>,
     rom: &Vec<u8>,
     test_mode: bool,
+    repro_inputs: &Vec<Input>,
     should_reset: &mut bool,
     should_speed_up: bool,
     should_step: bool,
@@ -84,11 +95,23 @@ fn run_simulation(
                     .collect(),
             );
             *game = Some(Sonic1 {
-                our_system: System::new("sonic1", (&rom, 0x29A0), kvps, true, test_mode)?,
+                our_system: System::new(
+                    "sonic1",
+                    (&rom, 0x29A0),
+                    kvps,
+                    true,
+                    test_mode,
+                    AccuracyCheckOptions {
+                        check_regs: false,
+                        check_mem: true,
+                        check_sr: false,
+                    },
+                )?,
                 debug_pause: false,
                 current_playing_music: 0,
                 is_current_music_sped_up: false,
                 frame_counter: 0,
+                input_history: repro_inputs.clone(),
             });
         }
         game.as_mut().unwrap().our_system.reset()?;
@@ -110,7 +133,7 @@ fn run_simulation(
     }
 }
 
-fn run_window(rom: Vec<u8>, test_mode: bool) -> Result<(), String> {
+fn run_window(rom: Vec<u8>, test_mode: bool, repro_inputs: Vec<Input>) -> Result<(), String> {
     /* initialize SDL and its video subsystem */
     let sdl = sdl2::init()?;
     let audio_subsystem = sdl.audio()?;
@@ -191,14 +214,17 @@ fn run_window(rom: Vec<u8>, test_mode: bool) -> Result<(), String> {
 
     let ui_popup_id = "Simulation Errors";
 
-    /* start main loop */
-    let mut event_pump = sdl.event_pump().unwrap();
-
     let mut apply_filter = false;
 
     let mut native_percent_store = VecDeque::new();
 
     let mut should_draw = true;
+
+    let initial_repro_input_size = repro_inputs.len();
+    let mut wrote_repro_inputs = false;
+
+    /* start main loop */
+    let mut event_pump = sdl.event_pump().unwrap();
 
     'main: loop {
         start_frame_time = sdl.timer().unwrap().performance_counter();
@@ -277,6 +303,9 @@ fn run_window(rom: Vec<u8>, test_mode: bool) -> Result<(), String> {
                 _ => {}
             }
         }
+        if let Some(game) = game.as_ref() {
+            should_speed_up |= game.frame_counter < initial_repro_input_size;
+        }
 
         let sim_result = match error_string {
             Some(ref err) => Err(err.clone()),
@@ -284,6 +313,7 @@ fn run_window(rom: Vec<u8>, test_mode: bool) -> Result<(), String> {
                 &mut game,
                 &rom,
                 test_mode,
+                &repro_inputs,
                 &mut should_reset,
                 should_speed_up,
                 should_step,
@@ -315,6 +345,21 @@ fn run_window(rom: Vec<u8>, test_mode: bool) -> Result<(), String> {
                 /*if let Some(game) = &mut game {
                     game.render();
                 }*/
+                if !wrote_repro_inputs {
+                    wrote_repro_inputs = true;
+                    if fs::exists(REPRO_INPUTS_PATH).map_err(|e| e.to_string())? {
+                        fs::remove_file(REPRO_INPUTS_PATH).map_err(|e| e.to_string())?;
+                    }
+                    fs::write(
+                        REPRO_INPUTS_PATH,
+                        game.as_ref()
+                            .unwrap()
+                            .input_history
+                            .iter()
+                            .map(|i| (*i).into())
+                            .collect_vec(),
+                    );
+                }
                 error_string = Some(m.clone());
                 ui.open_popup(ui_popup_id);
                 if let Some(_token) = ui
@@ -337,35 +382,35 @@ fn run_window(rom: Vec<u8>, test_mode: bool) -> Result<(), String> {
                         fb_plane_b_handle.render(
                             &gl_handle,
                             &window_size,
-                            &game.our_system.fb_plane_b,
+                            game.our_system.fb_plane_b(),
                             apply_filter,
                             time as f32,
                         );
                         fb_plane_a_low_handle.render(
                             &gl_handle,
                             &window_size,
-                            &game.our_system.fb_plane_a_low,
+                            game.our_system.fb_plane_a_low(),
                             false,
                             time as f32,
                         );
                         fb_plane_s_low_handle.render(
                             &gl_handle,
                             &window_size,
-                            &game.our_system.fb_plane_s_low,
+                            game.our_system.fb_plane_s_low(),
                             false,
                             time as f32,
                         );
                         fb_plane_a_high_handle.render(
                             &gl_handle,
                             &window_size,
-                            &game.our_system.fb_plane_a_high,
+                            game.our_system.fb_plane_a_high(),
                             false,
                             time as f32,
                         );
                         fb_plane_s_high_handle.render(
                             &gl_handle,
                             &window_size,
-                            &game.our_system.fb_plane_s_high,
+                            game.our_system.fb_plane_s_high(),
                             false,
                             time as f32,
                         );
@@ -449,36 +494,51 @@ fn run_window(rom: Vec<u8>, test_mode: bool) -> Result<(), String> {
                 native_percent_store.pop_front();
             }
 
-            ui.window("Debug Info")
-                .no_decoration()
-                .position([0.0, 0.0], imgui::Condition::Always)
-                .always_auto_resize(true)
-                .no_inputs()
-                .build(|| {
-                    ui.text(format!("Frame {}", game.frame_counter()));
-                    ui.text(format!(
-                        "Instructions emulated w/ scripts: {}",
-                        script_inst_count,
-                    ));
-                    ui.text(format!(
-                        "Instructions to emulate w/o scripts: {}",
-                        emu_inst_count,
-                    ));
-                    ui.text(format!(
-                        "{}% native code",
-                        native_percent_store.iter().sum::<f64>() / (MAX_AVERAGE_COUNT as f64)
-                    ));
-                });
-            ui.window("Unimplemented funcs")
-                .no_decoration()
-                .position([0.0, 80.0], imgui::Condition::Always)
-                .always_auto_resize(true)
-                .no_inputs()
-                .build(|| {
-                    for sub in &game.our_system.unimplemented_subs_frame {
-                        ui.text(format!("{:X}", sub));
-                    }
-                });
+            if test_mode {
+                ui.window("Debug Info")
+                    .no_decoration()
+                    .position([0.0, 0.0], imgui::Condition::Always)
+                    .always_auto_resize(true)
+                    .no_inputs()
+                    .build(|| {
+                        ui.text(format!("Frame {}", game.frame_counter()));
+                        ui.text(format!(
+                            "Instructions emulated w/ scripts: {}",
+                            script_inst_count,
+                        ));
+                        ui.text(format!(
+                            "Instructions to emulate w/o scripts: {}",
+                            emu_inst_count,
+                        ));
+                        ui.text(format!(
+                            "{}% native code",
+                            native_percent_store.iter().sum::<f64>() / (MAX_AVERAGE_COUNT as f64)
+                        ));
+                    });
+                ui.window("Input display")
+                    .no_decoration()
+                    .position([0.0, 80.0], imgui::Condition::Always)
+                    .always_auto_resize(true)
+                    .no_inputs()
+                    .build(|| {
+                        ui.text(
+                            (game.input_history.get(game.frame_counter))
+                                .map(|i| i.clone())
+                                .unwrap_or_default()
+                                .to_string(),
+                        )
+                    });
+                ui.window("Unimplemented funcs")
+                    .no_decoration()
+                    .position([0.0, 120.0], imgui::Condition::Always)
+                    .always_auto_resize(true)
+                    .no_inputs()
+                    .build(|| {
+                        for sub in &game.our_system.unimplemented_subs_frame {
+                            ui.text(format!("{:X}", sub));
+                        }
+                    });
+            }
         }
 
         /* render */
@@ -516,6 +576,7 @@ struct Sonic1 {
     current_playing_music: u8,
     is_current_music_sped_up: bool,
     frame_counter: usize,
+    input_history: Vec<Input>,
 }
 
 impl Sonic1 {
@@ -538,11 +599,16 @@ impl Sonic1 {
         let mut should_redraw = false;
         if !self.debug_pause {
             for _ in 0..num_frames {
+                while self.frame_counter >= self.input_history.len() {
+                    self.input_history.push(system_input);
+                }
                 // println!("Frame {}", self.frame_counter);
-                self.our_system.run_frame(system_input).map_err(|e| {
-                    println!("{}", e);
-                    e
-                })?;
+                self.our_system
+                    .run_frame(self.input_history[self.frame_counter])
+                    .map_err(|e| {
+                        println!("{}", e);
+                        e
+                    })?;
 
                 self.frame_counter += 1;
             }

@@ -1,7 +1,6 @@
-// #define CHECK_STUFF(loc) 1
+// #define CHECK_STUFF 1
 #include "../opcodes.h"
 #include "../system.h"
-
 
 ROMFUNC(rom_ACA6) {
   u8 switchindex = 0;
@@ -28,11 +27,10 @@ ROMFUNC(rom_ACA6) {
   }
 }
 ROMFUNC(rom_ACBC) {
-  DEF_ROMLOC(ACBC) : add_tomem_8(0x2, A0 + 0x24);   // ADDQ.B	#$02,36(A0)
-  DEF_ROMLOC(ACC0) : move_tomem_16(0xF0, A0 + 0x8); // MOVE.W	#$00F0,8(A0)
-  DEF_ROMLOC(ACC6) : move_tomem_16(0xDE, A0 + 0xA); // MOVE.W	#$00DE,10(A0)
-  DEF_ROMLOC(ACCC)
-      : move_tomem_32(0xAF12, A0 + 0x4);              // MOVE.L	#$0000AF12,4(A0)
+  DEF_ROMLOC(ACBC) : add_tomem_8(0x2, A0 + 0x24);     // ADDQ.B	#$02,36(A0)
+  DEF_ROMLOC(ACC0) : move_tomem_16(0xF0, A0 + 0x8);   // MOVE.W	#$00F0,8(A0)
+  DEF_ROMLOC(ACC6) : move_tomem_16(0xDE, A0 + 0xA);   // MOVE.W	#$00DE,10(A0)
+  DEF_ROMLOC(ACCC) : move_tomem_32(0xAF12, A0 + 0x4); // MOVE.L	#$0000AF12,4(A0)
   DEF_ROMLOC(ACD4) : move_tomem_16(0x2300, A0 + 0x2); // MOVE.W	#$2300,2(A0)
   DEF_ROMLOC(ACDA) : move_tomem_8(0x1, A0 + 0x18);    // MOVE.B	#$01,24(A0)
   DEF_ROMLOC(ACE0) : move_tomem_8(0x1D, A0 + 0x1F);   // MOVE.B	#$1D,31(A0)
