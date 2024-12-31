@@ -73,27 +73,30 @@ impl ScriptEngine {
     }
 
     fn read_8(&self, loc: u32) -> u8 {
-        self.bus.read_memory(loc, DataSize::Byte) as u8
+        self.bus.read_memory::<{ DataSize::Byte }>(loc) as u8
     }
 
     fn read_16(&self, loc: u32) -> u16 {
-        self.bus.read_memory(loc, DataSize::Word) as u16
+        self.bus.read_memory::<{ DataSize::Word }>(loc) as u16
     }
 
     fn read_32(&self, loc: u32) -> u32 {
-        self.bus.read_memory(loc, DataSize::Long)
+        self.bus.read_memory::<{ DataSize::Long }>(loc)
     }
 
     fn write_8(&mut self, loc: u32, value: u8) {
-        self.bus.write_memory(loc, value as u32, DataSize::Byte);
+        self.bus
+            .write_memory::<{ DataSize::Byte }>(loc, value as u32);
     }
 
     fn write_16(&mut self, loc: u32, value: u16) {
-        self.bus.write_memory(loc, value as u32, DataSize::Word);
+        self.bus
+            .write_memory::<{ DataSize::Word }>(loc, value as u32);
     }
 
     fn write_32(&mut self, loc: u32, value: u32) {
-        self.bus.write_memory(loc, value as u32, DataSize::Long);
+        self.bus
+            .write_memory::<{ DataSize::Long }>(loc, value as u32);
     }
 
     pub fn reset(&mut self) -> Result<(), String> {

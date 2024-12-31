@@ -173,36 +173,33 @@ impl SystemEmulator for SpeedShoesCore {
     }
 
     fn read_8(&mut self, loc: u32) -> u8 {
-        let size = DataSize::Byte;
-        let value = self.mem.read_memory(loc, size);
+        let value = self.mem.read_memory::<{ DataSize::Byte }>(loc);
         value as u8
     }
 
     fn read_16(&mut self, loc: u32) -> u16 {
-        let size = DataSize::Word;
-        let value = self.mem.read_memory(loc, size);
+        let value = self.mem.read_memory::<{ DataSize::Word }>(loc);
         value as u16
     }
 
     fn read_32(&mut self, loc: u32) -> u32 {
-        let size = DataSize::Long;
-        let value = self.mem.read_memory(loc, size);
+        let value = self.mem.read_memory::<{ DataSize::Long }>(loc);
         value
     }
 
     fn write_8(&mut self, loc: u32, value: u8) {
-        let size = DataSize::Byte;
-        self.mem.write_memory(loc, value as u32, size);
+        self.mem
+            .write_memory::<{ DataSize::Byte }>(loc, value as u32);
     }
 
     fn write_16(&mut self, loc: u32, value: u16) {
-        let size = DataSize::Word;
-        self.mem.write_memory(loc, value as u32, size);
+        self.mem
+            .write_memory::<{ DataSize::Word }>(loc, value as u32);
     }
 
     fn write_32(&mut self, loc: u32, value: u32) {
-        let size = DataSize::Long;
-        self.mem.write_memory(loc, value as u32, size);
+        self.mem
+            .write_memory::<{ DataSize::Long }>(loc, value as u32);
     }
 }
 
@@ -238,19 +235,19 @@ pub struct SpeedShoesBus {
 }
 
 impl SpeedShoesBus {
-    pub fn read_memory(&self, address: u32, size: DataSize) -> u32 {
+    pub fn read_memory<const SIZE: DataSize>(&self, address: u32) -> u32 {
         let match_addr: usize = (address & ADDRBUS_MASK) as usize;
         let ret = match match_addr {
             0..=0x7f_ffff => {
                 let match_addr_end = match_addr
-                    + match size {
+                    + match SIZE {
                         DataSize::Byte => 0,
                         DataSize::Word => 1,
                         DataSize::Long => 3,
                     };
                 if match_addr_end < self.rom.len() {
                     // ROM
-                    match size {
+                    match SIZE {
                         DataSize::Byte => self.rom[match_addr] as u32,
                         DataSize::Word => u16::from_be_bytes(
                             self.rom[match_addr..(match_addr + 2)].try_into().unwrap(),
@@ -266,7 +263,7 @@ impl SpeedShoesBus {
             0xff_0000.. => {
                 // RAM
                 let ram = self.ram.as_ref().borrow();
-                let ret = match size {
+                let ret = match SIZE {
                     DataSize::Byte => {
                         let ret = ram[match_addr - 0xff_0000] as u32;
                         ret
@@ -317,29 +314,23 @@ impl SpeedShoesBus {
         ret
     }
 
-    pub fn write_memory(&mut self, address: u32, value: u32, size: DataSize) {
+    pub fn write_memory<const SIZE: DataSize>(&mut self, address: u32, value: u32) {
         /*if address == 0xFFF602 || address == 0xFFF603 || address == 0xFFF604 || address == 0xFFF605
         {
             println!("{} write_{} {:#X} -> {:#X}", self.id, size, value, address);
         }*/
         let mut match_addr: usize = (address & ADDRBUS_MASK) as usize;
         let match_addr_max = match_addr
-            + match size {
+            + match SIZE {
                 DataSize::Byte => 0,
                 DataSize::Word => 1,
                 DataSize::Long => 3,
             };
-        if (match_addr_max as usize) < self.rom.len() {
-            // ROM
-            panic!(
-                "attempted to write to rom address {:#X}: data of size {}: {:#X}",
-                address, size, value
-            );
-        } else if match_addr >= 0xff_0000 {
+        if match_addr >= 0xff_0000 {
             // RAM
             let mut ram = self.ram.as_ref().borrow_mut();
             match_addr -= 0xff_0000;
-            match size {
+            match SIZE {
                 DataSize::Byte => {
                     ram[match_addr] = value as u8;
                 }
@@ -359,7 +350,7 @@ impl SpeedShoesBus {
         } else if match_addr == 0xc0_0000 {
             // vdp data port
             let mut vdp = self.vdp.as_ref().borrow_mut();
-            match size {
+            match SIZE {
                 DataSize::Byte => {
                     vdp.handle_data_write_byte(0, value as u8);
                 }
@@ -369,7 +360,7 @@ impl SpeedShoesBus {
                     vdp.handle_data_write((value & 0xffff) as u16, true);
                 }
             };
-        } else if match_addr == 0xc0_0004 && size == DataSize::Word {
+        } else if match_addr == 0xc0_0004 && SIZE == DataSize::Word {
             // vdp control port
             let mut vdp = self.vdp.as_ref().borrow_mut();
             let value_msb = value >> 8;
@@ -378,7 +369,7 @@ impl SpeedShoesBus {
             } else {
                 vdp.handle_control_word(value as u16);
             }
-        } else if match_addr == 0xc0_0004 && size == DataSize::Long {
+        } else if match_addr == 0xc0_0004 && SIZE == DataSize::Long {
             // vdp control port
             let mut vdp = self.vdp.as_ref().borrow_mut();
             let value_msb = value >> 24;
@@ -426,15 +417,15 @@ impl AddressBus for SpeedShoesBus {
     }
 
     fn read_byte(&mut self, _address_space: r68k_emu::ram::AddressSpace, address: u32) -> u32 {
-        self.read_memory(address, DataSize::Byte)
+        self.read_memory::<{ DataSize::Byte }>(address)
     }
 
     fn read_word(&mut self, _address_space: r68k_emu::ram::AddressSpace, address: u32) -> u32 {
-        self.read_memory(address, DataSize::Word)
+        self.read_memory::<{ DataSize::Word }>(address)
     }
 
     fn read_long(&mut self, _address_space: r68k_emu::ram::AddressSpace, address: u32) -> u32 {
-        self.read_memory(address, DataSize::Long)
+        self.read_memory::<{ DataSize::Long }>(address)
     }
 
     fn write_byte(
@@ -443,7 +434,7 @@ impl AddressBus for SpeedShoesBus {
         address: u32,
         value: u32,
     ) {
-        self.write_memory(address, value, DataSize::Byte);
+        self.write_memory::<{ DataSize::Byte }>(address, value);
     }
 
     fn write_word(
@@ -452,7 +443,7 @@ impl AddressBus for SpeedShoesBus {
         address: u32,
         value: u32,
     ) {
-        self.write_memory(address, value, DataSize::Word);
+        self.write_memory::<{ DataSize::Word }>(address, value);
     }
 
     fn write_long(
@@ -461,6 +452,6 @@ impl AddressBus for SpeedShoesBus {
         address: u32,
         value: u32,
     ) {
-        self.write_memory(address, value, DataSize::Long);
+        self.write_memory::<{ DataSize::Long }>(address, value);
     }
 }

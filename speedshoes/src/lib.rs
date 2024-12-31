@@ -1,3 +1,6 @@
+#![feature(adt_const_params)]
+
+use std::marker::ConstParamTy;
 use std::{
     fmt::{Display, UpperHex},
     slice::Iter,
@@ -13,7 +16,7 @@ pub const GAME_HEIGHT: u32 = 224;
 
 pub(crate) type Registers = [u32; 16];
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, ConstParamTy)]
 pub enum DataSize {
     Byte,
     Word,
