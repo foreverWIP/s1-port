@@ -3,12 +3,11 @@
 #include "opcodes.h"
 #include "system.h"
 
-
 ROMFUNC(rom_4CF0);
 
 ROMFUNC(rom_4CEC) {
   DEF_ROMLOC(4CEC) : game_state = rom_4CF0;
-  rom_1E4A(); // BSR.W	$1E4A
+  palette_fade_out(); // BSR.W	$1E4A
 }
 ROMFUNC(rom_4CF0) {
   DEF_ROMLOC(4CF0) : move_tosr_16(0x2700, &SR); // MOVE.W	#$2700,SR
@@ -43,7 +42,7 @@ ROMFUNC(rom_4CF0) {
   DEF_ROMLOC(4D60) : move_toreg_32(0xA, &D1);     // MOVEQ.L	$0A,D1
   DEF_ROMLOC(4D62) : rom_1D104();                 // JSR	$0001D104
   DEF_ROMLOC(4D68) : move_toreg_32(0x12, &D0);    // MOVEQ.L	$12,D0
-  DEF_ROMLOC(4D6A) : rom_20F4();                  // BSR.W	$20F4
+  DEF_ROMLOC(4D6A) : load_palette_fading();                  // BSR.W	$20F4
   DEF_ROMLOC(4D6E) : move_toreg_8(0xFFFFFF90, &D0);    // MOVE.B	#$90,D0
   DEF_ROMLOC(4D72) : rom_138E();                       // BSR.W	$138E
   DEF_ROMLOC(4D76) : move_tomem_16(0x293, 0xFFFFF614); // MOVE.W
@@ -69,7 +68,7 @@ ROMFUNC(rom_4CF0) {
   DEF_ROMLOC(4DC2) : or_toreg_8(0x40, &D0);       // ORI.B	#$40,D0
   DEF_ROMLOC(4DC6) : move_tomem_16(D0, 0xC00004); // MOVE.W	D0,$00C00004
   DEF_ROMLOC(4DCC) : game_state = rom_4DD0;
-  rom_1DA4(); // BSR.W	$1DA4
+  palette_fade_in(true); // BSR.W	$1DA4
 }
 ROMFUNC(rom_4DDA);
 ROMFUNC(rom_4DD0) {

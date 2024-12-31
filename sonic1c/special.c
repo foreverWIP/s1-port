@@ -3,14 +3,13 @@
 #include "opcodes.h"
 #include "system.h"
 
-
 ROMFUNC(rom_45EA);
 
 ROMFUNC(rom_45DE) {
   DEF_ROMLOC(45DE) : move_toreg_16(0xCA, &D0); // MOVE.W	#$00CA,D0
   DEF_ROMLOC(45E2) : rom_1394();               // BSR.W	$1394
   DEF_ROMLOC(45E6) : game_state = rom_45EA;
-  rom_1F74(); // BSR.W	$1F74
+  palette_fade_to_white(); // BSR.W	$1F74
 }
 ROMFUNC(rom_45EA) {
   DEF_ROMLOC(45EA) : move_tosr_16(0x2700, &SR);     // MOVE.W	#$2700,SR
@@ -77,7 +76,7 @@ ROMFUNC(rom_45EA) {
   DEF_ROMLOC(4694) : clr_mem_8(0xFFFFF64E);   // CLR.B	$F64E
   DEF_ROMLOC(4698) : clr_mem_16(0xFFFFFE02);  // CLR.W	$FE02
   DEF_ROMLOC(469C) : move_toreg_32(0xA, &D0); // MOVEQ.L	$0A,D0
-  DEF_ROMLOC(469E) : rom_20F4();              // BSR.W	$20F4
+  DEF_ROMLOC(469E) : load_palette_fading();              // BSR.W	$20F4
   DEF_ROMLOC(46A2) : rom_1BE32();             // JSR	$0001BE32
   DEF_ROMLOC(46A8)
       : move_tomem_32(0x0, 0xFFFFF700); // MOVE.L	#$00000000,$F700
@@ -114,7 +113,7 @@ ROMFUNC(rom_45EA) {
   DEF_ROMLOC(471E) : or_toreg_8(0x40, &D0);       // ORI.B	#$40,D0
   DEF_ROMLOC(4722) : move_tomem_16(D0, 0xC00004); // MOVE.W	D0,$00C00004
   DEF_ROMLOC(4728) : game_state = rom_472C;
-  rom_1EC8(); // BSR.W	$1EC8
+  palette_fade_from_white(); // BSR.W	$1EC8
 }
 ROMFUNC(rom_4894);
 ROMFUNC(rom_473A);
@@ -170,7 +169,7 @@ ROMFUNC(rom_47A6) {
   DEF_ROMLOC(47C6) : sub_tomem_16(0x1, 0xFFFFF794);  // SUBQ.W	#$01,$F794
   DEF_ROMLOC(47CA) : if (CCR_PL) goto rom_47D6;      // BPL.B	$47D6
   DEF_ROMLOC(47CC) : move_tomem_16(0x2, 0xFFFFF794); // MOVE.W	#$0002,$F794
-  DEF_ROMLOC(47D2) : rom_1F94();                     // BSR.W	$1F94
+  DEF_ROMLOC(47D2) : palette_move_towards_white();                     // BSR.W	$1F94
   DEF_ROMLOC(47D6) : tst_mem_16(0xFFFFF614);         // TST.W	$F614
   DEF_ROMLOC(47DA) : if (!CCR_EQ) {rom_479C();return;}     // BNE.B	$479C
   DEF_ROMLOC(47DC) : move_tosr_16(0x2700, &SR);      // MOVE.W	#$2700,SR
@@ -186,7 +185,7 @@ ROMFUNC(rom_47A6) {
   DEF_ROMLOC(480A) : rom_1CFEE();                 // JSR	$0001CFEE
   DEF_ROMLOC(4810) : move_tosr_16(0x2300, &SR);   // MOVE.W	#$2300,SR
   DEF_ROMLOC(4814) : move_toreg_32(0x11, &D0);    // MOVEQ.L	$11,D0
-  DEF_ROMLOC(4816) : rom_2110();                  // BSR.W	$2110
+  DEF_ROMLOC(4816) : load_palette();                  // BSR.W	$2110
   DEF_ROMLOC(481A) : move_toreg_32(0x0, &D0);     // MOVEQ.L	$00,D0
   DEF_ROMLOC(481C) : rom_15AA();                  // BSR.W	$15AA
   DEF_ROMLOC(4820) : move_toreg_32(0x1B, &D0);    // MOVEQ.L	$1B,D0
@@ -229,7 +228,7 @@ ROMFUNC(rom_486C) {
   DEF_ROMLOC(4888) : move_toreg_16(0xCA, &D0);       // MOVE.W	#$00CA,D0
   DEF_ROMLOC(488C) : rom_1394();                     // BSR.W	$1394
   DEF_ROMLOC(4890) : game_state = rom_4894;
-  rom_1F74();                // BSR.W	$1F74
+  palette_fade_to_white();                // BSR.W	$1F74
 }
 ROMFUNC(rom_4896) {
   DEF_ROMLOC(4896) : SET_GM_SEGA();

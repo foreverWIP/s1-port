@@ -3,13 +3,12 @@
 #include "opcodes.h"
 #include "system.h"
 
-
 ROMFUNC(rom_57DA);
 
 ROMFUNC(rom_57D2) {
   DEF_ROMLOC(57D2) : rom_15D6(); // BSR.W	$15D6
   DEF_ROMLOC(57D6) : game_state = rom_57DA;
-  rom_1E4A(); // BSR.W	$1E4A
+  palette_fade_out(); // BSR.W	$1E4A
 }
 ROMFUNC(rom_57DA) {
   DEF_ROMLOC(57DA) : move_toreg_32(0xC00004, &A6);   // LEA.L	$00C00004,A6
@@ -43,7 +42,7 @@ ROMFUNC(rom_57DA) {
   if ((D1 & 0xffff) != 0xffff)
     goto rom_5832;                            // DBF.W	D1,$5832
   DEF_ROMLOC(5838) : move_toreg_32(0x3, &D0); // MOVEQ.L	$03,D0
-  DEF_ROMLOC(583A) : rom_20F4();              // BSR.W	$20F4
+  DEF_ROMLOC(583A) : load_palette_fading();              // BSR.W	$20F4
   DEF_ROMLOC(583E)
       : move_tomem_8(0xFFFFFF8A, 0xFFFFD080); // MOVE.B	#$8A,$D080
   DEF_ROMLOC(5844) : rom_D9C6();              // JSR	$0000D9C6
@@ -65,7 +64,7 @@ ROMFUNC(rom_57DA) {
   DEF_ROMLOC(5872) : rom_1578();                      // BSR.W	$1578
   DEF_ROMLOC(5876) : move_tomem_16(0x78, 0xFFFFF614); // MOVE.W	#$0078,$F614
   DEF_ROMLOC(587C) : game_state = rom_5880;
-  rom_1DA4(); // BSR.W	$1DA4
+  palette_fade_in(true); // BSR.W	$1DA4
 }
 ROMFUNC(rom_588A);
 ROMFUNC(rom_5880) {
@@ -130,7 +129,7 @@ ROMFUNC(rom_5942);
 ROMFUNC(rom_593A) {
   DEF_ROMLOC(593A) : rom_15D6(); // BSR.W	$15D6
   DEF_ROMLOC(593E) : game_state = rom_5942;
-  rom_1E4A(); // BSR.W	$1E4A
+  palette_fade_out(); // BSR.W	$1E4A
 }
 ROMFUNC(rom_5942) {
   DEF_ROMLOC(5942) : move_toreg_32(0xC00004, &A6);   // LEA.L	$00C00004,A6
@@ -162,7 +161,7 @@ ROMFUNC(rom_5942) {
   if ((D1 & 0xffff) != 0xffff)
     goto rom_598C;                             // DBF.W	D1,$598C
   DEF_ROMLOC(5992) : move_toreg_32(0x13, &D0); // MOVEQ.L	$13,D0
-  DEF_ROMLOC(5994) : rom_20F4();               // BSR.W	$20F4
+  DEF_ROMLOC(5994) : load_palette_fading();               // BSR.W	$20F4
   DEF_ROMLOC(5998) : clr_mem_16(0xFFFFFBC0);   // CLR.W	$FBC0
   DEF_ROMLOC(599C)
       : move_tomem_8(0xFFFFFF8B, 0xFFFFD080);          // MOVE.B	#$8B,$D080
@@ -171,7 +170,7 @@ ROMFUNC(rom_5942) {
   DEF_ROMLOC(59AE) : move_tomem_16(0x708, 0xFFFFF614); // MOVE.W
                                                        // #$0708,$F614
   DEF_ROMLOC(59B4) : game_state = rom_59B8;
-  rom_1DA4(); // BSR.W	$1DA4
+  palette_fade_in(true); // BSR.W	$1DA4
 }
 ROMFUNC(rom_59C6);
 ROMFUNC(rom_59BC);

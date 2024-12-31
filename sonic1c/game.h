@@ -1,6 +1,7 @@
 #pragma once
 
 #include "system.h"
+#include "palette.h"
 
 extern void (*game_state)(void);
 extern bool exit_mainloop;

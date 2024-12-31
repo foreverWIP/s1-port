@@ -2,6 +2,7 @@
 #include "../opcodes.h"
 #include "../system.h"
 
+void load_palette_fading(void);
 
 ROMFUNC(rom_5ECC) {
   DEF_ROMLOC(5ECC) : move_toreg_32(0x0, &D0);      // MOVEQ.L	$00,D0
@@ -132,7 +133,7 @@ ROMFUNC(rom_72F0) {
   DEF_ROMLOC(733E) : cmp_tomem_16(0x502, 0xFFFFFE10);   // CMPI.W	#$0502,$FE10
   DEF_ROMLOC(7344) : if (!CCR_EQ) goto rom_7348;        // BNE.B	$7348
   DEF_ROMLOC(7346) : move_toreg_32(0xE, &D0);           // MOVEQ.L	$0E,D0
-  DEF_ROMLOC(7348) : rom_20F4();                        // BSR.W	$20F4
+  DEF_ROMLOC(7348) : load_palette_fading();                        // BSR.W	$20F4
   DEF_ROMLOC(734C)
       : move_toreg_32(read_32((A7 += 4, A7 - 4)), &A2); // MOVEA.L	(A7)+,A2
   DEF_ROMLOC(734E) : add_toreg_16(0x4, &A2);            // ADDQ.W	#$04,A2
