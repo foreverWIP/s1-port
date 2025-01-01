@@ -30,6 +30,7 @@ struct FFIInfo {
 
 pub(crate) struct ScriptEngine {
     libname: String,
+    dependent_libs: Vec<dlopen2::symbor::Library>,
     lib: Option<dlopen2::symbor::Library>,
     hooks: HashMap<u32, *const u8>,
     regs: Vec<*mut u32>,
@@ -59,6 +60,7 @@ impl ScriptEngine {
             input_th_toggle: false,
         };
         Ok(Self {
+            dependent_libs: Vec::new(),
             libname: libname.to_string(),
             lib: None,
             hooks: HashMap::new(),
@@ -125,6 +127,10 @@ impl ScriptEngine {
             DLL_SUFFIX
         );
         println!("loading library {}", libname);
+        if cfg!(target_os = "windows") {
+            self.dependent_libs
+                .push(dlopen2::symbor::Library::open("msvcrt.dll").map_err(|e| e.to_string())?);
+        }
         // fs::copy(libname, libname_use.clone()).map_err(|e| e.to_string())?;
         self.lib = Some(dlopen2::symbor::Library::open(&libname).map_err(|e| e.to_string())?);
         let lib = self.lib.as_ref().unwrap();

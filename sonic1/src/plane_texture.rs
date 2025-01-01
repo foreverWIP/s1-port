@@ -129,7 +129,7 @@ fn build_shader_program(
                     *shader
                 } else {
                     let shader = gl.create_shader(shader_type).expect("Cannot create shader");
-                    gl.shader_source(shader, &format!("{}\n{}", "#version 330", shader_source));
+                    gl.shader_source(shader, &format!("{}\n{}", "#version 410", shader_source));
                     gl.compile_shader(shader);
                     if !gl.get_shader_compile_status(shader) {
                         panic!("{}", gl.get_shader_info_log(shader));

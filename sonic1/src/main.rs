@@ -150,7 +150,7 @@ fn run_window(rom: Vec<u8>, test_mode: bool, repro_inputs: Vec<Input>) -> Result
     /* hint SDL to initialize an OpenGL 3.3 core profile context */
     let gl_attr = video_subsystem.gl_attr();
 
-    gl_attr.set_context_version(3, 3);
+    gl_attr.set_context_version(4, 1);
     gl_attr.set_context_profile(GLProfile::Core);
 
     /* create a new window, be sure to call opengl method on the builder when using glow! */

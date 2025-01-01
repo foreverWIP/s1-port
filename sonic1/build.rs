@@ -48,6 +48,6 @@ fn set_up_sdl2() {
     }
 }
 fn main() -> Result<(), String> {
-    // set_up_sdl2();
+    set_up_sdl2();
     Ok(())
 }
