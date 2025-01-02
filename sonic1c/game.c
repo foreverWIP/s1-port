@@ -47,6 +47,10 @@ void rom_388_nosega(void) {
 	}
 }
 
+EXPORT TEST_FLAGS get_test_level(void) {
+	return TEST_LEVEL;
+}
+
 ROMFUNC(rom_396);
 EXPORT void reset_game(void) {
   // print("reseting game");

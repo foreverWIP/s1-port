@@ -28,7 +28,7 @@ use sdl2::{
 };
 use sonic1::{get_data_defs, patch_rom, read_as_symbols};
 use speedshoes::{
-    system::{self, AccuracyCheckOptions, Input, System},
+    system::{self, Input, System},
     DataSize, GAME_HEIGHT, GAME_WIDTH,
 };
 
@@ -95,18 +95,7 @@ fn run_simulation(
                     .collect(),
             );
             *game = Some(Sonic1 {
-                our_system: System::new(
-                    "sonic1",
-                    (&rom, 0x29A0),
-                    kvps,
-                    true,
-                    test_mode,
-                    AccuracyCheckOptions {
-                        check_regs: false,
-                        check_mem: true,
-                        check_sr: false,
-                    },
-                )?,
+                our_system: System::new("sonic1", (&rom, 0x29A0), kvps, true, test_mode)?,
                 debug_pause: false,
                 current_playing_music: 0,
                 is_current_music_sped_up: false,

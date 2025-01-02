@@ -1,3 +1,4 @@
+use bitflags::bitflags;
 use std::borrow::Borrow;
 use std::cell::RefCell;
 use std::cmp::Ordering;
@@ -15,6 +16,17 @@ use crate::vdp::Vdp;
 use crate::{DataSize, GAME_HEIGHT, GAME_WIDTH};
 
 type VoidCFunc = extern "C" fn() -> ();
+
+bitflags! {
+    #[derive(PartialEq, Eq)]
+    pub struct TestFlags: u32 {
+        const TEST_NONE = 0 << 0;
+        const TEST_REGS = 1 << 0;
+        const TEST_SR = 1 << 1;
+        const TEST_MEM = 1 << 2;
+        const TEST_PER_INSTRUCTION = 1 << 3;
+    }
+}
 
 #[repr(C)]
 struct FFIInfo {
@@ -177,6 +189,22 @@ impl ScriptEngine {
             }
         }
         ret
+    }
+
+    pub fn get_test_level(&self) -> TestFlags {
+        unsafe {
+            if let Some(lib) = &self.lib {
+                let func = match lib.symbol::<extern "C" fn() -> TestFlags>("get_test_level") {
+                    Ok(f) => f,
+                    Err(_) => {
+                        return TestFlags::TEST_NONE;
+                    }
+                };
+                func()
+            } else {
+                TestFlags::TEST_NONE
+            }
+        }
     }
 
     pub fn sync_script_with_emu(&mut self, emu: &mut SpeedShoesCore) {

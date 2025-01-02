@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+bitflags = "2.6.0"
 dlopen2 = { version = "0.7.0", features = ["symbor"] }
 itertools = "0.13.0"
 libc = "0.2.164"

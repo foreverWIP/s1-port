@@ -27,7 +27,7 @@
 				}
 			},
 			"args": [
-				// "--test",
+				"--test",
 			],
 			"cwd": "${workspaceFolder}/sonic1",
 			"env": {

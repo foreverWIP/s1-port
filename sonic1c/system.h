@@ -1,9 +1,5 @@
 #pragma once
 
-#ifndef CHECK_STUFF
-#define CHECK_STUFF 0
-#endif
-
 #include <setjmp.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -15,8 +11,6 @@
 #define EXPORT
 #endif
 
-#define ROMFUNC(funcname) EXPORT void funcname(void)
-
 typedef uint8_t u8;
 typedef int8_t s8;
 typedef uint16_t u16;
@@ -25,6 +19,22 @@ typedef uint32_t u32;
 typedef int32_t s32;
 typedef uint64_t u64;
 typedef int64_t s64;
+
+#ifndef CHECK_STUFF
+#define CHECK_STUFF 1
+#endif
+
+typedef enum {
+  TEST_NONE = 0 << 0,
+  TEST_REGS = 1 << 0,
+  TEST_SR = 1 << 1,
+  TEST_MEM = 1 << 2,
+  TEST_PER_INSTRUCTION = 1 << 3,
+} TEST_FLAGS;
+
+#define TEST_LEVEL TEST_MEM
+
+#define ROMFUNC(funcname) EXPORT void funcname(void)
 
 extern u32 speedshoes__read_8(u32 loc);
 extern u32 speedshoes__read_16(u32 loc);
@@ -84,6 +94,8 @@ extern jmp_buf speedshoes__desync_jumpbuf;
 #define A7 speedshoes__a7
 #define SR speedshoes__sr
 
+#define GETWORD(value) ((value) & 0xffff)
+#define GETBYTE(value) ((value) & 0xff)
 #define SETWORD(reg, value) reg = ((reg & 0xffff0000) | ((value) & 0x0000ffff))
 #define SETBYTE(reg, value) reg = ((reg & 0xffffff00) | ((value) & 0x000000ff))
 
@@ -92,7 +104,7 @@ extern void print(const char *msg, ...);
 #define PRINTVAL(val) print(#val " = 0x%X", val)
 #define PRINTREG(reg) print(#reg " = 0x%X", reg)
 
-#if CHECK_STUFF
+#if CHECK_STUFF && (TEST_LEVEL & TEST_PER_INSTRUCTION)
 #define DEF_ROMLOC(loc)                                                        \
   rom_##loc : print("synching to romloc " #loc);                               \
   if (!speedshoes__synchronize(0x##loc)) {                                     \

@@ -1,4 +1,5 @@
 use std::{
+    borrow::Borrow,
     cell::{RefCell, UnsafeCell},
     collections::{HashMap, HashSet},
     fmt::Display,
@@ -15,9 +16,9 @@ use r68k_tools::{disassembler::Disassembler, memory::MemoryVec, Exception, Opcod
 use crate::{
     comma_separated,
     emu::{SpeedShoesCore, SystemEmulator, SystemEmulatorRegister},
-    script::ScriptEngine,
+    script::{ScriptEngine, TestFlags},
     vdp::Vdp,
-    GAME_HEIGHT, GAME_WIDTH,
+    DataSize, GAME_HEIGHT, GAME_WIDTH,
 };
 
 pub(crate) const SYSTEM_RAM_SIZE: usize = 0x1_0000;
@@ -160,6 +161,10 @@ pub fn synchronize_script(pc: u32) -> bool {
     if !our_system.test_mode {
         return true;
     }
+    let test_level = our_system.script_engine.get_test_level();
+    if test_level == TestFlags::TEST_NONE {
+        return true;
+    }
     our_system.last_script_pc = pc;
     let mut inst_sync_counter = 0;
     const MAX_SYNC_INSTS: usize = 896_040 * 60;
@@ -204,7 +209,7 @@ pub fn synchronize_script(pc: u32) -> bool {
             break;
         }
     }
-    match our_system.check_accuracy() {
+    match our_system.check_accuracy(test_level) {
         Ok(_) => true,
         Err(msg) => {
             unsafe {
@@ -213,13 +218,6 @@ pub fn synchronize_script(pc: u32) -> bool {
             false
         }
     }
-}
-
-#[derive(Clone, Copy, Default)]
-pub struct AccuracyCheckOptions {
-    pub check_regs: bool,
-    pub check_mem: bool,
-    pub check_sr: bool,
 }
 
 pub struct System {
@@ -243,7 +241,6 @@ pub struct System {
     pub unimplemented_subs_frame: HashSet<u32>,
     unimplemented_subs_total: HashSet<u32>,
     test_mode: bool,
-    accuracy_check_options: AccuracyCheckOptions,
 }
 
 impl Drop for System {
@@ -349,7 +346,7 @@ impl System {
         }
     }
 
-    fn check_accuracy(&mut self) -> Result<(), String> {
+    fn check_accuracy(&mut self, test_flags: TestFlags) -> Result<(), String> {
         if !self.test_mode {
             return Ok(());
         }
@@ -359,12 +356,12 @@ impl System {
         let script_ram = self.script_engine.ram();
         let mut ram_differences: Vec<String> = Vec::new();
         let mut reg_differences: Vec<String> = Vec::new();
-        if self.accuracy_check_options.check_regs {
+        if test_flags.contains(TestFlags::TEST_REGS) {
             for i in 0..17 {
                 if i == 15 {
                     continue;
                 }
-                if i == 16 && !self.accuracy_check_options.check_sr {
+                if i == 16 && !test_flags.contains(TestFlags::TEST_SR) {
                     continue;
                 }
                 let mut emu_reg = emu_reg_state[i];
@@ -383,9 +380,9 @@ impl System {
                 }
             }
         }
-        if self.accuracy_check_options.check_mem {
-            let emu_ram_u64 = emu_ram.borrow().as_ptr() as *const u64;
-            let script_ram_u64 = script_ram.borrow().as_ptr() as *const u64;
+        if test_flags.contains(TestFlags::TEST_MEM) {
+            let emu_ram_u64 = emu_ram.as_ref().borrow().as_ptr() as *const u64;
+            let script_ram_u64 = script_ram.as_ref().borrow().as_ptr() as *const u64;
             let mut differing_u64s = Vec::new();
             let mut contiguous = true;
             unsafe {
@@ -410,8 +407,8 @@ impl System {
                         continue;
                     }
                     for i in 0..8 {
-                        let control_u8 = emu_ram.borrow()[(diff * 8) + i];
-                        let our_u8 = script_ram.borrow()[(diff * 8) + i];
+                        let control_u8 = emu_ram.as_ref().borrow()[(diff * 8) + i];
+                        let our_u8 = script_ram.as_ref().borrow()[(diff * 8) + i];
                         if control_u8 != our_u8 {
                             ram_differences.push(format!(
                                 "ram_{:X}: expected {:#X}, got {:#X}",
@@ -423,7 +420,7 @@ impl System {
                     }
                 }
             }
-            /*let emu_ram = emu_ram.as_ref().borrow();
+            let emu_ram = emu_ram.as_ref().borrow();
             let script_ram = script_ram.as_ref().borrow();
             for i in 0..0x1_0000usize {
                 if (0xF000..0xF600).contains(&i) || (0xFCC0..0xFE00).contains(&i) {
@@ -438,11 +435,11 @@ impl System {
                         i, control_u8, our_u8
                     ));
                 }
-            }*/
+            }
         }
 
         if !ram_differences.is_empty() || !reg_differences.is_empty() {
-            fs::write("lastram.bin", self.ram().borrow().as_slice());
+            fs::write("lastram.bin", self.ram().as_ref().borrow().as_slice());
             return Err(format!(
                 "Simulation mismatch at pc {} (calling function {}):\nFirst {} PCs ran: {}\n{}",
                 self.get_symbol(self.core.as_ref().unwrap().pc()),
@@ -462,7 +459,6 @@ impl System {
         symbol_map: Option<HashMap<u32, String>>,
         use_scripts: bool,
         test_mode: bool,
-        accuracy_check_options: AccuracyCheckOptions,
     ) -> Result<System, String> {
         unsafe {
             DESYNC_SCRIPT_MESSAGE = None;
@@ -516,7 +512,6 @@ impl System {
             unimplemented_subs_frame: HashSet::new(),
             unimplemented_subs_total: HashSet::new(),
             test_mode,
-            accuracy_check_options,
         })
     }
 
@@ -565,7 +560,7 @@ impl System {
                 self.emu_machine_instructions_ran += 1;
                 inst_sync_counter += 1;
             }
-            self.check_accuracy()?;
+            self.check_accuracy(self.script_engine.get_test_level())?;
             self.script_engine
                 .sync_emu_with_script(&mut self.core.as_mut().unwrap());
             Ok(sub_addr == self.vblank_addr)
@@ -624,7 +619,6 @@ impl System {
 
         if self.test_mode {
             let mut prev_pc = self.core.as_ref().unwrap().pc;
-            let mut already_synced = true;
             loop {
                 // we check for error conditions before running
                 // any instructions, just in case we ended up
@@ -652,21 +646,28 @@ impl System {
                 }*/
 
                 if prev_pc == 0xB6C {
-                    break;
+                    if let Some(core) = &self.core {
+                        let our_vblank_count = self
+                            .script_engine
+                            .bus
+                            .read_memory::<{ DataSize::Long }>(0xFFFE0C);
+                        let emu_vblank_count = core.mem.read_memory::<{ DataSize::Long }>(0xFFFE0C);
+                        if emu_vblank_count >= our_vblank_count {
+                            break;
+                        }
+                    }
                 }
                 self.run_emu_instruction();
-                already_synced = false;
                 prev_pc = self.core.as_ref().unwrap().pc;
             }
 
-            if !already_synced {
-                self.check_accuracy()?;
-            }
+            self.check_accuracy(self.script_engine.get_test_level())?;
 
             if let Some(ram) = &mut self.last_frame_ram {
-                ram.copy_from_slice(&self.core.as_ref().unwrap().ram().borrow());
+                ram.copy_from_slice(&self.core.as_ref().unwrap().ram().as_ref().borrow());
             } else {
-                self.last_frame_ram = Some(self.core.as_ref().unwrap().ram().borrow().clone());
+                self.last_frame_ram =
+                    Some(self.core.as_ref().unwrap().ram().as_ref().borrow().clone());
             }
 
             // accumulate our unimplemented subroutines
@@ -715,7 +716,7 @@ impl System {
     }
 
     pub fn bg_color(&self) -> u32 {
-        self.script_engine.bus.vdp.borrow().bg_color()
+        self.script_engine.bus.vdp.as_ref().borrow().bg_color()
     }
 
     fn vdp(&self) -> Rc<RefCell<Vdp>> {
