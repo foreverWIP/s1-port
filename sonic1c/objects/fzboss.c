@@ -148,7 +148,7 @@ ROMFUNC(rom_1A630) {
   rom_1A640(); // Detected flow into next function
 }
 ROMFUNC(rom_1A640) {
-  DEF_ROMLOC(1A640) : tst_mem_32(0xFFFFF680);           // TST.L	$F680
+  DEF_ROMLOC(1A640) : tst_mem_32(v_plc_buffer);           // TST.L	$F680
   DEF_ROMLOC(1A644) : if (!CCR_EQ) goto rom_1A652;      // BNE.B	$1A652
   DEF_ROMLOC(1A646) : cmp_tomem_16(0x2450, 0xFFFFF700); // CMPI.W
                                                         // #$2450,$F700

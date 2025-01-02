@@ -856,7 +856,7 @@ ROMFUNC(rom_712A) {
 ROMFUNC(rom_712C) {
   DEF_ROMLOC(712C)
       : add_toreg_16(read_16(A3 + 0x4), &D4);        // ADD.W	4(A3),D4
-  DEF_ROMLOC(7130) : move_toreg_32(0xFFFFB000, &A1); // LEA.L	$B000,A1
+  DEF_ROMLOC(7130) : move_toreg_32(v_16x16, &A1); // LEA.L	$B000,A1
   DEF_ROMLOC(7134) : move_toreg_16(D4, &D3);         // MOVE.W	D4,D3
   DEF_ROMLOC(7136) : lsr_toreg_16(0x1, &D3);         // LSR.W	#$01,D3
   DEF_ROMLOC(7138) : and_toreg_16(0x380, &D3);       // ANDI.W	#$0380,D3

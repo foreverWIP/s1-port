@@ -21,7 +21,7 @@ ROMFUNC(rom_149BC) {
   }
 }
 ROMFUNC(rom_149D0) {
-  DEF_ROMLOC(149D0) : tst_mem_32(0xFFFFF680);      // TST.L	$F680
+  DEF_ROMLOC(149D0) : tst_mem_32(v_plc_buffer);      // TST.L	$F680
   DEF_ROMLOC(149D4) : if (CCR_EQ) goto rom_149D8;  // BEQ.B	$149D8
   DEF_ROMLOC(149D6) : return;                      // RTS
   DEF_ROMLOC(149D8) : add_tomem_8(0x2, A0 + 0x24); // ADDQ.B	#$02,36(A0)

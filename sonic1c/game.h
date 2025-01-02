@@ -2,6 +2,9 @@
 
 #include "system.h"
 #include "palette.h"
+#include "object.h"
+#include "romlocs.h"
+#include "ramlocs.h"
 
 extern void (*game_state)(void);
 extern bool exit_mainloop;

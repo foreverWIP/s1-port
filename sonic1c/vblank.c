@@ -1,7 +1,6 @@
 // #define CHECK_STUFF 1
 #include "opcodes.h"
 #include "system.h"
-#include "game.h"
 
 static u32 d0backup = 0;
 static u32 d1backup = 0;

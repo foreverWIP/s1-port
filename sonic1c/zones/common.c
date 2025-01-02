@@ -113,12 +113,12 @@ ROMFUNC(rom_72F0) {
   DEF_ROMLOC(7304) : add_toreg_32(0x4, &A2);     // ADDQ.L	#$04,A2
   DEF_ROMLOC(7306)
       : move_toreg_32(read_32((A2 += 4, A2 - 4)), &A0); // MOVEA.L	(A2)+,A0
-  DEF_ROMLOC(7308) : move_toreg_32(0xFFFFB000, &A1);    // LEA.L	$B000,A1
+  DEF_ROMLOC(7308) : move_toreg_32(v_16x16, &A1);    // LEA.L	$B000,A1
   DEF_ROMLOC(730C) : move_toreg_16(0x0, &D0);           // MOVE.W	#$0000,D0
   DEF_ROMLOC(7310) : rom_1716();                        // BSR.W	$1716
   DEF_ROMLOC(7314)
       : move_toreg_32(read_32((A2 += 4, A2 - 4)), &A0); // MOVEA.L	(A2)+,A0
-  DEF_ROMLOC(7316) : move_toreg_32(0xFF0000, &A1);      // LEA.L	$00FF0000,A1
+  DEF_ROMLOC(7316) : move_toreg_32(v_256x256, &A1);      // LEA.L	$00FF0000,A1
   DEF_ROMLOC(731C) : rom_1894();                        // BSR.W	$1894
   DEF_ROMLOC(7320) : rom_735C();                        // BSR.W	$735C
   DEF_ROMLOC(7324)

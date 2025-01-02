@@ -1,5 +1,4 @@
 // #define CHECK_STUFF 1
-#include "game.h"
 #include "opcodes.h"
 #include "system.h"
 
@@ -117,23 +116,23 @@ ROMFUNC(rom_2DE2) {
       : move_tomem_32(0x40000000, 0xC00004);      // MOVE.L	#$40000000,$00C00004
   DEF_ROMLOC(2E20) : move_toreg_32(0x1E700, &A0); // LEA.L	$0001E700,A0
   DEF_ROMLOC(2E26) : rom_1438();                  // rom_1438(); // BSR.W	$1438
-  DEF_ROMLOC(2E2A) : move_toreg_32(0xFF0000, &A1);   // LEA.L	$00FF0000,A1
+  DEF_ROMLOC(2E2A) : move_toreg_32(v_256x256, &A1);   // LEA.L	$00FF0000,A1
   DEF_ROMLOC(2E30) : move_toreg_32(0x1EB70, &A0);    // LEA.L	$0001EB70,A0
   DEF_ROMLOC(2E36) : move_toreg_16(0x0, &D0);        // MOVE.W	#$0000,D0
   DEF_ROMLOC(2E3A) : rom_1716();                     // BSR.W	$1716
-  DEF_ROMLOC(2E3E) : move_toreg_32(0xFF0000, &A1);   // LEA.L	$00FF0000,A1
+  DEF_ROMLOC(2E3E) : move_toreg_32(v_256x256, &A1);   // LEA.L	$00FF0000,A1
   DEF_ROMLOC(2E44) : move_toreg_32(0x65100003, &D0); // MOVE.L	#$65100003,D0
   DEF_ROMLOC(2E4A) : move_toreg_32(0x17, &D1);       // MOVEQ.L	$17,D1
   DEF_ROMLOC(2E4C) : move_toreg_32(0x7, &D2);        // MOVEQ.L	$07,D2
   DEF_ROMLOC(2E4E) : rom_1418();                     // BSR.W	$1418
-  DEF_ROMLOC(2E52) : move_toreg_32(0xFF0180, &A1);   // LEA.L	$00FF0180,A1
+  DEF_ROMLOC(2E52) : move_toreg_32(v_256x256 + 0x180, &A1);   // LEA.L	$00FF0180,A1
   DEF_ROMLOC(2E58) : move_toreg_32(0x40000003, &D0); // MOVE.L	#$40000003,D0
   DEF_ROMLOC(2E5E) : move_toreg_32(0x27, &D1);       // MOVEQ.L	$27,D1
   DEF_ROMLOC(2E60) : move_toreg_32(0x1B, &D2);       // MOVEQ.L	$1B,D2
   DEF_ROMLOC(2E62) : rom_1418();                     // BSR.W	$1418
   DEF_ROMLOC(2E66) : tst_mem_8(0xFFFFFFF8);          // TST.B	$FFF8
   DEF_ROMLOC(2E6A) : if (CCR_MI) goto rom_2E80;      // BMI.B	$2E80
-  DEF_ROMLOC(2E6C) : move_toreg_32(0xFF0A40, &A1);   // LEA.L	$00FF0A40,A1
+  DEF_ROMLOC(2E6C) : move_toreg_32(v_256x256 + 0xA40, &A1);   // LEA.L	$00FF0A40,A1
   DEF_ROMLOC(2E72) : move_toreg_32(0x453A0003, &D0); // MOVE.L	#$453A0003,D0
   DEF_ROMLOC(2E78) : move_toreg_32(0x2, &D1);        // MOVEQ.L	$02,D1
   DEF_ROMLOC(2E7A) : move_toreg_32(0x1, &D2);        // MOVEQ.L	$01,D2

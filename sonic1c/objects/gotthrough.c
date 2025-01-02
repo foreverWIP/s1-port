@@ -23,7 +23,7 @@ ROMFUNC(rom_CC00) {
 		}
 }
 ROMFUNC(rom_CC20) {
-	DEF_ROMLOC(CC20): tst_mem_32(0xFFFFF680); // TST.L	$F680
+	DEF_ROMLOC(CC20): tst_mem_32(v_plc_buffer); // TST.L	$F680
 	DEF_ROMLOC(CC24): if (CCR_EQ) goto rom_CC28; // BEQ.B	$CC28
 	DEF_ROMLOC(CC26): return; // RTS
 	DEF_ROMLOC(CC28): move_toreg_32(A0, &A1); // MOVEA.L	A0,A1

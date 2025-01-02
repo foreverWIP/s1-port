@@ -1,5 +1,4 @@
 // #define CHECK_STUFF 1
-#include "game.h"
 #include "opcodes.h"
 #include "system.h"
 
@@ -47,11 +46,11 @@ ROMFUNC(rom_2F04) {
       : move_tomem_32(0x54C00000, 0xC00004);      // MOVE.L	#$54C00000,$00C00004
   DEF_ROMLOC(2F64) : move_toreg_32(0x6203A, &A0); // LEA.L	$0006203A,A0
   DEF_ROMLOC(2F6A) : rom_1438();                  // BSR.W	$1438
-  DEF_ROMLOC(2F6E) : move_toreg_32(0xFF0000, &A1);   // LEA.L	$00FF0000,A1
+  DEF_ROMLOC(2F6E) : move_toreg_32(v_256x256, &A1);   // LEA.L	$00FF0000,A1
   DEF_ROMLOC(2F74) : move_toreg_32(0x2178E, &A0);    // LEA.L	$0002178E,A0
   DEF_ROMLOC(2F7A) : move_toreg_16(0x0, &D0);        // MOVE.W	#$0000,D0
   DEF_ROMLOC(2F7E) : rom_1716();                     // BSR.W	$1716
-  DEF_ROMLOC(2F82) : move_toreg_32(0xFF0000, &A1);   // LEA.L	$00FF0000,A1
+  DEF_ROMLOC(2F82) : move_toreg_32(v_256x256, &A1);   // LEA.L	$00FF0000,A1
   DEF_ROMLOC(2F88) : move_toreg_32(0x40000003, &D0); // MOVE.L	#$40000003,D0
   DEF_ROMLOC(2F8E) : move_toreg_32(0x27, &D1);       // MOVEQ.L	$27,D1
   DEF_ROMLOC(2F90) : move_toreg_32(0x1B, &D2);       // MOVEQ.L	$1B,D2
@@ -109,12 +108,12 @@ ROMFUNC(rom_301A) {
   DEF_ROMLOC(303E) : move_tomem_16(0x0, 0xFFFFF634); // MOVE.W	#$0000,$F634
   DEF_ROMLOC(3044) : rom_5ECC();                     // BSR.W	$5ECC
   DEF_ROMLOC(3048) : rom_626E();                     // BSR.W	$626E
-  DEF_ROMLOC(304C) : move_toreg_32(0xFFFFB000, &A1); // LEA.L	$B000,A1
+  DEF_ROMLOC(304C) : move_toreg_32(v_16x16, &A1); // LEA.L	$B000,A1
   DEF_ROMLOC(3050) : move_toreg_32(0x3C19C, &A0);    // LEA.L	$0003C19C,A0
   DEF_ROMLOC(3056) : move_toreg_16(0x0, &D0);        // MOVE.W	#$0000,D0
   DEF_ROMLOC(305A) : rom_1716();                     // BSR.W	$1716
   DEF_ROMLOC(305E) : move_toreg_32(0x3F544, &A0);    // LEA.L	$0003F544,A0
-  DEF_ROMLOC(3064) : move_toreg_32(0xFF0000, &A1);   // LEA.L	$00FF0000,A1
+  DEF_ROMLOC(3064) : move_toreg_32(v_256x256, &A1);   // LEA.L	$00FF0000,A1
   DEF_ROMLOC(306A) : rom_1894();                     // BSR.W	$1894
   DEF_ROMLOC(306E) : rom_735C();                     // BSR.W	$735C
   DEF_ROMLOC(3072) : game_state = rom_3076;
@@ -129,11 +128,11 @@ ROMFUNC(rom_3076) {
   DEF_ROMLOC(308E) : move_toreg_32(0xFFFFA440, &A4); // LEA.L	$A440,A4
   DEF_ROMLOC(3092) : move_toreg_16(0x6000, &D2);     // MOVE.W	#$6000,D2
   DEF_ROMLOC(3096) : rom_71F8();                     // BSR.W	$71F8
-  DEF_ROMLOC(309A) : move_toreg_32(0xFF0000, &A1);   // LEA.L	$00FF0000,A1
+  DEF_ROMLOC(309A) : move_toreg_32(v_256x256, &A1);   // LEA.L	$00FF0000,A1
   DEF_ROMLOC(30A0) : move_toreg_32(0x1EC6C, &A0);    // LEA.L	$0001EC6C,A0
   DEF_ROMLOC(30A6) : move_toreg_16(0x0, &D0);        // MOVE.W	#$0000,D0
   DEF_ROMLOC(30AA) : rom_1716();                     // BSR.W	$1716
-  DEF_ROMLOC(30AE) : move_toreg_32(0xFF0000, &A1);   // LEA.L	$00FF0000,A1
+  DEF_ROMLOC(30AE) : move_toreg_32(v_256x256, &A1);   // LEA.L	$00FF0000,A1
   DEF_ROMLOC(30B4) : move_toreg_32(0x42060003, &D0); // MOVE.L	#$42060003,D0
   DEF_ROMLOC(30BA) : move_toreg_32(0x21, &D1);       // MOVEQ.L	$21,D1
   DEF_ROMLOC(30BC) : move_toreg_32(0x15, &D2);       // MOVEQ.L	$15,D2
@@ -298,7 +297,7 @@ ROMFUNC(rom_3272) {
 ROMFUNC(rom_327C) {
   DEF_ROMLOC(327C) : rom_345C();             // BSR.W	$345C
   DEF_ROMLOC(3280) : rom_15E4();             // BSR.W	$15E4
-  DEF_ROMLOC(3284) : tst_mem_32(0xFFFFF680); // TST.L	$F680
+  DEF_ROMLOC(3284) : tst_mem_32(v_plc_buffer); // TST.L	$F680
   DEF_ROMLOC(3288) : if (!CCR_EQ) {
     rom_3272();
     return;

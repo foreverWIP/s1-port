@@ -1,5 +1,4 @@
 // #define CHECK_STUFF 1
-#include "game.h"
 #include "opcodes.h"
 #include "system.h"
 
@@ -79,7 +78,7 @@ ROMFUNC(rom_588A) {
     rom_5880();
     return;
   }                                          // BNE.B	$5880
-  DEF_ROMLOC(5894) : tst_mem_32(0xFFFFF680); // TST.L	$F680
+  DEF_ROMLOC(5894) : tst_mem_32(v_plc_buffer); // TST.L	$F680
   DEF_ROMLOC(5898) : if (!CCR_EQ) {
     rom_5880();
     return;

@@ -49,7 +49,7 @@ ROMFUNC(rom_CE3C) {
   }
 }
 ROMFUNC(rom_CE60) {
-  DEF_ROMLOC(CE60) : tst_mem_32(0xFFFFF680);         // TST.L	$F680
+  DEF_ROMLOC(CE60) : tst_mem_32(v_plc_buffer);         // TST.L	$F680
   DEF_ROMLOC(CE64) : if (CCR_EQ) goto rom_CE68;      // BEQ.B	$CE68
   DEF_ROMLOC(CE66) : return;                         // RTS
   DEF_ROMLOC(CE68) : move_toreg_32(A0, &A1);         // MOVEA.L	A0,A1

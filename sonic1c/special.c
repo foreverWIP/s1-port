@@ -1,5 +1,4 @@
 // #define CHECK_STUFF 1
-#include "game.h"
 #include "opcodes.h"
 #include "system.h"
 
@@ -223,7 +222,7 @@ ROMFUNC(rom_486C) {
   DEF_ROMLOC(4878) : rom_15E4();                     // BSR.W	$15E4
   DEF_ROMLOC(487C) : tst_mem_16(0xFFFFFE02);         // TST.W	$FE02
   DEF_ROMLOC(4880) : if (CCR_EQ) {rom_485E();return;}      // BEQ.B	$485E
-  DEF_ROMLOC(4882) : tst_mem_32(0xFFFFF680);         // TST.L	$F680
+  DEF_ROMLOC(4882) : tst_mem_32(v_plc_buffer);         // TST.L	$F680
   DEF_ROMLOC(4886) : if (!CCR_EQ) {rom_485E();return;}     // BNE.B	$485E
   DEF_ROMLOC(4888) : move_toreg_16(0xCA, &D0);       // MOVE.W	#$00CA,D0
   DEF_ROMLOC(488C) : rom_1394();                     // BSR.W	$1394

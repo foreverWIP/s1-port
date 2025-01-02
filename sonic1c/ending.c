@@ -1,5 +1,4 @@
 // #define CHECK_STUFF 1
-#include "game.h"
 #include "opcodes.h"
 #include "system.h"
 
@@ -82,7 +81,7 @@ ROMFUNC(rom_50FE) {
       : move_tomem_32(0x64A00, 0xFFFFF796);          // MOVE.L	#$00064A00,$F796
   DEF_ROMLOC(51C4) : move_tosr_16(0x2300, &SR);      // MOVE.W	#$2300,SR
   DEF_ROMLOC(51C8) : move_toreg_32(0x61822, &A0);    // LEA.L	$00061822,A0
-  DEF_ROMLOC(51CE) : move_toreg_32(0xFFFF9400, &A1); // LEA.L	$9400,A1
+  DEF_ROMLOC(51CE) : move_toreg_32(v_256x256 + 0xA400 - 0x1000, &A1); // LEA.L	$9400,A1
   DEF_ROMLOC(51D2) : rom_1894();                     // BSR.W	$1894
   DEF_ROMLOC(51D6) : move_toreg_32(0x3, &D0);        // MOVEQ.L	$03,D0
   DEF_ROMLOC(51D8) : load_palette_fading();                     // BSR.W	$20F4

@@ -53,9 +53,6 @@ extern void speedshoes__callemu(u32 loc);
 #define write_16(loc, value) speedshoes__write_16(loc, value)
 #define write_32(loc, value) speedshoes__write_32(loc, value)
 
-#include "object.h"
-#include "romlocs.h"
-
 extern EXPORT u32 speedshoes__d0;
 extern EXPORT u32 speedshoes__d1;
 extern EXPORT u32 speedshoes__d2;
@@ -114,3 +111,5 @@ extern void print(const char *msg, ...);
 #else
 #define DEF_ROMLOC(loc) rom_##loc
 #endif
+
+#include "game.h"

@@ -26,7 +26,7 @@ ROMFUNC(rom_CB42) {
   }
 }
 ROMFUNC(rom_CB56) {
-  DEF_ROMLOC(CB56) : tst_mem_32(0xFFFFF680);         // TST.L	$F680
+  DEF_ROMLOC(CB56) : tst_mem_32(v_plc_buffer);         // TST.L	$F680
   DEF_ROMLOC(CB5A) : if (CCR_EQ) goto rom_CB5E;      // BEQ.B	$CB5E
   DEF_ROMLOC(CB5C) : return;                         // RTS
   DEF_ROMLOC(CB5E) : add_tomem_8(0x2, A0 + 0x24);    // ADDQ.B	#$02,36(A0)
