@@ -46,7 +46,7 @@ void rom_388_nosega(void) {
 	}
 }
 
-EXPORT TEST_FLAGS get_test_level(void) {
+EXPORT u32 get_test_level(void) {
 	return TEST_LEVEL;
 }
 

@@ -3,6 +3,7 @@
 #include <setjmp.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <math.h>
 #include <stdio.h>
 
 #ifdef _WIN32
@@ -21,18 +22,16 @@ typedef uint64_t u64;
 typedef int64_t s64;
 
 #ifndef CHECK_STUFF
-#define CHECK_STUFF 1
+#define CHECK_STUFF 0
 #endif
 
-typedef enum {
-  TEST_NONE = 0 << 0,
-  TEST_REGS = 1 << 0,
-  TEST_SR = 1 << 1,
-  TEST_MEM = 1 << 2,
-  TEST_PER_INSTRUCTION = 1 << 3,
-} TEST_FLAGS;
+#define TEST_NONE (0 << 0)
+#define TEST_REGS (1 << 0)
+#define TEST_SR (1 << 1)
+#define TEST_MEM (1 << 2)
+#define TEST_PER_INSTRUCTION (1 << 3)
 
-#define TEST_LEVEL TEST_MEM
+#define TEST_LEVEL (TEST_REGS | TEST_MEM | TEST_PER_INSTRUCTION)
 
 #define ROMFUNC(funcname) EXPORT void funcname(void)
 
@@ -101,15 +100,13 @@ extern void print(const char *msg, ...);
 #define PRINTVAL(val) print(#val " = 0x%X", val)
 #define PRINTREG(reg) print(#reg " = 0x%X", reg)
 
-#if CHECK_STUFF && (TEST_LEVEL & TEST_PER_INSTRUCTION)
 #define DEF_ROMLOC(loc)                                                        \
-  rom_##loc : print("synching to romloc " #loc);                               \
-  if (!speedshoes__synchronize(0x##loc)) {                                     \
-    longjmp(speedshoes__desync_jumpbuf, 1);                                    \
+  rom_##loc : if (CHECK_STUFF && (TEST_LEVEL & TEST_PER_INSTRUCTION)) {        \
+    print("synching to romloc " #loc);                                         \
+    if (!speedshoes__synchronize(0x##loc)) {                                   \
+      longjmp(speedshoes__desync_jumpbuf, 1);                                  \
+    }                                                                          \
   }                                                                            \
   rom_##loc##_colon
-#else
-#define DEF_ROMLOC(loc) rom_##loc
-#endif
 
 #include "game.h"
