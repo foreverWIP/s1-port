@@ -2,7 +2,6 @@
 #include "../opcodes.h"
 #include "../system.h"
 
-
 ROMFUNC(rom_4F68) {
   u8 switchindex = 0;
   DEF_ROMLOC(4F68) : move_toreg_32(0x0, &D0); // MOVEQ.L	$00,D0
@@ -73,18 +72,21 @@ ROMFUNC(rom_4FF2) {
   DEF_ROMLOC(501C) : clr_mem_16(A0 + 0x14);          // CLR.W	20(A0)
   DEF_ROMLOC(5020) : sub_tomem_16(0x8, A0 + 0xC);    // SUBQ.W	#$08,12(A0)
   DEF_ROMLOC(5024) : move_toreg_8(0xFFFFFFE0, &D0);  // MOVE.B	#$E0,D0
-  DEF_ROMLOC(5028) : rom_1394();                     // BSR.W	$1394
+  DEF_ROMLOC(5028) : play_sound_special();           // BSR.W	$1394
   rom_502C(); // Detected flow into next function
 }
 ROMFUNC(rom_502C) {
-  DEF_ROMLOC(502C) : cmp_tomem_16(0x800, A0 + 0x14);   // CMPI.W	#$0800,20(A0)
-  DEF_ROMLOC(5032) : if (!CCR_EQ) goto rom_503C;       // BNE.B	$503C
-  DEF_ROMLOC(5034) : move_tomem_16(0x1000, A0 + 0x10); // MOVE.W
-                                                       // #$1000,16(A0)
-  goto rom_5042;                                       // BRA.B	$5042
-  DEF_ROMLOC(503C) : add_tomem_16(0x20, A0 + 0x14);    // ADDI.W	#$0020,20(A0)
-  DEF_ROMLOC(5042) : rom_DC6C();                       // JSR	$0000DC6C
-  DEF_ROMLOC(5048) : rom_14098();                      // JSR	$00014098
+  DEF_ROMLOC(502C)
+      : cmp_tomem_16(0x800, A0 + 0x14);          // CMPI.W	#$0800,20(A0)
+  DEF_ROMLOC(5032) : if (!CCR_EQ) goto rom_503C; // BNE.B	$503C
+  DEF_ROMLOC(5034)
+      : move_tomem_16(0x1000, A0 + 0x10); // MOVE.W
+                                          // #$1000,16(A0)
+  goto rom_5042;                          // BRA.B	$5042
+  DEF_ROMLOC(503C)
+      : add_tomem_16(0x20, A0 + 0x14); // ADDI.W	#$0020,20(A0)
+  DEF_ROMLOC(5042) : rom_DC6C();       // JSR	$0000DC6C
+  DEF_ROMLOC(5048) : rom_14098();      // JSR	$00014098
   DEF_ROMLOC(504E) : rom_14312();
   return; // JMP	$00014312
 }

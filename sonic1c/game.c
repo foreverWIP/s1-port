@@ -19,7 +19,6 @@ ROMFUNC(rom_300) {
   DEF_ROMLOC(35C)
       : move_tomem_32(0x696E6974, 0xFFFFFFFC); // MOVE.L	#$696E6974,$FFFC
   DEF_ROMLOC(376) : rom_1222();                // BSR.W	$1222
-  DEF_ROMLOC(37A) : rom_134A();                // BSR.W	$134A
   DEF_ROMLOC(37E) : rom_11B6();                // BSR.W	$11B6
   DEF_ROMLOC(382) : move_tomem_8(0x0, 0xFFFFF600);
   rom_388(); // Detected flow into next function
@@ -28,14 +27,14 @@ ROMFUNC(rom_388) {
   DEF_ROMLOC(388)
       : move_toreg_8(read_8(0xFFFFF600), &D0); // MOVE.B	$F600,D0
   DEF_ROMLOC(38C) : and_toreg_16(0x1C, &D0);   // ANDI.W	#$001C,D0
-  rom_2DD2();
+  sega_init();
 }
 
 void rom_388_nosega(void) {
   DEF_ROMLOC(388): move_toreg_8(read_8(0xFFFFF600), &D0); // MOVE.B	$F600,D0
   DEF_ROMLOC(38C): and_toreg_16(0x1C, &D0);   // ANDI.W	#$001C,D0
 	switch (D0 & 0x1C) {
-		case 0: game_state = rom_2DD2; break;
+		case 0: game_state = sega_init; break;
 		case 4: game_state = rom_2EF4; break;
 		case 8: game_state = rom_379E; break;
 		case 0xc: game_state = rom_379E; break;
@@ -50,7 +49,6 @@ EXPORT u32 get_test_level(void) {
 	return TEST_LEVEL;
 }
 
-ROMFUNC(rom_396);
 EXPORT void reset_game(void) {
   // print("reseting game");
   for (u16 i = 0; i < 0x4000; i++) {
@@ -92,4 +90,5 @@ EXPORT void run_game_frame(void) {
 		rom_388_nosega();
 	}
   }
+  DEF_ROMLOC(29A0) : rom_B10(); // JMP	$00000B10
 }

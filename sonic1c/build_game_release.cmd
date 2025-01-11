@@ -2,6 +2,7 @@ echo \" <<'BATCH_SCRIPT' >/dev/null ">NUL "\" \`" <#"
 @ECHO OFF
 REM ===== Batch Script Begin =====
 %cd%/../tcc/tcc.exe -rdynamic -shared ./*.c ./objects/*.c ./zones/*.c -o ../sonic1.dll
+for %%I in ("../sonic1.dll") do @echo %%~zI
 REM ====== Batch Script End ======
 GOTO :eof
 TYPE CON >NUL

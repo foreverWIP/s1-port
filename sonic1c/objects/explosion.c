@@ -2,7 +2,6 @@
 #include "../opcodes.h"
 #include "../system.h"
 
-
 ROMFUNC(rom_93E0) {
   u8 switchindex = 0;
   DEF_ROMLOC(93E0) : move_toreg_32(0x0, &D0); // MOVEQ.L	$00,D0
@@ -52,7 +51,7 @@ ROMFUNC(rom_9416) {
   DEF_ROMLOC(9440) : move_tomem_8(0x7, A0 + 0x1E);   // MOVE.B	#$07,30(A0)
   DEF_ROMLOC(9446) : move_tomem_8(0x0, A0 + 0x1A);   // MOVE.B	#$00,26(A0)
   DEF_ROMLOC(944C) : move_toreg_16(0xC1, &D0);       // MOVE.W	#$00C1,D0
-  DEF_ROMLOC(9450) : rom_1394();                     // JSR	$00001394
+  DEF_ROMLOC(9450) : play_sound_special();           // JSR	$00001394
   rom_9456();
 }
 ROMFUNC(rom_9456) {
@@ -101,7 +100,7 @@ ROMFUNC(rom_9486) {
   DEF_ROMLOC(94B6) : move_tomem_8(0x0, A0 + 0x1A);   // MOVE.B	#$00,26(A0)
   DEF_ROMLOC(94BC) : move_toreg_16(0xC4, &D0);       // MOVE.W	#$00C4,D0
   DEF_ROMLOC(94C0) : {
-    rom_1394();
+    play_sound_special();
     return;
   } // JMP	$00001394
 }

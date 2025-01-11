@@ -45,7 +45,7 @@ ROMFUNC(rom_168EC) {
   DEF_ROMLOC(168FC) : tst_mem_8(A0 + 0x1);          // TST.B	1(A0)
   DEF_ROMLOC(16900) : if (CCR_PL) goto rom_1690C;   // BPL.B	$1690C
   DEF_ROMLOC(16902) : move_toreg_16(0xB1, &D0);     // MOVE.W	#$00B1,D0
-  DEF_ROMLOC(16906) : rom_1394();                   // JSR	$00001394
+  DEF_ROMLOC(16906) : play_sound_special();         // JSR	$00001394
   DEF_ROMLOC(1690C) : move_toreg_32(0x16930, &A1);  // LEA.L	$00016930,A1
   DEF_ROMLOC(16912) : rom_ADA2();                   // JSR	$0000ADA2
   DEF_ROMLOC(16918) : move_tomem_8(0x0, A0 + 0x20); // MOVE.B	#$00,32(A0)

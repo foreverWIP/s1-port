@@ -1,4 +1,3 @@
-// #define CHECK_STUFF 1
 #include "opcodes.h"
 #include "system.h"
 
@@ -50,7 +49,7 @@ ROMFUNC(rom_15AA) {
   DEF_ROMLOC(15BA)
       : move_toreg_32((s32)A1 + (s8)0x0 + (s16)D0,
                       &A1);                          // LEA.L	0(A1,D0),A1
-  DEF_ROMLOC(15BE) : rom_15D6();                     // BSR.B	$15D6
+  DEF_ROMLOC(15BE) : clear_plc();                     // BSR.B	$15D6
   DEF_ROMLOC(15C0) : move_toreg_32(v_plc_buffer, &A2); // LEA.L	$F680,A2
   DEF_ROMLOC(15C4)
       : move_toreg_16(read_16((A1 += 2, A1 - 2)), &D0); // MOVE.W	(A1)+,D0
@@ -68,7 +67,7 @@ ROMFUNC(rom_15AA) {
   A2 = a2backup;             // TODO; // MOVEM.L	(A7)+,A1-A2
   DEF_ROMLOC(15D4) : return; // RTS
 }
-ROMFUNC(rom_15D6) {
+void clear_plc(void) {
   DEF_ROMLOC(15D6) : move_toreg_32(v_plc_buffer, &A2); // LEA.L	$F680,A2
   DEF_ROMLOC(15DA) : move_toreg_32(0x1F, &D0);       // MOVEQ.L	$1F,D0
   DEF_ROMLOC(15DC) : clr_mem_32((A2 += 4, A2 - 4));  // CLR.L	(A2)+
@@ -215,7 +214,7 @@ ROMFUNC(rom_16E4) {
   DEF_ROMLOC(1700) : or_toreg_16(0x4000, &D0);          // ORI.W	#$4000,D0
   DEF_ROMLOC(1704) : swap_reg_16(&D0);                  // SWAP.W	D0
   DEF_ROMLOC(1706) : move_tomem_32(D0, 0xC00004);       // MOVE.L	D0,$00C00004
-  DEF_ROMLOC(170C) : rom_1438();                        // BSR.W	$1438
+  DEF_ROMLOC(170C) : decompress_nemesis();                        // BSR.W	$1438
   DEF_ROMLOC(1710) : dec_reg_16(&D1);
   if ((D1 & 0xffff) != 0xffff)
     goto rom_16F6;           // DBF.W	D1,$16F6

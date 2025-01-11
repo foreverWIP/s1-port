@@ -27,9 +27,10 @@ ROMFUNC(rom_15EAC) {
   DEF_ROMLOC(15EAC) : add_tomem_8(0x2, A0 + 0x24); // ADDQ.B	#$02,36(A0)
   DEF_ROMLOC(15EB0)
       : move_tomem_32(0x16048, A0 + 0x4); // MOVE.L	#$00016048,4(A0)
-  DEF_ROMLOC(15EB8) : move_tomem_16(0x4492, A0 + 0x2); // MOVE.W
-                                                       // #$4492,2(A0)
-  DEF_ROMLOC(15EBE) : or_tomem_8(0x4, A0 + 0x1);       // ORI.B	#$04,1(A0)
+  DEF_ROMLOC(15EB8)
+      : move_tomem_16(0x4492, A0 + 0x2);         // MOVE.W
+                                                 // #$4492,2(A0)
+  DEF_ROMLOC(15EBE) : or_tomem_8(0x4, A0 + 0x1); // ORI.B	#$04,1(A0)
   DEF_ROMLOC(15EC4)
       : move_tomem_8(0xFFFFFF80, A0 + 0x19);   // MOVE.B	#$80,25(A0)
   DEF_ROMLOC(15ECA) : move_toreg_32(0x0, &D0); // MOVEQ.L	$00,D0
@@ -70,7 +71,7 @@ ROMFUNC(rom_15F2A) {
   DEF_ROMLOC(15F3C) : tst_mem_8(A0 + 0x1);            // TST.B	1(A0)
   DEF_ROMLOC(15F40) : if (CCR_PL) goto rom_15F4C;     // BPL.B	$15F4C
   DEF_ROMLOC(15F42) : move_toreg_16(0xBB, &D0);       // MOVE.W	#$00BB,D0
-  DEF_ROMLOC(15F46) : rom_1394();                     // JSR	$00001394
+  DEF_ROMLOC(15F46) : play_sound_special();           // JSR	$00001394
   DEF_ROMLOC(15F4C) : move_toreg_32(0x1600C, &A1);    // LEA.L	$0001600C,A1
   DEF_ROMLOC(15F52) : rom_ADA2();                     // JSR	$0000ADA2
   DEF_ROMLOC(15F58) : tst_mem_8(A0 + 0x1A);           // TST.B	26(A0)

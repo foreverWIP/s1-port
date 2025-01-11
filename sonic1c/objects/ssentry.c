@@ -21,7 +21,7 @@ ROMFUNC(rom_149BC) {
   }
 }
 ROMFUNC(rom_149D0) {
-  DEF_ROMLOC(149D0) : tst_mem_32(v_plc_buffer);      // TST.L	$F680
+  DEF_ROMLOC(149D0) : tst_mem_32(v_plc_buffer);    // TST.L	$F680
   DEF_ROMLOC(149D4) : if (CCR_EQ) goto rom_149D8;  // BEQ.B	$149D8
   DEF_ROMLOC(149D6) : return;                      // RTS
   DEF_ROMLOC(149D8) : add_tomem_8(0x2, A0 + 0x24); // ADDQ.B	#$02,36(A0)
@@ -49,7 +49,7 @@ ROMFUNC(rom_14A02) {
   DEF_ROMLOC(14A2C) : if (CCR_EQ) goto rom_14A3E;    // BEQ.B	$14A3E
   DEF_ROMLOC(14A2E) : move_tomem_8(0x0, 0xFFFFD000); // MOVE.B	#$00,$D000
   DEF_ROMLOC(14A34) : move_toreg_16(0xA8, &D0);      // MOVE.W	#$00A8,D0
-  DEF_ROMLOC(14A38) : rom_1394();                    // JSR	$00001394
+  DEF_ROMLOC(14A38) : play_sound_special();          // JSR	$00001394
   DEF_ROMLOC(14A3E) : rom_DC92();
   return; // JMP	$0000DC92
 }

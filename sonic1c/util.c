@@ -21,8 +21,7 @@ ROMFUNC(rom_13A0) {
   rom_13C2();
 }
 ROMFUNC(rom_13C2) {
-  DEF_ROMLOC(13C2) : move_tomem_8(0x10, 0xFFFFF62A); // MOVE.B	#$10,$F62A
-  DEF_ROMLOC(13C8) : rom_29A0(); // rom_29A0(); // BSR.W	$29A0
+  end_frame(0x10);
   game_state = rom_13CC;
 }
 ROMFUNC(rom_13CC) {

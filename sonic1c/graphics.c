@@ -1,4 +1,3 @@
-// #define CHECK_STUFF 1
 #include "opcodes.h"
 #include "system.h"
 
@@ -48,7 +47,7 @@ ROMFUNC(rom_1222) {
   DEF_ROMLOC(129C) : return;                            // RTS
 }
 
-ROMFUNC(rom_12C4) {
+void clear_screen(void) {
   DEF_ROMLOC(12C4) : move_toreg_32(0xC00004, &A5);  // LEA.L	$00C00004,A5
   DEF_ROMLOC(12CA) : move_tomem_16(0xFFFF8F01, A5); // MOVE.W	#$8F01,(A5)
   DEF_ROMLOC(12CE)
@@ -95,22 +94,20 @@ ROMFUNC(rom_12C4) {
     goto rom_1342;           // DBF.W	D1,$1342
   DEF_ROMLOC(1348) : return; // RTS
 }
-ROMFUNC(rom_1418) {
-  DEF_ROMLOC(1418) : move_toreg_32(0xC00000, &A6); // LEA.L	$00C00000,A6
-  DEF_ROMLOC(141E) : move_toreg_32(0x800000, &D4); // MOVE.L	#$00800000,D4
-  DEF_ROMLOC(1424) : move_tomem_32(D0, A6 + 0x4);  // MOVE.L	D0,4(A6)
-  DEF_ROMLOC(1428) : move_toreg_16(D1, &D3);       // MOVE.W	D1,D3
-  DEF_ROMLOC(142A)
-      : move_tomem_16(read_16((A1 += 2, A1 - 2)),
-                      A6); // MOVE.W	(A1)+,(A6)
-  DEF_ROMLOC(142C) : dec_reg_16(&D3);
-  if ((D3 & 0xffff) != 0xffff)
-    goto rom_142A;                          // DBF.W	D3,$142A
-  DEF_ROMLOC(1430) : add_toreg_32(D4, &D0); // ADD.L	D4,D0
-  DEF_ROMLOC(1432) : dec_reg_16(&D2);
-  if ((D2 & 0xffff) != 0xffff)
-    goto rom_1424;           // DBF.W	D2,$1424
-  DEF_ROMLOC(1436) : return; // RTS
+void copy_tilemap_to_vram(void) {
+  A6 = 0xC00000; // LEA.L	$00C00000,A6
+  D4 = 0x800000; // MOVE.L	#$00800000,D4
+  do {
+	move_tomem_32(D0, A6 + 0x4);  // MOVE.L	D0,4(A6)
+	move_toreg_16(D1, &D3);       // MOVE.W	D1,D3
+	do {
+		write_16(A6, read_16(A1));
+		A1 += 2;
+		dec_reg_16(&D3);
+	} while ((D3 & 0xffff) != 0xffff);
+	D0 += 0x800000;
+	dec_reg_16(&D2);
+  } while ((D2 & 0xffff) != 0xffff);
 }
 ROMFUNC(rom_68DA) {
   DEF_ROMLOC(68DA)

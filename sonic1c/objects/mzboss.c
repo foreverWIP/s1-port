@@ -96,14 +96,15 @@ ROMFUNC(rom_18A78) {
     rom_18D32();
     break;
   }
-  DEF_ROMLOC(18A86) : move_toreg_32(0x18468, &A1); // LEA.L	$00018468,A1
-  DEF_ROMLOC(18A8C) : rom_ADA2();                  // JSR	$0000ADA2
-  DEF_ROMLOC(18A92) : move_toreg_32(0x3, &D0);     // MOVEQ.L	$03,D0
-  DEF_ROMLOC(18A94)
-      : and_toreg_8(read_8(A0 + 0x22), &D0);             // AND.B	34(A0),D0
-  DEF_ROMLOC(18A98) : and_tomem_8(0xFFFFFFFC, A0 + 0x1); // ANDI.B
-                                                         // #$FC,1(A0)
-  DEF_ROMLOC(18A9E) : or_tomem_8(D0, A0 + 0x1);          // OR.B	D0,1(A0)
+  DEF_ROMLOC(18A86) : move_toreg_32(0x18468, &A1);         // LEA.L	$00018468,A1
+  DEF_ROMLOC(18A8C) : rom_ADA2();                          // JSR	$0000ADA2
+  DEF_ROMLOC(18A92) : move_toreg_32(0x3, &D0);             // MOVEQ.L	$03,D0
+  DEF_ROMLOC(18A94) : and_toreg_8(read_8(A0 + 0x22), &D0); // AND.B
+                                                           // 34(A0),D0
+  DEF_ROMLOC(18A98)
+      : and_tomem_8(0xFFFFFFFC, A0 + 0x1);      // ANDI.B
+                                                // #$FC,1(A0)
+  DEF_ROMLOC(18A9E) : or_tomem_8(D0, A0 + 0x1); // OR.B	D0,1(A0)
   DEF_ROMLOC(18AA2) : rom_DC92();
   return; // JMP	$0000DC92
 }
@@ -115,16 +116,17 @@ ROMFUNC(rom_18AB2) {
   DEF_ROMLOC(18AC0) : asr_toreg_16(0x2, &D0);       // ASR.W	#$02,D0
   DEF_ROMLOC(18AC2) : move_tomem_16(D0, A0 + 0x12); // MOVE.W	D0,18(A0)
   DEF_ROMLOC(18AC6)
-      : move_tomem_16(0xFFFFFF00, A0 + 0x10);          // MOVE.W	#$FF00,16(A0)
-  DEF_ROMLOC(18ACC) : rom_18050();                     // BSR.W	$18050
-  DEF_ROMLOC(18AD0) : cmp_tomem_16(0x1910, A0 + 0x30); // CMPI.W
-                                                       // #$1910,48(A0)
-  DEF_ROMLOC(18AD6) : if (!CCR_EQ) goto rom_18AE4;     // BNE.B	$18AE4
-  DEF_ROMLOC(18AD8) : add_tomem_8(0x2, A0 + 0x25);     // ADDQ.B	#$02,37(A0)
-  DEF_ROMLOC(18ADC) : clr_mem_8(A0 + 0x28);            // CLR.B	40(A0)
-  DEF_ROMLOC(18AE0) : clr_mem_32(A0 + 0x10);           // CLR.L	16(A0)
-  DEF_ROMLOC(18AE4) : rom_29AC();                      // JSR	$000029AC
-  DEF_ROMLOC(18AEA) : move_tomem_8(D0, A0 + 0x34);     // MOVE.B	D0,52(A0)
+      : move_tomem_16(0xFFFFFF00, A0 + 0x10); // MOVE.W	#$FF00,16(A0)
+  DEF_ROMLOC(18ACC) : rom_18050();            // BSR.W	$18050
+  DEF_ROMLOC(18AD0)
+      : cmp_tomem_16(0x1910, A0 + 0x30);           // CMPI.W
+                                                   // #$1910,48(A0)
+  DEF_ROMLOC(18AD6) : if (!CCR_EQ) goto rom_18AE4; // BNE.B	$18AE4
+  DEF_ROMLOC(18AD8) : add_tomem_8(0x2, A0 + 0x25); // ADDQ.B	#$02,37(A0)
+  DEF_ROMLOC(18ADC) : clr_mem_8(A0 + 0x28);        // CLR.B	40(A0)
+  DEF_ROMLOC(18AE0) : clr_mem_32(A0 + 0x10);       // CLR.L	16(A0)
+  DEF_ROMLOC(18AE4) : rom_29AC();                  // JSR	$000029AC
+  DEF_ROMLOC(18AEA) : move_tomem_8(D0, A0 + 0x34); // MOVE.B	D0,52(A0)
   rom_18AEE(); // Detected flow into next function
 }
 ROMFUNC(rom_18AEE) {
@@ -142,7 +144,7 @@ ROMFUNC(rom_18AEE) {
   DEF_ROMLOC(18B12) : if (!CCR_EQ) goto rom_18B24;    // BNE.B	$18B24
   DEF_ROMLOC(18B14) : move_tomem_8(0x28, A0 + 0x3E);  // MOVE.B	#$28,62(A0)
   DEF_ROMLOC(18B1A) : move_toreg_16(0xAC, &D0);       // MOVE.W	#$00AC,D0
-  DEF_ROMLOC(18B1E) : rom_1394();                     // JSR	$00001394
+  DEF_ROMLOC(18B1E) : play_sound_special();           // JSR	$00001394
   DEF_ROMLOC(18B24) : move_toreg_32(0xFFFFFB22, &A1); // LEA.L	$FB22,A1
   DEF_ROMLOC(18B28) : move_toreg_32(0x0, &D0);        // MOVEQ.L	$00,D0
   DEF_ROMLOC(18B2A) : tst_mem_16(A1);                 // TST.W	(A1)
@@ -197,50 +199,56 @@ ROMFUNC(rom_18B7A) {
   DEF_ROMLOC(18B8C) : neg_reg_16(&D0);                // NEG.W	D0
   DEF_ROMLOC(18B8E) : move_tomem_16(D0, A0 + 0x12);   // MOVE.W	D0,18(A0)
   rom_18050();
-  return;                                               // BRA.W	$18050
-  DEF_ROMLOC(18B96) : move_tomem_16(0x200, A0 + 0x10);  // MOVE.W
-                                                        // #$0200,16(A0)
-  DEF_ROMLOC(18B9C) : move_tomem_16(0x100, A0 + 0x12);  // MOVE.W
-                                                        // #$0100,18(A0)
-  DEF_ROMLOC(18BA2) : btst_tomem_8(0x0, A0 + 0x22);     // BTST.B	#$00,34(A0)
-  DEF_ROMLOC(18BA8) : if (!CCR_EQ) goto rom_18BAE;      // BNE.B	$18BAE
-  DEF_ROMLOC(18BAA) : neg_mem_16(A0 + 0x10);            // NEG.W	16(A0)
-  DEF_ROMLOC(18BAE) : cmp_tomem_8(0x18, A0 + 0x3E);     // CMPI.B	#$18,62(A0)
-  DEF_ROMLOC(18BB4) : if (CCR_CC) goto rom_18BBE;       // BCC.B	$18BBE
-  DEF_ROMLOC(18BB6) : rom_18050();                      // BSR.W	$18050
-  DEF_ROMLOC(18BBA) : sub_tomem_16(0x4, A0 + 0x12);     // SUBQ.W	#$04,18(A0)
-  DEF_ROMLOC(18BBE) : sub_tomem_8(0x1, A0 + 0x34);      // SUBQ.B	#$01,52(A0)
-  DEF_ROMLOC(18BC2) : if (CCR_CC) goto rom_18C0C;       // BCC.B	$18C0C
-  DEF_ROMLOC(18BC4) : rom_E11A();                       // JSR	$0000E11A
-  DEF_ROMLOC(18BCA) : if (!CCR_EQ) goto rom_18BFA;      // BNE.B	$18BFA
-  DEF_ROMLOC(18BCC) : move_tomem_8(0x14, A1 + 0x0);     // MOVE.B	#$14,0(A1)
-  DEF_ROMLOC(18BD2) : move_tomem_16(0x2E8, A1 + 0xC);   // MOVE.W	#$02E8,12(A1)
-  DEF_ROMLOC(18BD8) : rom_29AC();                       // JSR	$000029AC
-  DEF_ROMLOC(18BDE) : and_toreg_32(0xFFFF, &D0);        // ANDI.L	#$0000FFFF,D0
-  DEF_ROMLOC(18BE4) : divu_toreg_16(0x50, &D0);         // DIVU.W	#$0050,D0
-  DEF_ROMLOC(18BE8) : swap_reg_16(&D0);                 // SWAP.W	D0
-  DEF_ROMLOC(18BEA) : add_toreg_16(0x1878, &D0);        // ADDI.W	#$1878,D0
-  DEF_ROMLOC(18BEE) : move_tomem_16(D0, A1 + 0x8);      // MOVE.W	D0,8(A1)
-  DEF_ROMLOC(18BF2) : lsr_toreg_8(0x7, &D1);            // LSR.B	#$07,D1
-  DEF_ROMLOC(18BF4) : move_tomem_16(0xFF, A1 + 0x28);   // MOVE.W	#$00FF,40(A1)
-  DEF_ROMLOC(18BFA) : rom_29AC();                       // JSR	$000029AC
-  DEF_ROMLOC(18C00) : and_toreg_8(0x1F, &D0);           // ANDI.B	#$1F,D0
-  DEF_ROMLOC(18C04) : add_toreg_8(0x40, &D0);           // ADDI.B	#$40,D0
-  DEF_ROMLOC(18C08) : move_tomem_8(D0, A0 + 0x34);      // MOVE.B	D0,52(A0)
-  DEF_ROMLOC(18C0C) : btst_tomem_8(0x0, A0 + 0x22);     // BTST.B	#$00,34(A0)
-  DEF_ROMLOC(18C12) : if (CCR_EQ) goto rom_18C24;       // BEQ.B	$18C24
-  DEF_ROMLOC(18C14) : cmp_tomem_16(0x1910, A0 + 0x30);  // CMPI.W
-                                                        // #$1910,48(A0)
-  DEF_ROMLOC(18C1A) : if (CCR_LT) goto rom_18C4C;       // BLT.B	$18C4C
-  DEF_ROMLOC(18C1C) : move_tomem_16(0x1910, A0 + 0x30); // MOVE.W
-                                                        // #$1910,48(A0)
-  goto rom_18C32;                                       // BRA.B	$18C32
-  DEF_ROMLOC(18C24) : cmp_tomem_16(0x1830, A0 + 0x30);  // CMPI.W
-                                                        // #$1830,48(A0)
-  DEF_ROMLOC(18C2A) : if (CCR_GT) goto rom_18C4C;       // BGT.B	$18C4C
-  DEF_ROMLOC(18C2C) : move_tomem_16(0x1830, A0 + 0x30); // MOVE.W
-                                                        // #$1830,48(A0)
-  DEF_ROMLOC(18C32) : clr_mem_16(A0 + 0x10);            // CLR.W	16(A0)
+  return; // BRA.W	$18050
+  DEF_ROMLOC(18B96)
+      : move_tomem_16(0x200, A0 + 0x10); // MOVE.W
+                                         // #$0200,16(A0)
+  DEF_ROMLOC(18B9C)
+      : move_tomem_16(0x100, A0 + 0x12);              // MOVE.W
+                                                      // #$0100,18(A0)
+  DEF_ROMLOC(18BA2) : btst_tomem_8(0x0, A0 + 0x22);   // BTST.B	#$00,34(A0)
+  DEF_ROMLOC(18BA8) : if (!CCR_EQ) goto rom_18BAE;    // BNE.B	$18BAE
+  DEF_ROMLOC(18BAA) : neg_mem_16(A0 + 0x10);          // NEG.W	16(A0)
+  DEF_ROMLOC(18BAE) : cmp_tomem_8(0x18, A0 + 0x3E);   // CMPI.B	#$18,62(A0)
+  DEF_ROMLOC(18BB4) : if (CCR_CC) goto rom_18BBE;     // BCC.B	$18BBE
+  DEF_ROMLOC(18BB6) : rom_18050();                    // BSR.W	$18050
+  DEF_ROMLOC(18BBA) : sub_tomem_16(0x4, A0 + 0x12);   // SUBQ.W	#$04,18(A0)
+  DEF_ROMLOC(18BBE) : sub_tomem_8(0x1, A0 + 0x34);    // SUBQ.B	#$01,52(A0)
+  DEF_ROMLOC(18BC2) : if (CCR_CC) goto rom_18C0C;     // BCC.B	$18C0C
+  DEF_ROMLOC(18BC4) : rom_E11A();                     // JSR	$0000E11A
+  DEF_ROMLOC(18BCA) : if (!CCR_EQ) goto rom_18BFA;    // BNE.B	$18BFA
+  DEF_ROMLOC(18BCC) : move_tomem_8(0x14, A1 + 0x0);   // MOVE.B	#$14,0(A1)
+  DEF_ROMLOC(18BD2) : move_tomem_16(0x2E8, A1 + 0xC); // MOVE.W	#$02E8,12(A1)
+  DEF_ROMLOC(18BD8) : rom_29AC();                     // JSR	$000029AC
+  DEF_ROMLOC(18BDE) : and_toreg_32(0xFFFF, &D0);      // ANDI.L	#$0000FFFF,D0
+  DEF_ROMLOC(18BE4) : divu_toreg_16(0x50, &D0);       // DIVU.W	#$0050,D0
+  DEF_ROMLOC(18BE8) : swap_reg_16(&D0);               // SWAP.W	D0
+  DEF_ROMLOC(18BEA) : add_toreg_16(0x1878, &D0);      // ADDI.W	#$1878,D0
+  DEF_ROMLOC(18BEE) : move_tomem_16(D0, A1 + 0x8);    // MOVE.W	D0,8(A1)
+  DEF_ROMLOC(18BF2) : lsr_toreg_8(0x7, &D1);          // LSR.B	#$07,D1
+  DEF_ROMLOC(18BF4) : move_tomem_16(0xFF, A1 + 0x28); // MOVE.W	#$00FF,40(A1)
+  DEF_ROMLOC(18BFA) : rom_29AC();                     // JSR	$000029AC
+  DEF_ROMLOC(18C00) : and_toreg_8(0x1F, &D0);         // ANDI.B	#$1F,D0
+  DEF_ROMLOC(18C04) : add_toreg_8(0x40, &D0);         // ADDI.B	#$40,D0
+  DEF_ROMLOC(18C08) : move_tomem_8(D0, A0 + 0x34);    // MOVE.B	D0,52(A0)
+  DEF_ROMLOC(18C0C) : btst_tomem_8(0x0, A0 + 0x22);   // BTST.B	#$00,34(A0)
+  DEF_ROMLOC(18C12) : if (CCR_EQ) goto rom_18C24;     // BEQ.B	$18C24
+  DEF_ROMLOC(18C14)
+      : cmp_tomem_16(0x1910, A0 + 0x30);          // CMPI.W
+                                                  // #$1910,48(A0)
+  DEF_ROMLOC(18C1A) : if (CCR_LT) goto rom_18C4C; // BLT.B	$18C4C
+  DEF_ROMLOC(18C1C)
+      : move_tomem_16(0x1910, A0 + 0x30); // MOVE.W
+                                          // #$1910,48(A0)
+  goto rom_18C32;                         // BRA.B	$18C32
+  DEF_ROMLOC(18C24)
+      : cmp_tomem_16(0x1830, A0 + 0x30);          // CMPI.W
+                                                  // #$1830,48(A0)
+  DEF_ROMLOC(18C2A) : if (CCR_GT) goto rom_18C4C; // BGT.B	$18C4C
+  DEF_ROMLOC(18C2C)
+      : move_tomem_16(0x1830, A0 + 0x30);    // MOVE.W
+                                             // #$1830,48(A0)
+  DEF_ROMLOC(18C32) : clr_mem_16(A0 + 0x10); // CLR.W	16(A0)
   DEF_ROMLOC(18C36)
       : move_tomem_16(0xFFFFFE80, A0 + 0x12);         // MOVE.W	#$FE80,18(A0)
   DEF_ROMLOC(18C3C) : cmp_tomem_16(0x22C, A0 + 0x38); // CMPI.W	#$022C,56(A0)
@@ -314,23 +322,25 @@ ROMFUNC(rom_18CDC) {
   goto rom_18D2A;                                     // BRA.B	$18D2A
   DEF_ROMLOC(18D1C) : clr_mem_16(A0 + 0x12);          // CLR.W	18(A0)
   DEF_ROMLOC(18D20) : move_toreg_16(0x83, &D0);       // MOVE.W	#$0083,D0
-  DEF_ROMLOC(18D24) : rom_138E();                     // JSR	$0000138E
+  DEF_ROMLOC(18D24) : play_sound();                   // JSR	$0000138E
   DEF_ROMLOC(18D2A) : rom_18050();                    // BSR.W	$18050
   rom_18AEE();                                        // BRA.W	$18AEE
 }
 ROMFUNC(rom_18D32) {
-  DEF_ROMLOC(18D32) : move_tomem_16(0x500, A0 + 0x10); // MOVE.W
-                                                       // #$0500,16(A0)
+  DEF_ROMLOC(18D32)
+      : move_tomem_16(0x500, A0 + 0x10); // MOVE.W
+                                         // #$0500,16(A0)
   DEF_ROMLOC(18D38)
-      : move_tomem_16(0xFFFFFFC0, A0 + 0x12);           // MOVE.W	#$FFC0,18(A0)
-  DEF_ROMLOC(18D3E) : cmp_tomem_16(0x1960, 0xFFFFF72A); // CMPI.W
-                                                        // #$1960,$F72A
-  DEF_ROMLOC(18D44) : if (CCR_CC) goto rom_18D4C;       // BCC.B	$18D4C
-  DEF_ROMLOC(18D46) : add_tomem_16(0x2, 0xFFFFF72A);    // ADDQ.W	#$02,$F72A
-  goto rom_18D52;                                       // BRA.B	$18D52
-  DEF_ROMLOC(18D4C) : tst_mem_8(A0 + 0x1);              // TST.B	1(A0)
-  DEF_ROMLOC(18D50) : if (CCR_PL) goto rom_18D5A;       // BPL.B	$18D5A
-  DEF_ROMLOC(18D52) : rom_18050();                      // BSR.W	$18050
+      : move_tomem_16(0xFFFFFFC0, A0 + 0x12); // MOVE.W	#$FFC0,18(A0)
+  DEF_ROMLOC(18D3E)
+      : cmp_tomem_16(0x1960, 0xFFFFF72A);            // CMPI.W
+                                                     // #$1960,$F72A
+  DEF_ROMLOC(18D44) : if (CCR_CC) goto rom_18D4C;    // BCC.B	$18D4C
+  DEF_ROMLOC(18D46) : add_tomem_16(0x2, 0xFFFFF72A); // ADDQ.W	#$02,$F72A
+  goto rom_18D52;                                    // BRA.B	$18D52
+  DEF_ROMLOC(18D4C) : tst_mem_8(A0 + 0x1);           // TST.B	1(A0)
+  DEF_ROMLOC(18D50) : if (CCR_PL) goto rom_18D5A;    // BPL.B	$18D5A
+  DEF_ROMLOC(18D52) : rom_18050();                   // BSR.W	$18050
   rom_18AEE();
   return; // BRA.W	$18AEE
   DEF_ROMLOC(18D5A) : rom_DCCE();
@@ -406,11 +416,12 @@ ROMFUNC(rom_18DFA) {
   DEF_ROMLOC(18E0A)
       : move_tomem_8(read_8(A1 + 0x22), A0 + 0x22); // MOVE.B	34(A1),34(A0)
   DEF_ROMLOC(18E10) : move_toreg_32(0x3, &D0);      // MOVEQ.L	$03,D0
-  DEF_ROMLOC(18E12)
-      : and_toreg_8(read_8(A0 + 0x22), &D0);             // AND.B	34(A0),D0
-  DEF_ROMLOC(18E16) : and_tomem_8(0xFFFFFFFC, A0 + 0x1); // ANDI.B
-                                                         // #$FC,1(A0)
-  DEF_ROMLOC(18E1C) : or_tomem_8(D0, A0 + 0x1);          // OR.B	D0,1(A0)
+  DEF_ROMLOC(18E12) : and_toreg_8(read_8(A0 + 0x22), &D0); // AND.B
+                                                           // 34(A0),D0
+  DEF_ROMLOC(18E16)
+      : and_tomem_8(0xFFFFFFFC, A0 + 0x1);      // ANDI.B
+                                                // #$FC,1(A0)
+  DEF_ROMLOC(18E1C) : or_tomem_8(D0, A0 + 0x1); // OR.B	D0,1(A0)
   DEF_ROMLOC(18E20) : rom_DC92();
   return; // JMP	$0000DC92
 }
@@ -423,9 +434,10 @@ ROMFUNC(rom_18E26) {
   DEF_ROMLOC(18E36) : if (CCR_PL) goto rom_18E4E;  // BPL.B	$18E4E
   DEF_ROMLOC(18E38)
       : move_tomem_32(0x18580, A0 + 0x4); // MOVE.L	#$00018580,4(A0)
-  DEF_ROMLOC(18E40) : move_tomem_16(0x246C, A0 + 0x2); // MOVE.W
-                                                       // #$246C,2(A0)
-  DEF_ROMLOC(18E46) : move_tomem_8(0x4, A0 + 0x1A);    // MOVE.B	#$04,26(A0)
+  DEF_ROMLOC(18E40)
+      : move_tomem_16(0x246C, A0 + 0x2);            // MOVE.W
+                                                    // #$246C,2(A0)
+  DEF_ROMLOC(18E46) : move_tomem_8(0x4, A0 + 0x1A); // MOVE.B	#$04,26(A0)
   rom_18DFA();
   return; // BRA.B	$18DFA
   DEF_ROMLOC(18E4E) : rom_DCCE();

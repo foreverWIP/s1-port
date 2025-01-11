@@ -5,6 +5,13 @@
 #include "object.h"
 #include "romlocs.h"
 #include "ramlocs.h"
+#include "graphics.h"
+#include "sound.h"
+#include "plc.h"
+#include "sega.h"
+#include "nemesis.h"
+#include "enigma.h"
+#include "vblank.h"
 
 extern void (*game_state)(void);
 extern bool exit_mainloop;

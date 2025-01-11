@@ -2,7 +2,6 @@
 #include "../opcodes.h"
 #include "../system.h"
 
-
 ROMFUNC(rom_10882);
 ROMFUNC(rom_10734) {
   u8 switchindex = 0;
@@ -97,13 +96,13 @@ ROMFUNC(rom_107D6) {
   DEF_ROMLOC(107E0) : move_toreg_16(0x80, &D2);      // MOVE.W	#$0080,D2
   DEF_ROMLOC(107E4) : rom_10882();                   // BSR.W	$10882
   DEF_ROMLOC(107E8)
-      : move_toreg_16(read_16(A0 + 0x36), &D0); // MOVE.W	54(A0),D0
-  DEF_ROMLOC(107EC)
-      : sub_toreg_16(read_16(A0 + 0xC), &D0);        // SUB.W	12(A0),D0
-  DEF_ROMLOC(107F0) : if (CCR_CS) goto rom_1080E;    // BCS.B	$1080E
-  DEF_ROMLOC(107F2) : cmp_toreg_16(0x10, &D0);       // CMPI.W	#$0010,D0
-  DEF_ROMLOC(107F6) : if (CCR_CC) goto rom_1080C;    // BCC.B	$1080C
-  DEF_ROMLOC(107F8) : move_tomem_16(D1, A0 + 0x10);  // MOVE.W	D1,16(A0)
+      : move_toreg_16(read_16(A0 + 0x36), &D0);             // MOVE.W	54(A0),D0
+  DEF_ROMLOC(107EC) : sub_toreg_16(read_16(A0 + 0xC), &D0); // SUB.W
+                                                            // 12(A0),D0
+  DEF_ROMLOC(107F0) : if (CCR_CS) goto rom_1080E;           // BCS.B	$1080E
+  DEF_ROMLOC(107F2) : cmp_toreg_16(0x10, &D0);              // CMPI.W	#$0010,D0
+  DEF_ROMLOC(107F6) : if (CCR_CC) goto rom_1080C;           // BCC.B	$1080C
+  DEF_ROMLOC(107F8) : move_tomem_16(D1, A0 + 0x10);         // MOVE.W	D1,16(A0)
   DEF_ROMLOC(107FC) : move_tomem_16(0x0, A0 + 0x12); // MOVE.W	#$0000,18(A0)
   DEF_ROMLOC(10802) : move_tomem_8(0x2, A0 + 0x1C);  // MOVE.B	#$02,28(A0)
   DEF_ROMLOC(10808) : add_tomem_8(0x2, A0 + 0x25);   // ADDQ.B	#$02,37(A0)
@@ -121,7 +120,7 @@ ROMFUNC(rom_10818) {
   DEF_ROMLOC(1081C) : and_toreg_8(0xF, &D0);       // ANDI.B	#$0F,D0
   DEF_ROMLOC(10820) : if (!CCR_EQ) goto rom_1082C; // BNE.B	$1082C
   DEF_ROMLOC(10822) : move_toreg_16(0xC0, &D0);    // MOVE.W	#$00C0,D0
-  DEF_ROMLOC(10826) : rom_1394();                  // JSR	$00001394
+  DEF_ROMLOC(10826) : play_sound_special();        // JSR	$00001394
   DEF_ROMLOC(1082C) : rom_DC6C();                  // BSR.W	$DC6C
   DEF_ROMLOC(10830)
       : move_toreg_16(read_16(0xFFFFD008), &D0); // MOVE.W	$D008,D0
@@ -158,12 +157,11 @@ ROMFUNC(rom_10882) {
   DEF_ROMLOC(10882) : move_toreg_16(0x100, &D1);    // MOVE.W	#$0100,D1
   DEF_ROMLOC(10886) : bset_tomem_8(0x0, A0 + 0x22); // BSET.B	#$00,34(A0)
   DEF_ROMLOC(1088C)
-      : move_toreg_16(read_16(0xFFFFD008), &D0); // MOVE.W	$D008,D0
-  DEF_ROMLOC(10890)
-      : sub_toreg_16(read_16(A0 + 0x8), &D0);       // SUB.W	8(A0),D0
-  DEF_ROMLOC(10894) : if (CCR_CC) goto rom_108A0;   // BCC.B	$108A0
-  DEF_ROMLOC(10896) : neg_reg_16(&D0);              // NEG.W	D0
-  DEF_ROMLOC(10898) : neg_reg_16(&D1);              // NEG.W	D1
+      : move_toreg_16(read_16(0xFFFFD008), &D0);            // MOVE.W	$D008,D0
+  DEF_ROMLOC(10890) : sub_toreg_16(read_16(A0 + 0x8), &D0); // SUB.W	8(A0),D0
+  DEF_ROMLOC(10894) : if (CCR_CC) goto rom_108A0;           // BCC.B	$108A0
+  DEF_ROMLOC(10896) : neg_reg_16(&D0);                      // NEG.W	D0
+  DEF_ROMLOC(10898) : neg_reg_16(&D1);                      // NEG.W	D1
   DEF_ROMLOC(1089A) : bclr_tomem_8(0x0, A0 + 0x22); // BCLR.B	#$00,34(A0)
   DEF_ROMLOC(108A0) : cmp_toreg_16(D2, &D0);        // CMP.W	D2,D0
   DEF_ROMLOC(108A2) : return;                       // RTS

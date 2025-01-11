@@ -3,7 +3,7 @@
 #include "system.h"
 
 
-ROMFUNC(rom_1716) {
+void decompress_enigma(void) {
   u32 d0backup = 0;
   u32 d1backup = 0;
   u32 d2backup = 0;
@@ -144,16 +144,6 @@ ROMFUNC(rom_1716) {
   if ((D2 & 0xffff) != 0xffff)
     goto rom_17A0;                  // DBF.W	D2,$17A0
   DEF_ROMLOC(17AA) : goto rom_1736; // BRA.B	$1736
-  // DEF_ROMLOC(17AC): goto rom_1760; // BRA.B	$1760
-  // DEF_ROMLOC(17AE): goto rom_1760; // BRA.B	$1760
-  // DEF_ROMLOC(17B0): goto rom_176A; // BRA.B	$176A
-  // DEF_ROMLOC(17B2): goto rom_176A; // BRA.B	$176A
-  // DEF_ROMLOC(17B4): goto rom_1772; // BRA.B	$1772
-  // DEF_ROMLOC(17B6): goto rom_177E; // BRA.B	$177E
-  // DEF_ROMLOC(17B8): goto rom_178C; // BRA.B	$178C
-  // rom_179A(); // BRA.B	$179A
-  // }
-  // ROMFUNC(rom_17BC) {
   DEF_ROMLOC(17BC) : sub_toreg_16(0x1, &A0);     // SUBQ.W	#$01,A0
   DEF_ROMLOC(17BE) : cmp_toreg_16(0x10, &D6);    // CMPI.W	#$0010,D6
   DEF_ROMLOC(17C2) : if (!CCR_EQ) goto rom_17C6; // BNE.B	$17C6

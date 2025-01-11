@@ -55,18 +55,17 @@ ROMFUNC(rom_1791C) {
       : move_tomem_8(read_8(A0 + 0x28), A0 + 0x1A);   // MOVE.B	40(A0),26(A0)
   DEF_ROMLOC(17978) : move_tomem_16(0x77, A0 + 0x30); // MOVE.W	#$0077,48(A0)
   DEF_ROMLOC(1797E) : move_toreg_16(0xC9, &D0);       // MOVE.W	#$00C9,D0
-  DEF_ROMLOC(17982) : rom_1394();                     // JSR	$00001394
+  DEF_ROMLOC(17982) : play_sound_special();           // JSR	$00001394
   DEF_ROMLOC(17988) : move_toreg_32(0x0, &D0);        // MOVEQ.L	$00,D0
-  DEF_ROMLOC(1798A)
-      : move_toreg_8(read_8(A0 + 0x28), &D0); // MOVE.B	40(A0),D0
-  DEF_ROMLOC(1798E) : add_toreg_16(D0, &D0);  // ADD.W	D0,D0
+  DEF_ROMLOC(1798A) : move_toreg_8(read_8(A0 + 0x28), &D0); // MOVE.B
+                                                            // 40(A0),D0
+  DEF_ROMLOC(1798E) : add_toreg_16(D0, &D0);                // ADD.W	D0,D0
   DEF_ROMLOC(17990)
       : move_toreg_16(read_16(0x179BE + (s16)(D0 & 0xffff)),
                       &D0);        // MOVE.W	44(PC,D0),D0
   DEF_ROMLOC(17994) : rom_1CE42(); // JSR	$0001CE42
-  DEF_ROMLOC(1799A)
-      : move_toreg_16(read_16(A0 + 0x8), &D0);       // MOVE.W	8(A0),D0
-  DEF_ROMLOC(1799E) : and_toreg_16(0xFFFFFF80, &D0); // ANDI.W	#$FF80,D0
+  DEF_ROMLOC(1799A) : move_toreg_16(read_16(A0 + 0x8), &D0); // MOVE.W	8(A0),D0
+  DEF_ROMLOC(1799E) : and_toreg_16(0xFFFFFF80, &D0);         // ANDI.W	#$FF80,D0
   DEF_ROMLOC(179A2)
       : move_toreg_16(read_16(0xFFFFF700), &D1);     // MOVE.W	$F700,D1
   DEF_ROMLOC(179A6) : sub_toreg_16(0x80, &D1);       // SUBI.W	#$0080,D1
@@ -80,9 +79,8 @@ ROMFUNC(rom_1791C) {
 ROMFUNC(rom_179C6) {
   DEF_ROMLOC(179C6) : sub_tomem_16(0x1, A0 + 0x30); // SUBQ.W	#$01,48(A0)
   DEF_ROMLOC(179CA) : if (CCR_MI) goto rom_179EE;   // BMI.B	$179EE
-  DEF_ROMLOC(179CC)
-      : move_toreg_16(read_16(A0 + 0x8), &D0);       // MOVE.W	8(A0),D0
-  DEF_ROMLOC(179D0) : and_toreg_16(0xFFFFFF80, &D0); // ANDI.W	#$FF80,D0
+  DEF_ROMLOC(179CC) : move_toreg_16(read_16(A0 + 0x8), &D0); // MOVE.W	8(A0),D0
+  DEF_ROMLOC(179D0) : and_toreg_16(0xFFFFFF80, &D0);         // ANDI.W	#$FF80,D0
   DEF_ROMLOC(179D4)
       : move_toreg_16(read_16(0xFFFFF700), &D1);     // MOVE.W	$F700,D1
   DEF_ROMLOC(179D8) : sub_toreg_16(0x80, &D1);       // SUBI.W	#$0080,D1

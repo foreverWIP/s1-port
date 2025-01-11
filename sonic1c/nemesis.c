@@ -17,7 +17,7 @@ static u32 a3backup;
 static u32 a4backup;
 static u32 a5backup;
 
-ROMFUNC(rom_1438) {
+void decompress_nemesis(void) {
   DEF_ROMLOC(1438) : d0backup = D0;
   d1backup = D1;
   d2backup = D2;
@@ -34,27 +34,6 @@ ROMFUNC(rom_1438) {
   // TODO; // MOVEM.L	D0-A1/A3-A5,-(A7)
   DEF_ROMLOC(143C) : move_toreg_32(0x14FA, &A3);   // LEA.L	$000014FA,A3
   DEF_ROMLOC(1442) : move_toreg_32(0xC00000, &A4); // LEA.L	$00C00000,A4
-  rom_1454();                                      // BRA.B	$1454
-}
-ROMFUNC(rom_144A) {
-  DEF_ROMLOC(144A) : d0backup = D0;
-  d1backup = D1;
-  d2backup = D2;
-  d3backup = D3;
-  d4backup = D4;
-  d5backup = D5;
-  d6backup = D6;
-  d7backup = D7;
-  a0backup = A0;
-  a1backup = A1;
-  a3backup = A3;
-  a4backup = A4;
-  a5backup = A5;
-  // TODO; // MOVEM.L	D0-A1/A3-A5,-(A7)
-  DEF_ROMLOC(144E) : move_toreg_32(0x1510, &A3); // LEA.L	$00001510,A3
-  rom_1454(); // Detected flow into next function
-}
-ROMFUNC(rom_1454) {
   DEF_ROMLOC(1454) : move_toreg_32(0xFFFFAA00, &A1); // LEA.L	$AA00,A1
   DEF_ROMLOC(1458)
       : move_toreg_16(read_16((A0 += 2, A0 - 2)), &D2); // MOVE.W	(A0)+,D2

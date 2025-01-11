@@ -5,7 +5,7 @@
 ROMFUNC(rom_57DA);
 
 ROMFUNC(rom_57D2) {
-  DEF_ROMLOC(57D2) : rom_15D6(); // BSR.W	$15D6
+  DEF_ROMLOC(57D2) : clear_plc(); // BSR.W	$15D6
   DEF_ROMLOC(57D6) : game_state = rom_57DA;
   palette_fade_out(); // BSR.W	$1E4A
 }
@@ -19,7 +19,7 @@ ROMFUNC(rom_57DA) {
   DEF_ROMLOC(57F4) : move_tomem_16(0xFFFF8B03, A6);  // MOVE.W	#$8B03,(A6)
   DEF_ROMLOC(57F8) : move_tomem_16(0xFFFF8720, A6);  // MOVE.W	#$8720,(A6)
   DEF_ROMLOC(57FC) : clr_mem_8(0xFFFFF64E);          // CLR.B	$F64E
-  DEF_ROMLOC(5800) : rom_12C4();                     // BSR.W	$12C4
+  DEF_ROMLOC(5800) : clear_screen();                     // BSR.W	$12C4
   DEF_ROMLOC(5804) : move_toreg_32(0xFFFFD000, &A1); // LEA.L	$D000,A1
   DEF_ROMLOC(5808) : move_toreg_32(0x0, &D0);        // MOVEQ.L	$00,D0
   DEF_ROMLOC(580A) : move_toreg_16(0x7FF, &D1);      // MOVE.W	#$07FF,D1
@@ -31,7 +31,7 @@ ROMFUNC(rom_57DA) {
   DEF_ROMLOC(5814)
       : move_tomem_32(0x74000002, 0xC00004);      // MOVE.L	#$74000002,$00C00004
   DEF_ROMLOC(581E) : move_toreg_32(0x6203A, &A0); // LEA.L	$0006203A,A0
-  DEF_ROMLOC(5824) : rom_1438();                  // BSR.W	$1438
+  DEF_ROMLOC(5824) : decompress_nemesis();                  // BSR.W	$1438
   DEF_ROMLOC(5828) : move_toreg_32(0xFFFFFB80, &A1); // LEA.L	$FB80,A1
   DEF_ROMLOC(582C) : move_toreg_32(0x0, &D0);        // MOVEQ.L	$00,D0
   DEF_ROMLOC(582E) : move_toreg_16(0x1F, &D1);       // MOVE.W	#$001F,D1
@@ -67,8 +67,7 @@ ROMFUNC(rom_57DA) {
 }
 ROMFUNC(rom_588A);
 ROMFUNC(rom_5880) {
-  DEF_ROMLOC(5880) : move_tomem_8(0x4, 0xFFFFF62A); // MOVE.B	#$04,$F62A
-  DEF_ROMLOC(5886) : rom_29A0();                    // BSR.W	$29A0
+  end_frame(0x4);
   game_state = rom_588A;
 }
 ROMFUNC(rom_588A) {
@@ -126,7 +125,7 @@ ROMFUNC(rom_58A6) {
 }
 ROMFUNC(rom_5942);
 ROMFUNC(rom_593A) {
-  DEF_ROMLOC(593A) : rom_15D6(); // BSR.W	$15D6
+  DEF_ROMLOC(593A) : clear_plc(); // BSR.W	$15D6
   DEF_ROMLOC(593E) : game_state = rom_5942;
   palette_fade_out(); // BSR.W	$1E4A
 }
@@ -140,7 +139,7 @@ ROMFUNC(rom_5942) {
   DEF_ROMLOC(595C) : move_tomem_16(0xFFFF8B03, A6);  // MOVE.W	#$8B03,(A6)
   DEF_ROMLOC(5960) : move_tomem_16(0xFFFF8720, A6);  // MOVE.W	#$8720,(A6)
   DEF_ROMLOC(5964) : clr_mem_8(0xFFFFF64E);          // CLR.B	$F64E
-  DEF_ROMLOC(5968) : rom_12C4();                     // BSR.W	$12C4
+  DEF_ROMLOC(5968) : clear_screen();                     // BSR.W	$12C4
   DEF_ROMLOC(596C) : move_toreg_32(0xFFFFD000, &A1); // LEA.L	$D000,A1
   DEF_ROMLOC(5970) : move_toreg_32(0x0, &D0);        // MOVEQ.L	$00,D0
   DEF_ROMLOC(5972) : move_toreg_16(0x7FF, &D1);      // MOVE.W	#$07FF,D1
@@ -177,8 +176,7 @@ ROMFUNC(rom_59B8) {
   DEF_ROMLOC(59B8) : game_state = rom_59BC; rom_13A0();                    // BSR.W	$13A0
 }
 ROMFUNC(rom_59BC) {
-  DEF_ROMLOC(59BC) : move_tomem_8(0x4, 0xFFFFF62A); // MOVE.B	#$04,$F62A
-  DEF_ROMLOC(59C2) : game_state = rom_59C6; rom_29A0();                    // BSR.W	$29A0
+  game_state = rom_59C6; end_frame(0x4);                    // BSR.W	$29A0
 }
 ROMFUNC(rom_59C6) {
   DEF_ROMLOC(59C6) : rom_D9C6();                    // JSR	$0000D9C6

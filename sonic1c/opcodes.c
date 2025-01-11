@@ -51,10 +51,14 @@ static u32 SIZE_SIGNS[] = {
 #define BINOP_TOMEM_32(funcname)                                               \
   write_32(dst, funcname(src, read_32(dst), 32, true))
 
+#if (TEST_LEVEL != 0)
 static bool is_data_reg(u32 *reg) {
   return (reg == &D0) || (reg == &D1) || (reg == &D2) || (reg == &D3) ||
          (reg == &D4) || (reg == &D5) || (reg == &D6) || (reg == &D7);
 }
+#else
+#define is_data_reg(reg) true
+#endif
 
 u32 add(u32 src, u32 dst, u8 bits, bool setflags) {
   src = MASKED(src, bits);

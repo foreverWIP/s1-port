@@ -2,7 +2,6 @@
 #include "../opcodes.h"
 #include "../system.h"
 
-
 ROMFUNC(rom_D74C) {
   u8 switchindex = 0;
   DEF_ROMLOC(D74C) : move_toreg_32(0x0, &D0); // MOVEQ.L	$00,D0
@@ -35,13 +34,12 @@ ROMFUNC(rom_D768) {
     return;
   }                                            // BNE.B	$D77C
   DEF_ROMLOC(D772) : move_toreg_16(0xD0, &D0); // MOVE.W	#$00D0,D0
-  DEF_ROMLOC(D776) : rom_1394();               // JSR	$00001394
+  DEF_ROMLOC(D776) : play_sound_special();     // JSR	$00001394
   rom_D77C(); // Detected flow into next function
 }
 ROMFUNC(rom_D77C) {
-  DEF_ROMLOC(D77C)
-      : move_toreg_16(read_16(A0 + 0x8), &D0);      // MOVE.W	8(A0),D0
-  DEF_ROMLOC(D780) : and_toreg_16(0xFFFFFF80, &D0); // ANDI.W	#$FF80,D0
+  DEF_ROMLOC(D77C) : move_toreg_16(read_16(A0 + 0x8), &D0); // MOVE.W	8(A0),D0
+  DEF_ROMLOC(D780) : and_toreg_16(0xFFFFFF80, &D0);         // ANDI.W	#$FF80,D0
   DEF_ROMLOC(D784)
       : move_toreg_16(read_16(0xFFFFF700), &D1);    // MOVE.W	$F700,D1
   DEF_ROMLOC(D788) : sub_toreg_16(0x80, &D1);       // SUBI.W	#$0080,D1

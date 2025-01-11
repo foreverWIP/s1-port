@@ -1,4 +1,3 @@
-// #define CHECK_STUFF 1
 #include "opcodes.h"
 #include "system.h"
 
@@ -278,8 +277,7 @@ void palette_fade_in(bool full_palette) {
   palette_fade_in_runvblank();
 }
 void palette_fade_in_runvblank(void) {
-  DEF_ROMLOC(1DC6) : move_tomem_8(0x12, 0xFFFFF62A); // MOVE.B	#$12,$F62A
-  DEF_ROMLOC(1DCC) : rom_29A0();                     // BSR.W	$29A0
+  end_frame(0x12);
   game_state = palette_fade_in_loop;
 }
 void palette_fade_in_loop(void) {
@@ -361,8 +359,7 @@ void palette_fade_out(void) {
   game_state = palette_fade_out_loop;
 }
 void palette_fade_out_runvblank(void) {
-  DEF_ROMLOC(1E54) : move_tomem_8(0x12, 0xFFFFF62A); // MOVE.B	#$12,$F62A
-  DEF_ROMLOC(1E5A) : rom_29A0();                     // BSR.W	$29A0
+  end_frame(0x12);
 }
 void palette_fade_out_loop(void) {
   DEF_ROMLOC(1E5E) : palette_move_toward_black(); // BSR.B	$1E6A
@@ -447,8 +444,7 @@ void palette_fade_from_white(void) {
   palette_fade_from_white_runvblank();
 }
 void palette_fade_from_white_runvblank(void) {
-  DEF_ROMLOC(1EEC) : move_tomem_8(0x12, 0xFFFFF62A); // MOVE.B	#$12,$F62A
-  DEF_ROMLOC(1EF2) : rom_29A0();                     // BSR.W	$29A0
+  end_frame(0x12);
   game_state = palette_fade_from_white_loop;
 }
 void palette_fade_from_white_loop(void) {
@@ -531,8 +527,7 @@ void palette_fade_to_white(void) {
   palette_fade_to_white_runvblank();
 }
 void palette_fade_to_white_runvblank(void) {
-  DEF_ROMLOC(1F7E) : move_tomem_8(0x12, 0xFFFFF62A); // MOVE.B	#$12,$F62A
-  DEF_ROMLOC(1F84) : rom_29A0();                     // BSR.W	$29A0
+  end_frame(0x12);
   game_state = palette_fade_to_white_loop;
 }
 void palette_fade_to_white_loop(void) {

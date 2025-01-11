@@ -2,7 +2,6 @@
 #include "../opcodes.h"
 #include "../system.h"
 
-
 ROMFUNC(rom_18E54) {
   u8 switchindex = 0;
   DEF_ROMLOC(18E54) : move_toreg_32(0x0, &D0); // MOVEQ.L	$00,D0
@@ -54,7 +53,7 @@ ROMFUNC(rom_18E70) {
 ROMFUNC(rom_18EBA) {
   DEF_ROMLOC(18EBA) : move_tomem_8(0x1E, A0 + 0x29); // MOVE.B	#$1E,41(A0)
   DEF_ROMLOC(18EC0) : move_toreg_16(0xAE, &D0);      // MOVE.W	#$00AE,D0
-  DEF_ROMLOC(18EC4) : rom_1394();                    // JSR	$00001394
+  DEF_ROMLOC(18EC4) : play_sound_special();          // JSR	$00001394
   rom_18ECA(); // Detected flow into next function
 }
 ROMFUNC(rom_18ECA) {
@@ -230,9 +229,9 @@ ROMFUNC(rom_18FE2) {
   DEF_ROMLOC(18FE2) : bclr_tomem_8(0x1, A0 + 0x22);  // BCLR.B	#$01,34(A0)
   DEF_ROMLOC(18FE8) : add_tomem_16(0x24, A0 + 0x12); // ADDI.W	#$0024,18(A0)
   DEF_ROMLOC(18FEE)
-      : move_toreg_16(read_16(A0 + 0x8), &D0); // MOVE.W	8(A0),D0
-  DEF_ROMLOC(18FF2)
-      : sub_toreg_16(read_16(A0 + 0x32), &D0); // SUB.W	50(A0),D0
+      : move_toreg_16(read_16(A0 + 0x8), &D0);               // MOVE.W	8(A0),D0
+  DEF_ROMLOC(18FF2) : sub_toreg_16(read_16(A0 + 0x32), &D0); // SUB.W
+                                                             // 50(A0),D0
   DEF_ROMLOC(18FF6) : if (CCR_PL) {
     rom_18FFA();
     return;

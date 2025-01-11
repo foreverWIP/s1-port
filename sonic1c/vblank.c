@@ -1,4 +1,3 @@
-// #define CHECK_STUFF 1
 #include "opcodes.h"
 #include "system.h"
 
@@ -107,7 +106,7 @@ ROMFUNC(rom_B10) {
   rom_B5E(); // Detected flow into next function
 }
 ROMFUNC(rom_B5E) {
-  // DEF_ROMLOC(B5E): rom_71B4C(); // JSR	$00071B4C
+  update_sound_driver();
   rom_B64(); // Detected flow into next function
 }
 ROMFUNC(rom_B64) {
@@ -733,7 +732,7 @@ ROMFUNC(rom_1126) {
   a6backup = A6;
   // TODO; // MOVEM.L	D0-A6,-(A7)
   DEF_ROMLOC(11A6) : rom_D84(); // BSR.W	$0D84
-  // DEF_ROMLOC(11AA): rom_71B4C(); // JSR	$00071B4C
+  update_sound_driver();
   DEF_ROMLOC(11B0) : D0 = d0backup;
   D1 = d1backup;
   D2 = d2backup;
@@ -752,7 +751,7 @@ ROMFUNC(rom_1126) {
   // TODO; // MOVEM.L	(A7)+,D0-A6
   DEF_ROMLOC(11B4) : return; // RTE
 }
-ROMFUNC(rom_29A0) {
-  DEF_ROMLOC(29A0) : rom_B10(); // JMP	$00000B10
+void end_frame(u8 routine) {
+  move_tomem_8(routine, 0xFFFFF62A);
   exit_mainloop = true;                                                        
 }

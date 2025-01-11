@@ -115,7 +115,7 @@ ROMFUNC(rom_72F0) {
       : move_toreg_32(read_32((A2 += 4, A2 - 4)), &A0); // MOVEA.L	(A2)+,A0
   DEF_ROMLOC(7308) : move_toreg_32(v_16x16, &A1);    // LEA.L	$B000,A1
   DEF_ROMLOC(730C) : move_toreg_16(0x0, &D0);           // MOVE.W	#$0000,D0
-  DEF_ROMLOC(7310) : rom_1716();                        // BSR.W	$1716
+  DEF_ROMLOC(7310) : decompress_enigma();                        // BSR.W	$1716
   DEF_ROMLOC(7314)
       : move_toreg_32(read_32((A2 += 4, A2 - 4)), &A0); // MOVEA.L	(A2)+,A0
   DEF_ROMLOC(7316) : move_toreg_32(v_256x256, &A1);      // LEA.L	$00FF0000,A1

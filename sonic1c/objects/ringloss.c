@@ -2,7 +2,6 @@
 #include "../opcodes.h"
 #include "../system.h"
 
-
 ROMFUNC(rom_A334) {
   u8 switchindex = 0;
   DEF_ROMLOC(A334) : move_toreg_32(0x0, &D0); // MOVEQ.L	$00,D0
@@ -51,9 +50,8 @@ ROMFUNC(rom_A34C) {
   DEF_ROMLOC(A382)
       : move_tomem_16(read_16(A0 + 0x8), A1 + 0x8); // MOVE.W	8(A0),8(A1)
   DEF_ROMLOC(A388)
-      : move_tomem_16(read_16(A0 + 0xC), A1 + 0xC); // MOVE.W	12(A0),12(A1)
-  DEF_ROMLOC(A38E)
-      : move_tomem_32(0xA610, A1 + 0x4);              // MOVE.L	#$0000A610,4(A1)
+      : move_tomem_16(read_16(A0 + 0xC), A1 + 0xC);   // MOVE.W	12(A0),12(A1)
+  DEF_ROMLOC(A38E) : move_tomem_32(0xA610, A1 + 0x4); // MOVE.L	#$0000A610,4(A1)
   DEF_ROMLOC(A396) : move_tomem_16(0x27B2, A1 + 0x2); // MOVE.W	#$27B2,2(A1)
   DEF_ROMLOC(A39C) : move_tomem_8(0x4, A1 + 0x1);     // MOVE.B	#$04,1(A1)
   DEF_ROMLOC(A3A2) : move_tomem_8(0x3, A1 + 0x18);    // MOVE.B	#$03,24(A1)
@@ -88,7 +86,7 @@ ROMFUNC(rom_A34C) {
       : move_tomem_8(0xFFFFFF80, 0xFFFFFE1D);       // MOVE.B	#$80,$FE1D
   DEF_ROMLOC(A3FC) : move_tomem_8(0x0, 0xFFFFFE1B); // MOVE.B	#$00,$FE1B
   DEF_ROMLOC(A402) : move_toreg_16(0xC6, &D0);      // MOVE.W	#$00C6,D0
-  DEF_ROMLOC(A406) : rom_1394();                    // JSR	$00001394
+  DEF_ROMLOC(A406) : play_sound_special();          // JSR	$00001394
   rom_A40C(); // Detected flow into next function
 }
 ROMFUNC(rom_A40C) {
@@ -117,10 +115,10 @@ ROMFUNC(rom_A40C) {
     return;
   } // BEQ.B	$A480
   DEF_ROMLOC(A44C)
-      : move_toreg_16(read_16(0xFFFFF72E), &D0); // MOVE.W	$F72E,D0
-  DEF_ROMLOC(A450) : add_toreg_16(0xE0, &D0);    // ADDI.W	#$00E0,D0
-  DEF_ROMLOC(A454)
-      : cmp_toreg_16(read_16(A0 + 0xC), &D0); // CMP.W	12(A0),D0
+      : move_toreg_16(read_16(0xFFFFF72E), &D0);           // MOVE.W	$F72E,D0
+  DEF_ROMLOC(A450) : add_toreg_16(0xE0, &D0);              // ADDI.W	#$00E0,D0
+  DEF_ROMLOC(A454) : cmp_toreg_16(read_16(A0 + 0xC), &D0); // CMP.W
+                                                           // 12(A0),D0
   DEF_ROMLOC(A458) : if (CCR_CS) {
     rom_A480();
     return;

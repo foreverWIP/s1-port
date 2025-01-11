@@ -31,14 +31,16 @@ ROMFUNC(rom_128DE) {
   DEF_ROMLOC(128DE) : add_tomem_8(0x2, A0 + 0x24); // ADDQ.B	#$02,36(A0)
   DEF_ROMLOC(128E2)
       : move_tomem_32(0x129EC, A0 + 0x4); // MOVE.L	#$000129EC,4(A0)
-  DEF_ROMLOC(128EA) : move_tomem_16(0x42E9, A0 + 0x2); // MOVE.W
-                                                       // #$42E9,2(A0)
-  DEF_ROMLOC(128F0) : or_tomem_8(0x4, A0 + 0x1);       // ORI.B	#$04,1(A0)
-  DEF_ROMLOC(128F6) : move_tomem_8(0x3, A0 + 0x18);    // MOVE.B	#$03,24(A0)
-  DEF_ROMLOC(128FC) : move_tomem_8(0x10, A0 + 0x19);   // MOVE.B	#$10,25(A0)
-  DEF_ROMLOC(12902)
-      : move_toreg_8(read_8(A0 + 0x28), &D0); // MOVE.B	40(A0),D0
-  DEF_ROMLOC(12906) : and_toreg_16(0xF, &D0); // ANDI.W	#$000F,D0
+  DEF_ROMLOC(128EA)
+      : move_tomem_16(0x42E9, A0 + 0x2);            // MOVE.W
+                                                    // #$42E9,2(A0)
+  DEF_ROMLOC(128F0) : or_tomem_8(0x4, A0 + 0x1);    // ORI.B	#$04,1(A0)
+  DEF_ROMLOC(128F6) : move_tomem_8(0x3, A0 + 0x18); // MOVE.B	#$03,24(A0)
+  DEF_ROMLOC(128FC)
+      : move_tomem_8(0x10, A0 + 0x19); // MOVE.B	#$10,25(A0)
+  DEF_ROMLOC(12902) : move_toreg_8(read_8(A0 + 0x28), &D0); // MOVE.B
+                                                            // 40(A0),D0
+  DEF_ROMLOC(12906) : and_toreg_16(0xF, &D0);               // ANDI.W	#$000F,D0
   DEF_ROMLOC(1290A)
       : move_tomem_8(read_8(0x128D6 + (s16)(D0 & 0xffff)),
                      A0 + 0x1F); // MOVE.B	-54(PC,D0),31(A0)
@@ -78,24 +80,24 @@ ROMFUNC(rom_12958) {
   DEF_ROMLOC(12976) : or_tomem_8(0x4, A0 + 0x1);      // ORI.B	#$04,1(A0)
   DEF_ROMLOC(1297C) : move_tomem_8(0x4, A0 + 0x18);   // MOVE.B	#$04,24(A0)
   DEF_ROMLOC(12982)
-      : move_tomem_8(0xFFFFFF98, A0 + 0x20);           // MOVE.B	#$98,32(A0)
-  DEF_ROMLOC(12988) : move_tomem_8(0x8, A0 + 0x19);    // MOVE.B	#$08,25(A0)
-  DEF_ROMLOC(1298E) : move_tomem_8(0x2, A0 + 0x1A);    // MOVE.B	#$02,26(A0)
-  DEF_ROMLOC(12994) : add_tomem_16(0x8, A0 + 0xC);     // ADDQ.W	#$08,12(A0)
-  DEF_ROMLOC(12998) : move_tomem_16(0x200, A0 + 0x10); // MOVE.W
-                                                       // #$0200,16(A0)
-  DEF_ROMLOC(1299E) : btst_tomem_8(0x0, A0 + 0x22);    // BTST.B	#$00,34(A0)
-  DEF_ROMLOC(129A4) : if (!CCR_EQ) goto rom_129AA;     // BNE.B	$129AA
-  DEF_ROMLOC(129A6) : neg_mem_16(A0 + 0x10);           // NEG.W	16(A0)
-  DEF_ROMLOC(129AA) : move_toreg_16(0xAE, &D0);        // MOVE.W	#$00AE,D0
-  DEF_ROMLOC(129AE) : rom_1394();                      // JSR	$00001394
+      : move_tomem_8(0xFFFFFF98, A0 + 0x20);        // MOVE.B	#$98,32(A0)
+  DEF_ROMLOC(12988) : move_tomem_8(0x8, A0 + 0x19); // MOVE.B	#$08,25(A0)
+  DEF_ROMLOC(1298E) : move_tomem_8(0x2, A0 + 0x1A); // MOVE.B	#$02,26(A0)
+  DEF_ROMLOC(12994) : add_tomem_16(0x8, A0 + 0xC);  // ADDQ.W	#$08,12(A0)
+  DEF_ROMLOC(12998)
+      : move_tomem_16(0x200, A0 + 0x10);            // MOVE.W
+                                                    // #$0200,16(A0)
+  DEF_ROMLOC(1299E) : btst_tomem_8(0x0, A0 + 0x22); // BTST.B	#$00,34(A0)
+  DEF_ROMLOC(129A4) : if (!CCR_EQ) goto rom_129AA;  // BNE.B	$129AA
+  DEF_ROMLOC(129A6) : neg_mem_16(A0 + 0x10);        // NEG.W	16(A0)
+  DEF_ROMLOC(129AA) : move_toreg_16(0xAE, &D0);     // MOVE.W	#$00AE,D0
+  DEF_ROMLOC(129AE) : play_sound_special();         // JSR	$00001394
   rom_129B4(); // Detected flow into next function
 }
 ROMFUNC(rom_129B4) {
-  DEF_ROMLOC(129B4)
-      : move_toreg_8(read_8(0xFFFFFE05), &D0);        // MOVE.B	$FE05,D0
-  DEF_ROMLOC(129B8) : and_toreg_8(0x7, &D0);          // ANDI.B	#$07,D0
-  DEF_ROMLOC(129BC) : if (!CCR_EQ) goto rom_129C4;    // BNE.B	$129C4
+  DEF_ROMLOC(129B4) : move_toreg_8(read_8(0xFFFFFE05), &D0); // MOVE.B	$FE05,D0
+  DEF_ROMLOC(129B8) : and_toreg_8(0x7, &D0);                 // ANDI.B	#$07,D0
+  DEF_ROMLOC(129BC) : if (!CCR_EQ) goto rom_129C4;           // BNE.B	$129C4
   DEF_ROMLOC(129BE) : bchg_tomem_8(0x0, A0 + 0x1A);   // BCHG.B	#$00,26(A0)
   DEF_ROMLOC(129C4) : rom_DC6C();                     // BSR.W	$DC6C
   DEF_ROMLOC(129C8) : btst_tomem_8(0x0, A0 + 0x22);   // BTST.B	#$00,34(A0)

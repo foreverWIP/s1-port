@@ -2,7 +2,6 @@
 #include "../opcodes.h"
 #include "../system.h"
 
-
 ROMFUNC(rom_1CCFE) {
   u8 switchindex = 0;
   DEF_ROMLOC(1CCFE) : move_toreg_32(0x0, &D0); // MOVEQ.L	$00,D0
@@ -54,10 +53,11 @@ ROMFUNC(rom_1CD3A) {
   } // JMP	$0000DC92
 }
 ROMFUNC(rom_1CE42) {
-  DEF_ROMLOC(1CE42) : move_tomem_8(0x1, 0xFFFFFE1F);   // MOVE.B	#$01,$FE1F
-  DEF_ROMLOC(1CE48) : move_toreg_32(0xFFFFFE26, &A3);  // LEA.L	$FE26,A3
-  DEF_ROMLOC(1CE4C) : add_tomem_32(D0, A3);            // ADD.L	D0,(A3)
-  DEF_ROMLOC(1CE4E) : move_toreg_32(0xF423F, &D1);     // MOVE.L	#$000F423F,D1
+  DEF_ROMLOC(1CE42) : move_tomem_8(0x1, 0xFFFFFE1F);  // MOVE.B	#$01,$FE1F
+  DEF_ROMLOC(1CE48) : move_toreg_32(0xFFFFFE26, &A3); // LEA.L	$FE26,A3
+  DEF_ROMLOC(1CE4C) : add_tomem_32(D0, A3);           // ADD.L	D0,(A3)
+  DEF_ROMLOC(1CE4E)
+      : move_toreg_32(0xF423F, &D1);                   // MOVE.L	#$000F423F,D1
   DEF_ROMLOC(1CE54) : cmp_toreg_32(read_32(A3), &D1);  // CMP.L	(A3),D1
   DEF_ROMLOC(1CE56) : if (CCR_HI) goto rom_1CE5A;      // BHI.B	$1CE5A
   DEF_ROMLOC(1CE58) : move_tomem_32(D1, A3);           // MOVE.L	D1,(A3)
@@ -72,7 +72,7 @@ ROMFUNC(rom_1CE42) {
   DEF_ROMLOC(1CE70) : add_tomem_8(0x1, 0xFFFFFE12); // ADDQ.B	#$01,$FE12
   DEF_ROMLOC(1CE74) : add_tomem_8(0x1, 0xFFFFFE1C); // ADDQ.B	#$01,$FE1C
   DEF_ROMLOC(1CE78) : move_toreg_16(0x88, &D0);     // MOVE.W	#$0088,D0
-  DEF_ROMLOC(1CE7C) : rom_138E();                   // JMP	$0000138E
+  DEF_ROMLOC(1CE7C) : play_sound();                 // JMP	$0000138E
   DEF_ROMLOC(1CE82) : return;                       // RTS
 }
 ROMFUNC(rom_1CE84) {
@@ -117,9 +117,8 @@ ROMFUNC(rom_1CE84) {
   DEF_ROMLOC(1CEFC) : move_tomem_8(0x9, A1);          // MOVE.B	#$09,(A1)
   DEF_ROMLOC(1CF00) : move_toreg_32(0x5E400003, &D0); // MOVE.L	#$5E400003,D0
   DEF_ROMLOC(1CF06) : move_toreg_32(0x0, &D1);        // MOVEQ.L	$00,D1
-  DEF_ROMLOC(1CF08)
-      : move_toreg_8(read_8(0xFFFFFE23), &D1);        // MOVE.B	$FE23,D1
-  DEF_ROMLOC(1CF0C) : rom_1D174();                    // BSR.W	$1D174
+  DEF_ROMLOC(1CF08) : move_toreg_8(read_8(0xFFFFFE23), &D1); // MOVE.B	$FE23,D1
+  DEF_ROMLOC(1CF0C) : rom_1D174();                           // BSR.W	$1D174
   DEF_ROMLOC(1CF10) : move_toreg_32(0x5EC00003, &D0); // MOVE.L	#$5EC00003,D0
   DEF_ROMLOC(1CF16) : move_toreg_32(0x0, &D1);        // MOVEQ.L	$00,D1
   DEF_ROMLOC(1CF18)
