@@ -14,6 +14,7 @@
 #include "vblank.h"
 #include "anim.h"
 #include "continue.h"
+#include "input.h"
 
 extern void (*game_state)(void);
 extern bool exit_mainloop;

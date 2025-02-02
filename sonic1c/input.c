@@ -3,7 +3,7 @@
 #include "system.h"
 
 
-ROMFUNC(rom_11B6) {
+void input_init(void) {
   DEF_ROMLOC(11B6)
       : move_tomem_16(0x100, 0xA11100); // MOVE.W	#$0100,$00A11100
   DEF_ROMLOC(11BE)
@@ -17,16 +17,16 @@ ROMFUNC(rom_11B6) {
       : move_tomem_16(0x0, 0xA11100); // MOVE.W	#$0000,$00A11100
   DEF_ROMLOC(11E4) : return;          // RTS
 }
-ROMFUNC(rom_11F4);
-ROMFUNC(rom_11E6) {
+void input_read_controller(void);
+void input_read_controllers(void) {
   u32 a1before = 0;
   DEF_ROMLOC(11E6) : move_toreg_32(0xFFFFF604, &A0); // LEA.L	$F604,A0
   DEF_ROMLOC(11EA) : move_toreg_32(0xA10003, &A1);   // LEA.L	$00A10003,A1
-  DEF_ROMLOC(11F0) : rom_11F4();                     // BSR.B	$11F4
+  DEF_ROMLOC(11F0) : input_read_controller();                     // BSR.B	$11F4
   DEF_ROMLOC(11F2) : add_toreg_16(0x2, &A1);         // ADDQ.W	#$02,A1
-  rom_11F4();
+  input_read_controller();
 }
-ROMFUNC(rom_11F4) {
+void input_read_controller(void) {
   DEF_ROMLOC(11F4) : move_tomem_8(0x0, A1);         // MOVE.B	#$00,(A1)
   DEF_ROMLOC(11F8) : {};                            // NOP
   DEF_ROMLOC(11FA) : {};                            // NOP

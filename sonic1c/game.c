@@ -19,7 +19,7 @@ ROMFUNC(rom_300) {
   DEF_ROMLOC(35C)
       : move_tomem_32(0x696E6974, 0xFFFFFFFC); // MOVE.L	#$696E6974,$FFFC
   DEF_ROMLOC(376) : vdp_setup();                // BSR.W	$1222
-  DEF_ROMLOC(37E) : rom_11B6();                // BSR.W	$11B6
+  DEF_ROMLOC(37E) : input_init();                // BSR.W	$11B6
   DEF_ROMLOC(382) : move_tomem_8(0x0, 0xFFFFF600);
   rom_388(); // Detected flow into next function
 }
