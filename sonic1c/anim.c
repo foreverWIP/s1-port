@@ -55,7 +55,7 @@ ROMFUNC(rom_4276) {
   DEF_ROMLOC(42A2) : move_tomem_16(D1, 0xFFFFF728); // MOVE.W	D1,$F728
   DEF_ROMLOC(42A6) : move_toreg_32(0x12, &D0);      // MOVEQ.L	$12,D0
   DEF_ROMLOC(42A8) : {
-    rom_15AA();
+    new_plc();
     return;
   }                          // BRA.W	$15AA
   DEF_ROMLOC(42AC) : return; // RTS

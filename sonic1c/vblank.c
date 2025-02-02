@@ -198,7 +198,7 @@ ROMFUNC(rom_C36) {
 ROMFUNC(rom_C44) {
   DEF_ROMLOC(C44) : rom_106E();                    // BSR.W	$106E
   DEF_ROMLOC(C48) : rom_6C30();                    // BSR.W	$6C30
-  DEF_ROMLOC(C4C) : rom_163A();                    // BSR.W	$163A
+  DEF_ROMLOC(C4C) : plc_refresh_frame();                    // BSR.W	$163A
   DEF_ROMLOC(C50) : tst_mem_16(0xFFFFF614);        // TST.W	$F614
   DEF_ROMLOC(C54) : if (CCR_EQ) goto rom_C5C;      // BEQ.W	$0C5C
   DEF_ROMLOC(C58) : sub_tomem_16(0x1, 0xFFFFF614); // SUBQ.W	#$01,$F614
@@ -319,7 +319,7 @@ ROMFUNC(rom_D84) {
   DEF_ROMLOC(D84) : rom_6C5C();                    // BSR.W	$6C5C
   DEF_ROMLOC(D88) : rom_1C7DA();                   // JSR	$0001C7DA
   DEF_ROMLOC(D8E) : rom_1CE84();                   // JSR	$0001CE84
-  DEF_ROMLOC(D94) : rom_1656();                    // BSR.W	$1656
+  DEF_ROMLOC(D94) : dplc_process_2();                    // BSR.W	$1656
   DEF_ROMLOC(D98) : tst_mem_16(0xFFFFF614);        // TST.W	$F614
   DEF_ROMLOC(D9C) : if (CCR_EQ) goto rom_DA4;      // BEQ.W	$0DA4
   DEF_ROMLOC(DA0) : sub_tomem_16(0x1, 0xFFFFF614); // SUBQ.W	#$01,$F614
@@ -475,7 +475,7 @@ ROMFUNC(rom_E72) {
   DEF_ROMLOC(F74) : rom_6C5C();  // BSR.W	$6C5C
   DEF_ROMLOC(F78) : rom_1C7DA(); // JSR	$0001C7DA
   DEF_ROMLOC(F7E) : rom_1CE84(); // JSR	$0001CE84
-  DEF_ROMLOC(F84) : rom_163A();  // BSR.W	$163A
+  DEF_ROMLOC(F84) : plc_refresh_frame();  // BSR.W	$163A
   DEF_ROMLOC(F88) : return;      // RTS
 }
 ROMFUNC(rom_F8A) {
@@ -488,7 +488,7 @@ ROMFUNC(rom_F9A) {
   DEF_ROMLOC(F9A) : rom_106E(); // BSR.W	$106E
   DEF_ROMLOC(F9E)
       : move_tomem_16(read_16(0xFFFFF624), A5); // MOVE.W	$F624,(A5)
-  rom_163A();                                   // BRA.W	$163A
+  plc_refresh_frame();                                   // BRA.W	$163A
 }
 ROMFUNC(rom_FA6) {
   DEF_ROMLOC(FA6)

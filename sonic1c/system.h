@@ -1,9 +1,9 @@
 #pragma once
 
+#include <math.h>
 #include <setjmp.h>
 #include <stdbool.h>
 #include <stdint.h>
-#include <math.h>
 #include <stdio.h>
 
 #ifdef _WIN32
@@ -94,6 +94,14 @@ extern jmp_buf speedshoes__desync_jumpbuf;
 #define GETBYTE(value) ((value) & 0xff)
 #define SETWORD(reg, value) reg = ((reg & 0xffff0000) | ((value) & 0x0000ffff))
 #define SETBYTE(reg, value) reg = ((reg & 0xffffff00) | ((value) & 0x000000ff))
+
+#define VDP_DATA_PORT 0xC00000
+#define VDP_CONTROL_PORT 0xC00004
+
+#define VRAM_PTR_TO_VDP_COMMAND(loc)                                           \
+  (0x40000000 + (((loc) & 0x3FFF) << 16) + (((loc) & 0xC000) >> 14))
+#define set_vram_ptr(loc)                                                      \
+  write_32(VDP_CONTROL_PORT, VRAM_PTR_TO_VDP_COMMAND((u32)loc))
 
 extern void print(const char *msg, ...);
 

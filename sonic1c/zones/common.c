@@ -140,7 +140,7 @@ ROMFUNC(rom_72F0) {
   DEF_ROMLOC(7350) : move_toreg_32(0x0, &D0);           // MOVEQ.L	$00,D0
   DEF_ROMLOC(7352) : move_toreg_8(read_8(A2), &D0);     // MOVE.B	(A2),D0
   DEF_ROMLOC(7354) : if (CCR_EQ) goto rom_735A;         // BEQ.B	$735A
-  DEF_ROMLOC(7356) : rom_1578();                        // BSR.W	$1578
+  DEF_ROMLOC(7356) : add_plc();                        // BSR.W	$1578
   DEF_ROMLOC(735A) : return;                            // RTS
 }
 ROMFUNC(rom_735C) {

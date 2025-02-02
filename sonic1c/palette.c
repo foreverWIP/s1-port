@@ -282,7 +282,7 @@ void palette_fade_in_runvblank(void) {
 }
 void palette_fade_in_loop(void) {
   DEF_ROMLOC(1DD0) : palette_move_from_black(); // BSR.B	$1DDC
-  DEF_ROMLOC(1DD2) : rom_15E4(); // BSR.W	$15E4
+  DEF_ROMLOC(1DD2) : run_plc(); // BSR.W	$15E4
   DEF_ROMLOC(1DD6) : dec_reg_16(&D4);
   if ((D4 & 0xffff) != 0xffff) {
     palette_fade_in_runvblank();
@@ -363,7 +363,7 @@ void palette_fade_out_runvblank(void) {
 }
 void palette_fade_out_loop(void) {
   DEF_ROMLOC(1E5E) : palette_move_toward_black(); // BSR.B	$1E6A
-  DEF_ROMLOC(1E60) : rom_15E4(); // BSR.W	$15E4
+  DEF_ROMLOC(1E60) : run_plc(); // BSR.W	$15E4
   DEF_ROMLOC(1E64) : dec_reg_16(&D4);
   if ((D4 & 0xffff) != 0xffff) {
     palette_fade_out_runvblank();
@@ -449,7 +449,7 @@ void palette_fade_from_white_runvblank(void) {
 }
 void palette_fade_from_white_loop(void) {
   DEF_ROMLOC(1EF6) : palette_move_from_white(); // BSR.B	$1F02
-  DEF_ROMLOC(1EF8) : rom_15E4(); // BSR.W	$15E4
+  DEF_ROMLOC(1EF8) : run_plc(); // BSR.W	$15E4
   DEF_ROMLOC(1EFC) : dec_reg_16(&D4);
   if ((D4 & 0xffff) != 0xffff) {
     palette_fade_from_white_runvblank();
@@ -532,7 +532,7 @@ void palette_fade_to_white_runvblank(void) {
 }
 void palette_fade_to_white_loop(void) {
   DEF_ROMLOC(1F88) : palette_move_towards_white(); // BSR.B	$1F94
-  DEF_ROMLOC(1F8A) : rom_15E4(); // BSR.W	$15E4
+  DEF_ROMLOC(1F8A) : run_plc(); // BSR.W	$15E4
   DEF_ROMLOC(1F8E) : dec_reg_16(&D4);
   if ((D4 & 0xffff) != 0xffff) {
     palette_fade_to_white_runvblank();

@@ -164,7 +164,7 @@ ROMFUNC(rom_3076) {
   DEF_ROMLOC(3130) : rom_626E();                     // BSR.W	$626E
   DEF_ROMLOC(3134) : rom_DCEC();                     // JSR	$0000DCEC
   DEF_ROMLOC(313A) : move_toreg_32(0x0, &D0);        // MOVEQ.L	$00,D0
-  DEF_ROMLOC(313C) : rom_15AA();                     // BSR.W	$15AA
+  DEF_ROMLOC(313C) : new_plc();                     // BSR.W	$15AA
   DEF_ROMLOC(3140) : move_tomem_16(0x0, 0xFFFFFFE4); // MOVE.W	#$0000,$FFE4
   DEF_ROMLOC(3146) : move_tomem_16(0x0, 0xFFFFFFE6); // MOVE.W	#$0000,$FFE6
   DEF_ROMLOC(314C)
@@ -184,7 +184,7 @@ ROMFUNC(rom_3168) {
   DEF_ROMLOC(316E) : rom_626E();                    // BSR.W	$626E
   DEF_ROMLOC(3172) : rom_DCEC();                    // JSR	$0000DCEC
   DEF_ROMLOC(3178) : level_palette_cycle_ghz(true); // BSR.W	$1954
-  DEF_ROMLOC(317C) : rom_15E4();                    // BSR.W	$15E4
+  DEF_ROMLOC(317C) : run_plc();                    // BSR.W	$15E4
   DEF_ROMLOC(3180)
       : move_toreg_16(read_16(0xFFFFD008), &D0);    // MOVE.W	$D008,D0
   DEF_ROMLOC(3184) : add_toreg_16(0x2, &D0);        // ADDQ.W	#$02,D0
@@ -287,7 +287,7 @@ ROMFUNC(rom_3272) {
 }
 ROMFUNC(rom_327C) {
   DEF_ROMLOC(327C) : rom_345C();               // BSR.W	$345C
-  DEF_ROMLOC(3280) : rom_15E4();               // BSR.W	$15E4
+  DEF_ROMLOC(3280) : run_plc();               // BSR.W	$15E4
   DEF_ROMLOC(3284) : tst_mem_32(v_plc_buffer); // TST.L	$F680
   DEF_ROMLOC(3288) : if (!CCR_EQ) {
     rom_3272();
@@ -388,7 +388,7 @@ void level_palette_cycle(void);
 ROMFUNC(rom_33B4) {
   DEF_ROMLOC(33B4) : rom_626E();            // BSR.W	$626E
   DEF_ROMLOC(33B8) : level_palette_cycle(); // BSR.W	$1934
-  DEF_ROMLOC(33BC) : rom_15E4();            // BSR.W	$15E4
+  DEF_ROMLOC(33BC) : run_plc();            // BSR.W	$15E4
   DEF_ROMLOC(33C0)
       : move_toreg_16(read_16(0xFFFFD008), &D0);    // MOVE.W	$D008,D0
   DEF_ROMLOC(33C4) : add_toreg_16(0x2, &D0);        // ADDQ.W	#$02,D0

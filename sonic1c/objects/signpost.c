@@ -142,7 +142,7 @@ ROMFUNC(rom_F316) {
   DEF_ROMLOC(F326) : clr_mem_8(0xFFFFFE1E);          // CLR.B	$FE1E
   DEF_ROMLOC(F32A) : move_tomem_8(0x3A, 0xFFFFD5C0); // MOVE.B	#$3A,$D5C0
   DEF_ROMLOC(F330) : move_toreg_32(0x10, &D0);       // MOVEQ.L	$10,D0
-  DEF_ROMLOC(F332) : rom_15AA();                     // JSR	$000015AA
+  DEF_ROMLOC(F332) : new_plc();                     // JSR	$000015AA
   DEF_ROMLOC(F338) : move_tomem_8(0x1, 0xFFFFF7D6);  // MOVE.B	#$01,$F7D6
   DEF_ROMLOC(F33E) : move_toreg_32(0x0, &D0);        // MOVEQ.L	$00,D0
   DEF_ROMLOC(F340)

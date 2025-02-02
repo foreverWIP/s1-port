@@ -131,11 +131,11 @@ ROMFUNC(rom_CA64) {
   DEF_ROMLOC(CA9E) : cmp_tomem_8(0x4, A0 + 0x24); // CMPI.B	#$04,36(A0)
   DEF_ROMLOC(CAA4) : if (!CCR_EQ) goto rom_CABE;  // BNE.B	$CABE
   DEF_ROMLOC(CAA6) : move_toreg_32(0x2, &D0);     // MOVEQ.L	$02,D0
-  DEF_ROMLOC(CAA8) : rom_1578();                  // JSR	$00001578
+  DEF_ROMLOC(CAA8) : add_plc();                  // JSR	$00001578
   DEF_ROMLOC(CAAE) : move_toreg_32(0x0, &D0);     // MOVEQ.L	$00,D0
   DEF_ROMLOC(CAB0)
       : move_toreg_8(read_8(0xFFFFFE10), &D0); // MOVE.B	$FE10,D0
   DEF_ROMLOC(CAB4) : add_toreg_16(0x15, &D0);  // ADDI.W	#$0015,D0
-  DEF_ROMLOC(CAB8) : rom_1578();               // JSR	$00001578
+  DEF_ROMLOC(CAB8) : add_plc();               // JSR	$00001578
   DEF_ROMLOC(CABE) : rom_DCCE();               // BRA.W	$DCCE
 }

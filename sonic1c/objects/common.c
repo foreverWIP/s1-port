@@ -860,7 +860,7 @@ ROMFUNC(rom_13F52) {
   DEF_ROMLOC(13F9A) : play_sound();                   // JSR	$0000138E
   DEF_ROMLOC(13FA0) : move_toreg_32(0x3, &D0);        // MOVEQ.L	$03,D0
   DEF_ROMLOC(13FA2) : {
-    rom_1578();
+    add_plc();
     return;
   }                                                   // JMP	$00001578
   DEF_ROMLOC(13FA8) : move_tomem_16(0x3C, A0 + 0x3A); // MOVE.W	#$003C,58(A0)

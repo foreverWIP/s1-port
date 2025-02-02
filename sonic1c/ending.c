@@ -69,7 +69,7 @@ ROMFUNC(rom_50FE) {
       : move_tomem_16(0x601, 0xFFFFFE10);           // MOVE.W
                                                     // #$0601,$FE10
   DEF_ROMLOC(519A) : move_toreg_32(0x1C, &D0);      // MOVEQ.L	$1C,D0
-  DEF_ROMLOC(519C) : rom_16E4();                    // BSR.W	$16E4
+  DEF_ROMLOC(519C) : quick_plc();                    // BSR.W	$16E4
   DEF_ROMLOC(51A0) : rom_1CFEE();                   // JSR	$0001CFEE
   DEF_ROMLOC(51A6) : rom_5ECC();                    // BSR.W	$5ECC
   DEF_ROMLOC(51AA) : rom_626E();                    // BSR.W	$626E

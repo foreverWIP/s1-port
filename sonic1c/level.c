@@ -40,9 +40,9 @@ ROMFUNC(rom_37BA) {
   DEF_ROMLOC(37EE) : move_toreg_32(0x0, &D0);              // MOVEQ.L	$00,D0
   DEF_ROMLOC(37F0) : move_toreg_8(read_8(A2), &D0);        // MOVE.B	(A2),D0
   DEF_ROMLOC(37F2) : if (CCR_EQ) goto rom_37F8;            // BEQ.B	$37F8
-  DEF_ROMLOC(37F4) : rom_1578();                           // BSR.W	$1578
+  DEF_ROMLOC(37F4) : add_plc();                           // BSR.W	$1578
   DEF_ROMLOC(37F8) : move_toreg_32(0x1, &D0);              // MOVEQ.L	$01,D0
-  DEF_ROMLOC(37FA) : rom_1578();                           // BSR.W	$1578
+  DEF_ROMLOC(37FA) : add_plc();                           // BSR.W	$1578
   DEF_ROMLOC(37FE) : move_toreg_32(0xFFFFD000, &A1);       // LEA.L	$D000,A1
   DEF_ROMLOC(3802) : move_toreg_32(0x0, &D0);              // MOVEQ.L	$00,D0
   DEF_ROMLOC(3804) : move_toreg_16(0x7FF, &D1);            // MOVE.W	#$07FF,D1
@@ -145,7 +145,7 @@ ROMFUNC(rom_3912) {
 ROMFUNC(rom_391C) {
   DEF_ROMLOC(391C) : rom_D9C6(); // JSR	$0000D9C6
   DEF_ROMLOC(3922) : rom_DCEC(); // JSR	$0000DCEC
-  DEF_ROMLOC(3928) : rom_15E4(); // BSR.W	$15E4
+  DEF_ROMLOC(3928) : run_plc(); // BSR.W	$15E4
   DEF_ROMLOC(392C)
       : move_toreg_16(read_16(0xFFFFD108), &D0); // MOVE.W	$D108,D0
   DEF_ROMLOC(3930)
@@ -291,12 +291,12 @@ ROMFUNC(rom_3AA8) {
   rom_3AD8();
   return;                                     // BRA.B	$3AD8
   DEF_ROMLOC(3AC0) : move_toreg_32(0x2, &D0); // MOVEQ.L	$02,D0
-  DEF_ROMLOC(3AC2) : rom_1578();              // JSR	$00001578
+  DEF_ROMLOC(3AC2) : add_plc();              // JSR	$00001578
   DEF_ROMLOC(3AC8) : move_toreg_32(0x0, &D0); // MOVEQ.L	$00,D0
   DEF_ROMLOC(3ACA)
       : move_toreg_8(read_8(0xFFFFFE10), &D0); // MOVE.B	$FE10,D0
   DEF_ROMLOC(3ACE) : add_toreg_16(0x15, &D0);  // ADDI.W	#$0015,D0
-  DEF_ROMLOC(3AD2) : rom_1578();               // JSR	$00001578
+  DEF_ROMLOC(3AD2) : add_plc();               // JSR	$00001578
   rom_3AD8(); // Detected flow into next function
 }
 ROMFUNC(rom_3AD8) {
@@ -331,7 +331,7 @@ ROMFUNC(rom_3AEC) {
   DEF_ROMLOC(3B18) : rom_DCEC();                   // JSR	$0000DCEC
   DEF_ROMLOC(3B1E) : rom_DF68();                   // JSR	$0000DF68
   DEF_ROMLOC(3B24) : level_palette_cycle();        // BSR.W	$1934
-  DEF_ROMLOC(3B28) : rom_15E4();                   // BSR.W	$15E4
+  DEF_ROMLOC(3B28) : run_plc();                   // BSR.W	$15E4
   DEF_ROMLOC(3B2C) : rom_4170();                   // BSR.W	$4170
   DEF_ROMLOC(3B30) : rom_4208();                   // BSR.W	$4208
   DEF_ROMLOC(3B34) : rom_4276();                   // BSR.W	$4276
