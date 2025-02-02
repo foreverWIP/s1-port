@@ -35,7 +35,7 @@ ROMFUNC(rom_ACBC) {
   DEF_ROMLOC(ACDA) : move_tomem_8(0x1, A0 + 0x18);    // MOVE.B	#$01,24(A0)
   DEF_ROMLOC(ACE0) : move_tomem_8(0x1D, A0 + 0x1F);   // MOVE.B	#$1D,31(A0)
   DEF_ROMLOC(ACE6) : move_toreg_32(0xAD8E, &A1);      // LEA.L	$0000AD8E,A1
-  DEF_ROMLOC(ACEC) : rom_ADA2();                      // BSR.W	$ADA2
+  DEF_ROMLOC(ACEC) : animate_sprite();                      // BSR.W	$ADA2
   rom_ACF0(); // Detected flow into next function
 }
 ROMFUNC(rom_ACF0) {
@@ -57,7 +57,7 @@ ROMFUNC(rom_AD00) {
 }
 ROMFUNC(rom_AD16) {
   DEF_ROMLOC(AD16) : move_toreg_32(0xAD8E, &A1); // LEA.L	$0000AD8E,A1
-  DEF_ROMLOC(AD1C) : rom_ADA2();                 // BSR.W	$ADA2
+  DEF_ROMLOC(AD1C) : animate_sprite();                 // BSR.W	$ADA2
   DEF_ROMLOC(AD20) : rom_DC92();
   return;                    // BRA.W	$DC92
   DEF_ROMLOC(AD24) : return; // RTS

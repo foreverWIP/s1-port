@@ -114,7 +114,7 @@ ROMFUNC(rom_E20C) {
 }
 ROMFUNC(rom_E262) {
   DEF_ROMLOC(E262) : move_toreg_32(0xE38C, &A1); // LEA.L	$0000E38C,A1
-  rom_ADA2();                                    // BRA.W	$ADA2
+  animate_sprite();                                    // BRA.W	$ADA2
 }
 ROMFUNC(rom_E26C) {
   DEF_ROMLOC(E26C) : move_tomem_8(0x1, A0 + 0x1D); // MOVE.B	#$01,29(A0)
@@ -157,7 +157,7 @@ ROMFUNC(rom_E278) {
 }
 ROMFUNC(rom_E2FA) {
   DEF_ROMLOC(E2FA) : move_toreg_32(0xE38C, &A1); // LEA.L	$0000E38C,A1
-  rom_ADA2();                                    // BRA.W	$ADA2
+  animate_sprite();                                    // BRA.W	$ADA2
 }
 ROMFUNC(rom_E304) {
   DEF_ROMLOC(E304) : move_tomem_8(0x2, A0 + 0x1D); // MOVE.B	#$02,29(A0)
@@ -195,7 +195,7 @@ ROMFUNC(rom_E310) {
 }
 ROMFUNC(rom_E376) {
   DEF_ROMLOC(E376) : move_toreg_32(0xE38C, &A1); // LEA.L	$0000E38C,A1
-  rom_ADA2();                                    // BRA.W	$ADA2
+  animate_sprite();                                    // BRA.W	$ADA2
 }
 ROMFUNC(rom_E380) {
   DEF_ROMLOC(E380) : move_tomem_8(0x1, A0 + 0x1D); // MOVE.B	#$01,29(A0)

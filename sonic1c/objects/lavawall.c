@@ -107,7 +107,7 @@ ROMFUNC(rom_F79E) {
   DEF_ROMLOC(F7C6) : clr_mem_16(A0 + 0x10);             // CLR.W	16(A0)
   DEF_ROMLOC(F7CA) : clr_mem_8(A0 + 0x36);              // CLR.B	54(A0)
   DEF_ROMLOC(F7CE) : move_toreg_32(0xF8CE, &A1);        // LEA.L	$0000F8CE,A1
-  DEF_ROMLOC(F7D4) : rom_ADA2();                        // BSR.W	$ADA2
+  DEF_ROMLOC(F7D4) : animate_sprite();                        // BSR.W	$ADA2
   DEF_ROMLOC(F7D8) : cmp_tomem_8(0x4, 0xFFFFD024);      // CMPI.B	#$04,$D024
   DEF_ROMLOC(F7DE) : if (CCR_CC) goto rom_F7E4;         // BCC.B	$F7E4
   DEF_ROMLOC(F7E0) : rom_DC6C();                        // BSR.W	$DC6C

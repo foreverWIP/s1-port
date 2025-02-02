@@ -119,7 +119,7 @@ ROMFUNC(rom_1912C) {
     break;
   }
   DEF_ROMLOC(1913A) : move_toreg_32(0x18468, &A1);         // LEA.L	$00018468,A1
-  DEF_ROMLOC(19140) : rom_ADA2();                          // JSR	$0000ADA2
+  DEF_ROMLOC(19140) : animate_sprite();                          // JSR	$0000ADA2
   DEF_ROMLOC(19146) : move_toreg_32(0x3, &D0);             // MOVEQ.L	$03,D0
   DEF_ROMLOC(19148) : and_toreg_8(read_8(A0 + 0x22), &D0); // AND.B
                                                            // 34(A0),D0
@@ -445,7 +445,7 @@ ROMFUNC(rom_19376) {
 }
 ROMFUNC(rom_1941C) {
   DEF_ROMLOC(1941C) : move_toreg_32(0x18468, &A1); // LEA.L	$00018468,A1
-  DEF_ROMLOC(19422) : rom_ADA2();                  // JSR	$0000ADA2
+  DEF_ROMLOC(19422) : animate_sprite();                  // JSR	$0000ADA2
   rom_19428(); // Detected flow into next function
 }
 ROMFUNC(rom_193A0) {
@@ -496,7 +496,7 @@ ROMFUNC(rom_193E4) {
   DEF_ROMLOC(19414) : if (CCR_LT) goto rom_1941C;   // BLT.B	$1941C
   DEF_ROMLOC(19416) : move_tomem_8(0x7, A0 + 0x1C); // MOVE.B	#$07,28(A0)
   DEF_ROMLOC(1941C) : move_toreg_32(0x18468, &A1);  // LEA.L	$00018468,A1
-  DEF_ROMLOC(19422) : rom_ADA2();                   // JSR	$0000ADA2
+  DEF_ROMLOC(19422) : animate_sprite();                   // JSR	$0000ADA2
   rom_19428(); // Detected flow into next function
 }
 ROMFUNC(rom_19428) {

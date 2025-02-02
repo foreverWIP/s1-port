@@ -64,7 +64,7 @@ ROMFUNC(rom_1318A) {
 }
 ROMFUNC(rom_131EC) {
   DEF_ROMLOC(131EC) : move_toreg_32(0x13220, &A1); // LEA.L	$00013220,A1
-  DEF_ROMLOC(131F2) : rom_ADA2();                  // JSR	$0000ADA2
+  DEF_ROMLOC(131F2) : animate_sprite();                  // JSR	$0000ADA2
   rom_131F8(); // Detected flow into next function
 }
 ROMFUNC(rom_131F8) {

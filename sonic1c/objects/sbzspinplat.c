@@ -204,7 +204,7 @@ ROMFUNC(rom_16B8C) {
 }
 ROMFUNC(rom_16B40) {
   DEF_ROMLOC(16B40) : move_toreg_32(0x16BF2, &A1); // LEA.L	$00016BF2,A1
-  DEF_ROMLOC(16B46) : rom_ADA2();                  // JSR	$0000ADA2
+  DEF_ROMLOC(16B46) : animate_sprite();                  // JSR	$0000ADA2
   DEF_ROMLOC(16B4C) : tst_mem_8(A0 + 0x1A);        // TST.B	26(A0)
   DEF_ROMLOC(16B50) : if (!CCR_EQ) goto rom_16B6C; // BNE.B	$16B6C
   DEF_ROMLOC(16B52)

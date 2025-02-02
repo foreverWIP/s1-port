@@ -102,7 +102,7 @@ void syz_boss_loop(u8 skip_state) {
     break;
   }
   DEF_ROMLOC(1994E) : move_toreg_32(0x18468, &A1);         // LEA.L	$00018468,A1
-  DEF_ROMLOC(19954) : rom_ADA2();                          // JSR	$0000ADA2
+  DEF_ROMLOC(19954) : animate_sprite();                          // JSR	$0000ADA2
   DEF_ROMLOC(1995A) : move_toreg_32(0x3, &D0);             // MOVEQ.L	$03,D0
   DEF_ROMLOC(1995C) : and_toreg_8(read_8(A0 + 0x22), &D0); // AND.B
                                                            // 34(A0),D0
@@ -581,7 +581,7 @@ ROMFUNC(rom_19D3A) {
 }
 ROMFUNC(rom_19D6E) {
   DEF_ROMLOC(19D6E) : move_toreg_32(0x18468, &A1); // LEA.L	$00018468,A1
-  DEF_ROMLOC(19D74) : rom_ADA2();                  // JSR	$0000ADA2
+  DEF_ROMLOC(19D74) : animate_sprite();                  // JSR	$0000ADA2
   DEF_ROMLOC(19D7A)
       : move_toreg_32(read_32(A0 + 0x34), &A1); // MOVEA.L	52(A0),A1
   DEF_ROMLOC(19D7E)

@@ -62,7 +62,7 @@ ROMFUNC(rom_4FF2) {
   DEF_ROMLOC(4FF2) : tst_mem_8(0xFFFFF605);      // TST.B	$F605
   DEF_ROMLOC(4FF6) : if (CCR_MI) goto rom_5004;  // BMI.B	$5004
   DEF_ROMLOC(4FF8) : move_toreg_32(0x5054, &A1); // LEA.L	$00005054,A1
-  DEF_ROMLOC(4FFE) : rom_ADA2();
+  DEF_ROMLOC(4FFE) : animate_sprite();
   return;                                         // JMP	$0000ADA2
   DEF_ROMLOC(5004) : add_tomem_8(0x2, A0 + 0x24); // ADDQ.B	#$02,36(A0)
   DEF_ROMLOC(5008)

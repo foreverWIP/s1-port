@@ -82,7 +82,7 @@ ROMFUNC(rom_F098) {
       : move_tomem_16(read_16(A0 + 0xC), A1 + 0xC); // MOVE.W	12(A0),12(A1)
   DEF_ROMLOC(F136) : move_tomem_8(0x4, A1 + 0x1A);  // MOVE.B	#$04,26(A1)
   DEF_ROMLOC(F13C) : move_toreg_32(0xF17C, &A1);    // LEA.L	$0000F17C,A1
-  DEF_ROMLOC(F142) : rom_ADA2();                    // BSR.W	$ADA2
+  DEF_ROMLOC(F142) : animate_sprite();                    // BSR.W	$ADA2
   DEF_ROMLOC(F146) : move_toreg_16(read_16(A0 + 0x8), &D0); // MOVE.W	8(A0),D0
   DEF_ROMLOC(F14A) : and_toreg_16(0xFFFFFF80, &D0);         // ANDI.W	#$FF80,D0
   DEF_ROMLOC(F14E)

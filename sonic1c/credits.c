@@ -245,7 +245,7 @@ ROMFUNC(rom_5A0C) {
 ROMFUNC(rom_5A5C) {
   DEF_ROMLOC(5A5C) : move_toreg_32(0x5AB0, &A1); // LEA.L	$00005AB0,A1
   DEF_ROMLOC(5A62) : {
-    rom_ADA2();
+    animate_sprite();
     return;
   } // JMP	$0000ADA2
 }

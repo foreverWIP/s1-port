@@ -58,7 +58,7 @@ ROMFUNC(rom_9FC8) {
 ROMFUNC(rom_A012) {
   DEF_ROMLOC(A012) : rom_A022();                 // BSR.B	$A022
   DEF_ROMLOC(A014) : move_toreg_32(0xA0A8, &A1); // LEA.L	$0000A0A8,A1
-  DEF_ROMLOC(A01A) : rom_ADA2();                 // BSR.W	$ADA2
+  DEF_ROMLOC(A01A) : animate_sprite();                 // BSR.W	$ADA2
   rom_DC92();                                    // BRA.W	$DC92
 }
 ROMFUNC(rom_A022) {
@@ -79,7 +79,7 @@ ROMFUNC(rom_A030) {
   DEF_ROMLOC(A03E) : move_tomem_8(0x1, A0 + 0x1C); // MOVE.B	#$01,28(A0)
   DEF_ROMLOC(A044) : rom_DC6C();                   // BSR.W	$DC6C
   DEF_ROMLOC(A048) : move_toreg_32(0xA0A8, &A1);   // LEA.L	$0000A0A8,A1
-  DEF_ROMLOC(A04E) : rom_ADA2();                   // BSR.W	$ADA2
+  DEF_ROMLOC(A04E) : animate_sprite();                   // BSR.W	$ADA2
   DEF_ROMLOC(A052) : rom_DC92();                   // BSR.W	$DC92
   DEF_ROMLOC(A056)
       : move_toreg_16(read_16(0xFFFFF72E), &D0); // MOVE.W	$F72E,D0
@@ -111,7 +111,7 @@ ROMFUNC(rom_A07C) {
 }
 ROMFUNC(rom_A086) {
   DEF_ROMLOC(A086) : move_toreg_32(0xA0A8, &A1); // LEA.L	$0000A0A8,A1
-  DEF_ROMLOC(A08C) : rom_ADA2();                 // BSR.W	$ADA2
+  DEF_ROMLOC(A08C) : animate_sprite();                 // BSR.W	$ADA2
   DEF_ROMLOC(A090) : rom_DC92();                 // BSR.W	$DC92
   DEF_ROMLOC(A094) : return;                     // RTS
 }

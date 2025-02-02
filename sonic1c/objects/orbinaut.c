@@ -113,7 +113,7 @@ ROMFUNC(rom_12492) {
   DEF_ROMLOC(124BA) : if (!CCR_EQ) goto rom_124C2;  // BNE.B	$124C2
   DEF_ROMLOC(124BC) : move_tomem_8(0x1, A0 + 0x1C); // MOVE.B	#$01,28(A0)
   DEF_ROMLOC(124C2) : move_toreg_32(0x125AA, &A1);  // LEA.L	$000125AA,A1
-  DEF_ROMLOC(124C8) : rom_ADA2();                   // BSR.W	$ADA2
+  DEF_ROMLOC(124C8) : animate_sprite();                   // BSR.W	$ADA2
   rom_124D4();                                      // BRA.W	$124D4
 }
 ROMFUNC(rom_124D0) {

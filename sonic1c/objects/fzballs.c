@@ -65,7 +65,7 @@ ROMFUNC(rom_1B022) {
     return;
   }                                                // BPL.W	$1ABFE
   DEF_ROMLOC(1B050) : move_toreg_32(0x1B1F6, &A1); // LEA.L	420(PC),A1
-  DEF_ROMLOC(1B054) : rom_ADA2();                  // JSR	$0000ADA2
+  DEF_ROMLOC(1B054) : animate_sprite();                  // JSR	$0000ADA2
   DEF_ROMLOC(1B05A) : rom_DC92();
   return; // JMP	$0000DC92
 }
@@ -172,7 +172,7 @@ ROMFUNC(rom_1B138) {
     break;
   }
   DEF_ROMLOC(1B146) : move_toreg_32(0x1B22C, &A1); // LEA.L	228(PC),A1
-  DEF_ROMLOC(1B14A) : rom_ADA2();                  // JSR	$0000ADA2
+  DEF_ROMLOC(1B14A) : animate_sprite();                  // JSR	$0000ADA2
   DEF_ROMLOC(1B150) : rom_DC92();
   return; // JMP	$0000DC92
 }

@@ -103,7 +103,7 @@ ROMFUNC(rom_EA48) {
   }
   DEF_ROMLOC(EA58) : rom_DC6C();                 // BSR.W	$DC6C
   DEF_ROMLOC(EA5C) : move_toreg_32(0xEB52, &A1); // LEA.L	$0000EB52,A1
-  DEF_ROMLOC(EA62) : rom_ADA2();                 // BSR.W	$ADA2
+  DEF_ROMLOC(EA62) : animate_sprite();                 // BSR.W	$ADA2
   rom_EA66(); // Detected flow into next function
 }
 ROMFUNC(rom_EA66) {

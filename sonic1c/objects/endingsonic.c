@@ -108,7 +108,7 @@ ROMFUNC(rom_54BA) {
 }
 ROMFUNC(rom_54D8) {
   DEF_ROMLOC(54D8) : move_toreg_32(0x5522, &A1); // LEA.L	$00005522,A1
-  DEF_ROMLOC(54DE) : rom_ADA2();
+  DEF_ROMLOC(54DE) : animate_sprite();
   return; // JMP	$0000ADA2
 }
 ROMFUNC(rom_54E4) {

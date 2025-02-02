@@ -61,7 +61,7 @@ ROMFUNC(rom_B380) {
     break;
   }
   DEF_ROMLOC(B38E) : move_toreg_32(0xB4CE, &A1); // LEA.L	$0000B4CE,A1
-  DEF_ROMLOC(B394) : rom_ADA2();                 // BSR.W	$ADA2
+  DEF_ROMLOC(B394) : animate_sprite();                 // BSR.W	$ADA2
   rom_FD38();                                    // BRA.W	$FD38
 }
 ROMFUNC(rom_B3A4) {

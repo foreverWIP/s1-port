@@ -41,7 +41,7 @@ ROMFUNC(rom_14A96) {
   DEF_ROMLOC(14A96)
       : move_tomem_16(read_16(0xFFFFF646), A0 + 0xC); // MOVE.W	$F646,12(A0)
   DEF_ROMLOC(14A9C) : move_toreg_32(0x14D2C, &A1);    // LEA.L	$00014D2C,A1
-  DEF_ROMLOC(14AA2) : rom_ADA2();                     // JSR	$0000ADA2
+  DEF_ROMLOC(14AA2) : animate_sprite();                     // JSR	$0000ADA2
   DEF_ROMLOC(14AA8) : {
     rom_DC92();
     return;

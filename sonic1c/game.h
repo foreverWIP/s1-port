@@ -12,6 +12,7 @@
 #include "nemesis.h"
 #include "enigma.h"
 #include "vblank.h"
+#include "anim.h"
 
 extern void (*game_state)(void);
 extern bool exit_mainloop;

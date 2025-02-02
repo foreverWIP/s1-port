@@ -163,7 +163,7 @@ ROMFUNC(rom_F606) {
   }
   DEF_ROMLOC(F616) : rom_DC6C();                 // BSR.W	$DC6C
   DEF_ROMLOC(F61A) : move_toreg_32(0xF8A0, &A1); // LEA.L	$0000F8A0,A1
-  DEF_ROMLOC(F620) : rom_ADA2();                 // BSR.W	$ADA2
+  DEF_ROMLOC(F620) : animate_sprite();                 // BSR.W	$ADA2
   rom_F624(); // Detected flow into next function
 }
 ROMFUNC(rom_F624) {

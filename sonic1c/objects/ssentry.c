@@ -42,7 +42,7 @@ ROMFUNC(rom_14A02) {
   DEF_ROMLOC(14A0E)
       : move_tomem_8(read_8(0xFFFFD022), A0 + 0x22); // MOVE.B	$D022,34(A0)
   DEF_ROMLOC(14A14) : move_toreg_32(0x14BBE, &A1);   // LEA.L	$00014BBE,A1
-  DEF_ROMLOC(14A1A) : rom_ADA2();                    // JSR	$0000ADA2
+  DEF_ROMLOC(14A1A) : animate_sprite();                    // JSR	$0000ADA2
   DEF_ROMLOC(14A20) : cmp_tomem_8(0x2, A0 + 0x1A);   // CMPI.B	#$02,26(A0)
   DEF_ROMLOC(14A26) : if (!CCR_EQ) goto rom_14A3E;   // BNE.B	$14A3E
   DEF_ROMLOC(14A28) : tst_mem_8(0xFFFFD000);         // TST.B	$D000

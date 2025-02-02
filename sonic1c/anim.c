@@ -3,7 +3,7 @@
 #include "system.h"
 
 
-ROMFUNC(rom_4208) {
+void run_global_anims(void) {
   DEF_ROMLOC(4208) : sub_tomem_8(0x1, 0xFFFFFEC0);  // SUBQ.B	#$01,$FEC0
   DEF_ROMLOC(420C) : if (CCR_PL) goto rom_421E;     // BPL.B	$421E
   DEF_ROMLOC(420E) : move_tomem_8(0xB, 0xFFFFFEC0); // MOVE.B	#$0B,$FEC0
@@ -35,7 +35,7 @@ ROMFUNC(rom_4208) {
   DEF_ROMLOC(4270) : sub_tomem_8(0x1, 0xFFFFFEC6);  // SUBQ.B	#$01,$FEC6
   DEF_ROMLOC(4274) : return;                        // RTS
 }
-ROMFUNC(rom_4276) {
+void maybe_load_signpost_art(void) {
   DEF_ROMLOC(4276) : tst_mem_16(0xFFFFFE08);       // TST.W	$FE08
   DEF_ROMLOC(427A) : if (!CCR_EQ) goto rom_42AC;   // BNE.W	$42AC
   DEF_ROMLOC(427E) : cmp_tomem_8(0x2, 0xFFFFFE11); // CMPI.B	#$02,$FE11
@@ -60,7 +60,7 @@ ROMFUNC(rom_4276) {
   }                          // BRA.W	$15AA
   DEF_ROMLOC(42AC) : return; // RTS
 }
-ROMFUNC(rom_ADA2) {
+void animate_sprite(void) {
   DEF_ROMLOC(ADA2) : move_toreg_32(0x0, &D0); // MOVEQ.L	$00,D0
   DEF_ROMLOC(ADA4)
       : move_toreg_8(read_8(A0 + 0x1C), &D0);             // MOVE.B	28(A0),D0

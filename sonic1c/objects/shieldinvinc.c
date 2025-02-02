@@ -51,7 +51,7 @@ ROMFUNC(rom_1490C) {
   DEF_ROMLOC(14924)
       : move_tomem_8(read_8(0xFFFFD022), A0 + 0x22); // MOVE.B	$D022,34(A0)
   DEF_ROMLOC(1492A) : move_toreg_32(0x14AB4, &A1);   // LEA.L	$00014AB4,A1
-  DEF_ROMLOC(14930) : rom_ADA2();                    // JSR	$0000ADA2
+  DEF_ROMLOC(14930) : animate_sprite();                    // JSR	$0000ADA2
   DEF_ROMLOC(14936) : {
     rom_DC92();
     return;
@@ -108,7 +108,7 @@ ROMFUNC(rom_14944) {
   DEF_ROMLOC(1499E)
       : move_tomem_8(read_8(0xFFFFD022), A0 + 0x22); // MOVE.B	$D022,34(A0)
   DEF_ROMLOC(149A4) : move_toreg_32(0x14AB4, &A1);   // LEA.L	$00014AB4,A1
-  DEF_ROMLOC(149AA) : rom_ADA2();                    // JSR	$0000ADA2
+  DEF_ROMLOC(149AA) : animate_sprite();                    // JSR	$0000ADA2
   DEF_ROMLOC(149B0) : {
     rom_DC92();
     return;

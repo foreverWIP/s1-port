@@ -39,7 +39,7 @@ ROMFUNC(rom_B1C0) {
 }
 ROMFUNC(rom_B1F6) {
   DEF_ROMLOC(B1F6) : move_toreg_32(0xB242, &A1);    // LEA.L	$0000B242,A1
-  DEF_ROMLOC(B1FC) : rom_ADA2();                    // BSR.W	$ADA2
+  DEF_ROMLOC(B1FC) : animate_sprite();                    // BSR.W	$ADA2
   DEF_ROMLOC(B200) : rom_DC6C();                    // BSR.W	$DC6C
   DEF_ROMLOC(B204) : add_tomem_16(0x18, A0 + 0x12); // ADDI.W	#$0018,18(A0)
   DEF_ROMLOC(B20A)

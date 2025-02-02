@@ -100,7 +100,7 @@ ROMFUNC(rom_F4CA) {
 }
 ROMFUNC(rom_F4D6) {
   DEF_ROMLOC(F4D6) : move_toreg_32(0xF8A0, &A1); // LEA.L	$0000F8A0,A1
-  DEF_ROMLOC(F4DC) : rom_ADA2();                 // BSR.W	$ADA2
+  DEF_ROMLOC(F4DC) : animate_sprite();                 // BSR.W	$ADA2
   DEF_ROMLOC(F4E0) : rom_DC92();                 // BSR.W	$DC92
   DEF_ROMLOC(F4E4) : return;                     // RTS
 }

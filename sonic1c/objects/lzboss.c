@@ -108,7 +108,7 @@ void lz_boss_main(bool skip_to_ship) {
     break;
   }
   DEF_ROMLOC(18698) : move_toreg_32(0x18468, &A1);         // LEA.L	$00018468,A1
-  DEF_ROMLOC(1869E) : rom_ADA2();                          // JSR	$0000ADA2
+  DEF_ROMLOC(1869E) : animate_sprite();                          // JSR	$0000ADA2
   DEF_ROMLOC(186A4) : move_toreg_32(0x3, &D0);             // MOVEQ.L	$03,D0
   DEF_ROMLOC(186A6) : and_toreg_8(read_8(A0 + 0x22), &D0); // AND.B
                                                            // 34(A0),D0
@@ -418,7 +418,7 @@ ROMFUNC(rom_1896E) {
 }
 ROMFUNC(rom_189A8) {
   DEF_ROMLOC(189A8) : move_toreg_32(0x18468, &A1); // LEA.L	$00018468,A1
-  DEF_ROMLOC(189AE) : rom_ADA2();                  // JSR	$0000ADA2
+  DEF_ROMLOC(189AE) : animate_sprite();                  // JSR	$0000ADA2
   DEF_ROMLOC(189B4)
       : move_toreg_32(read_32(A0 + 0x34), &A1); // MOVEA.L	52(A0),A1
   DEF_ROMLOC(189B8)

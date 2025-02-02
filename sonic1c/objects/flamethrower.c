@@ -64,7 +64,7 @@ ROMFUNC(rom_EBE4) {
   DEF_ROMLOC(EBFE) : move_toreg_16(0xB3, &D0);        // MOVE.W	#$00B3,D0
   DEF_ROMLOC(EC02) : play_sound_special();            // JSR	$00001394
   DEF_ROMLOC(EC08) : move_toreg_32(0xEC4A, &A1);      // LEA.L	$0000EC4A,A1
-  DEF_ROMLOC(EC0E) : rom_ADA2();                      // BSR.W	$ADA2
+  DEF_ROMLOC(EC0E) : animate_sprite();                      // BSR.W	$ADA2
   DEF_ROMLOC(EC12) : move_tomem_8(0x0, A0 + 0x20);    // MOVE.B	#$00,32(A0)
   DEF_ROMLOC(EC18)
       : move_toreg_8(read_8(A0 + 0x36), &D0); // MOVE.B	54(A0),D0

@@ -232,7 +232,7 @@ ROMFUNC(rom_1A658) {
   goto rom_1A74C;                                    // BRA.B	$1A74C
   DEF_ROMLOC(1A746) : move_tomem_8(0x1, A0 + 0x1C);  // MOVE.B	#$01,28(A0)
   DEF_ROMLOC(1A74C) : move_toreg_32(0x1A1B2, &A1);   // LEA.L	-1436(PC),A1
-  DEF_ROMLOC(1A750) : rom_ADA2();
+  DEF_ROMLOC(1A750) : animate_sprite();
   return;                                          // JMP	$0000ADA2
   DEF_ROMLOC(1A756) : tst_mem_8(A0 + 0x21);        // TST.B	33(A0)
   DEF_ROMLOC(1A75A) : if (CCR_EQ) goto rom_1A76C;  // BEQ.B	$1A76C
@@ -391,7 +391,7 @@ ROMFUNC(rom_1A8C8) {
 }
 ROMFUNC(rom_1A912) {
   DEF_ROMLOC(1A912) : move_toreg_32(0x1A1B2, &A1); // LEA.L	-1890(PC),A1
-  DEF_ROMLOC(1A916) : rom_ADA2();                  // JSR	$0000ADA2
+  DEF_ROMLOC(1A916) : animate_sprite();                  // JSR	$0000ADA2
   rom_1A91C();
 }
 ROMFUNC(rom_1A91C) {
@@ -496,7 +496,7 @@ ROMFUNC(rom_1AA1A) {
   DEF_ROMLOC(1AA3A) : if (CCR_EQ) goto rom_1AA42;   // BEQ.B	$1AA42
   DEF_ROMLOC(1AA3C) : move_tomem_8(0xB, A0 + 0x1C); // MOVE.B	#$0B,28(A0)
   DEF_ROMLOC(1AA42) : move_toreg_32(0x18468, &A1);  // LEA.L	-9692(PC),A1
-  DEF_ROMLOC(1AA46) : rom_ADA2();                   // JSR	$0000ADA2
+  DEF_ROMLOC(1AA46) : animate_sprite();                   // JSR	$0000ADA2
   rom_1AA4C(); // Detected flow into next function
 }
 ROMFUNC(rom_1AA4C) {
@@ -546,7 +546,7 @@ ROMFUNC(rom_1AA7C) {
       : move_tomem_32(0x184B8, A0 + 0x4);             // MOVE.L	#$000184B8,4(A0)
   DEF_ROMLOC(1AAB4) : move_tomem_16(0x400, A0 + 0x2); // MOVE.W	#$0400,2(A0)
   DEF_ROMLOC(1AABA) : move_toreg_32(0x18468, &A1);    // LEA.L	-9812(PC),A1
-  DEF_ROMLOC(1AABE) : rom_ADA2();                     // JSR	$0000ADA2
+  DEF_ROMLOC(1AABE) : animate_sprite();                     // JSR	$0000ADA2
   rom_1AA4C();
   return;                                  // BRA.W	$1AA4C
   DEF_ROMLOC(1AAC8) : tst_mem_8(A0 + 0x1); // TST.B	1(A0)
@@ -561,7 +561,7 @@ ROMFUNC(rom_1AA7C) {
       : move_tomem_32(0x1AB90, A0 + 0x4);             // MOVE.L	#$0001AB90,4(A0)
   DEF_ROMLOC(1AAE8) : move_tomem_16(0x3A0, A0 + 0x2); // MOVE.W	#$03A0,2(A0)
   DEF_ROMLOC(1AAEE) : move_toreg_32(0x1AB8A, &A1);    // LEA.L	154(PC),A1
-  DEF_ROMLOC(1AAF2) : rom_ADA2();                     // JSR	$0000ADA2
+  DEF_ROMLOC(1AAF2) : animate_sprite();                     // JSR	$0000ADA2
   rom_1AA4C();                                        // BRA.W	$1AA4C
 }
 ROMFUNC(rom_1AAFC) {

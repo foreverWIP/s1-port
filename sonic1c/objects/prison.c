@@ -113,7 +113,7 @@ ROMFUNC(rom_1B3B4) {
       : move_toreg_16(read_16(A0 + 0x8), &D4);     // MOVE.W	8(A0),D4
   DEF_ROMLOC(1B3C4) : rom_10062();                 // JSR	$00010062
   DEF_ROMLOC(1B3CA) : move_toreg_32(0x1B522, &A1); // LEA.L	$0001B522,A1
-  DEF_ROMLOC(1B3D0) : rom_ADA2();                  // JSR	$0000ADA2
+  DEF_ROMLOC(1B3D0) : animate_sprite();                  // JSR	$0000ADA2
   DEF_ROMLOC(1B3D6)
       : move_tomem_16(read_16(A0 + 0x30), A0 + 0xC);    // MOVE.W	48(A0),12(A0)
   DEF_ROMLOC(1B3DC) : tst_mem_8(A0 + 0x25);             // TST.B	37(A0)

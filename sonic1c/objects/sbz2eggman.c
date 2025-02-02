@@ -68,7 +68,7 @@ ROMFUNC(rom_1A0A0) {
 			case 3: rom_1A0E4(); break;
 		}
 	DEF_ROMLOC(1A0AE): move_toreg_32(0x1A1B2, &A1); // LEA.L	258(PC),A1
-	DEF_ROMLOC(1A0B2): rom_ADA2(); // JSR	$0000ADA2
+	DEF_ROMLOC(1A0B2): animate_sprite(); // JSR	$0000ADA2
 	DEF_ROMLOC(1A0B8): rom_DC92(); return; // JMP	$0000DC92
 }
 ROMFUNC(rom_1A0C6) {

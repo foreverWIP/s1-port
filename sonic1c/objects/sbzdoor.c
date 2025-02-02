@@ -55,7 +55,7 @@ ROMFUNC(rom_8FE8) {
   DEF_ROMLOC(901E) : if (CCR_EQ) goto rom_9026;    // BEQ.B	$9026
   DEF_ROMLOC(9020) : move_tomem_8(0x1, A0 + 0x1C); // MOVE.B	#$01,28(A0)
   DEF_ROMLOC(9026) : move_toreg_32(0x904E, &A1);   // LEA.L	$0000904E,A1
-  DEF_ROMLOC(902C) : rom_ADA2();                   // BSR.W	$ADA2
+  DEF_ROMLOC(902C) : animate_sprite();                   // BSR.W	$ADA2
   DEF_ROMLOC(9030) : tst_mem_8(A0 + 0x1A);         // TST.B	26(A0)
   DEF_ROMLOC(9034) : if (!CCR_EQ) goto rom_904A;   // BNE.B	$904A
   DEF_ROMLOC(9036) : move_toreg_16(0x11, &D1);     // MOVE.W	#$0011,D1

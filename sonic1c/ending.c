@@ -151,7 +151,7 @@ ROMFUNC(rom_529E) {
   DEF_ROMLOC(52B6) : rom_DF68();                    // JSR	$0000DF68
   DEF_ROMLOC(52BC) : level_palette_cycle();         // BSR.W	$1934
   DEF_ROMLOC(52C0) : rom_4170();                    // BSR.W	$4170
-  DEF_ROMLOC(52C4) : rom_4208();                    // BSR.W	$4208
+  DEF_ROMLOC(52C4) : run_global_anims();                    // BSR.W	$4208
   DEF_ROMLOC(52C8) : cmp_tomem_8(0x18, 0xFFFFF600); // CMPI.B	#$18,$F600
   DEF_ROMLOC(52CE) : if (CCR_EQ) goto rom_52E6;     // BEQ.B	$52E6
   DEF_ROMLOC(52D0) : SET_GM_CREDITS();
@@ -187,7 +187,7 @@ ROMFUNC(rom_530A) {
   DEF_ROMLOC(531C) : rom_DCEC();                    // JSR	$0000DCEC
   DEF_ROMLOC(5322) : rom_DF68();                    // JSR	$0000DF68
   DEF_ROMLOC(5328) : rom_4170();                    // BSR.W	$4170
-  DEF_ROMLOC(532C) : rom_4208();                    // BSR.W	$4208
+  DEF_ROMLOC(532C) : run_global_anims();                    // BSR.W	$4208
   DEF_ROMLOC(5330) : sub_tomem_16(0x1, 0xFFFFF794); // SUBQ.W	#$01,$F794
   DEF_ROMLOC(5334) : if (CCR_PL) goto rom_5340;     // BPL.B	$5340
   DEF_ROMLOC(5336)

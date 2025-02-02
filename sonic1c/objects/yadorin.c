@@ -82,7 +82,7 @@ ROMFUNC(rom_FF2C) {
     break;
   }
   DEF_ROMLOC(FF3A) : move_toreg_32(0xFFA8, &A1); // LEA.L	$0000FFA8,A1
-  DEF_ROMLOC(FF40) : rom_ADA2();                 // BSR.W	$ADA2
+  DEF_ROMLOC(FF40) : animate_sprite();                 // BSR.W	$ADA2
   rom_FD38();                                    // BRA.W	$FD38
 }
 ROMFUNC(rom_FF4C) {

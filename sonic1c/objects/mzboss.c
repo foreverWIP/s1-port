@@ -97,7 +97,7 @@ ROMFUNC(rom_18A78) {
     break;
   }
   DEF_ROMLOC(18A86) : move_toreg_32(0x18468, &A1);         // LEA.L	$00018468,A1
-  DEF_ROMLOC(18A8C) : rom_ADA2();                          // JSR	$0000ADA2
+  DEF_ROMLOC(18A8C) : animate_sprite();                          // JSR	$0000ADA2
   DEF_ROMLOC(18A92) : move_toreg_32(0x3, &D0);             // MOVEQ.L	$03,D0
   DEF_ROMLOC(18A94) : and_toreg_8(read_8(A0 + 0x22), &D0); // AND.B
                                                            // 34(A0),D0
@@ -403,7 +403,7 @@ ROMFUNC(rom_18DBA) {
 }
 ROMFUNC(rom_18DEE) {
   DEF_ROMLOC(18DEE) : move_toreg_32(0x18468, &A1); // LEA.L	$00018468,A1
-  DEF_ROMLOC(18DF4) : rom_ADA2();                  // JSR	$0000ADA2
+  DEF_ROMLOC(18DF4) : animate_sprite();                  // JSR	$0000ADA2
   rom_18DFA(); // Detected flow into next function
 }
 ROMFUNC(rom_18DFA) {

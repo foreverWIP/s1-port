@@ -100,7 +100,7 @@ ROMFUNC(rom_B93C) {
 }
 ROMFUNC(rom_B948) {
   DEF_ROMLOC(B948) : move_toreg_32(0xB956, &A1); // LEA.L	$0000B956,A1
-  DEF_ROMLOC(B94E) : rom_ADA2();                 // BSR.W	$ADA2
+  DEF_ROMLOC(B94E) : animate_sprite();                 // BSR.W	$ADA2
   DEF_ROMLOC(B952) : rom_DC92();
   return;                                    // BRA.W	$DC92
   DEF_ROMLOC(B956) : or_toreg_8(0x0, &D2);   // ORI.B	#$00,D2

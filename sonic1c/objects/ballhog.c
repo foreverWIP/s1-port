@@ -41,7 +41,7 @@ ROMFUNC(rom_91DC) {
 }
 ROMFUNC(rom_922C) {
   DEF_ROMLOC(922C) : move_toreg_32(0x94C6, &A1);  // LEA.L	$000094C6,A1
-  DEF_ROMLOC(9232) : rom_ADA2();                  // BSR.W	$ADA2
+  DEF_ROMLOC(9232) : animate_sprite();                  // BSR.W	$ADA2
   DEF_ROMLOC(9236) : cmp_tomem_8(0x1, A0 + 0x1A); // CMPI.B	#$01,26(A0)
   DEF_ROMLOC(923C) : if (!CCR_EQ) goto rom_9246;  // BNE.B	$9246
   DEF_ROMLOC(923E) : tst_mem_8(A0 + 0x32);        // TST.B	50(A0)

@@ -56,7 +56,7 @@ ROMFUNC(rom_B2C4) {
   DEF_ROMLOC(B2D4) : bchg_tomem_8(0x0, A0 + 0x22);    // BCHG.B	#$00,34(A0)
   DEF_ROMLOC(B2DA) : move_tomem_8(0x1, A0 + 0x1D);    // MOVE.B	#$01,29(A0)
   DEF_ROMLOC(B2E0) : move_toreg_32(0xB2F2, &A1);      // LEA.L	$0000B2F2,A1
-  DEF_ROMLOC(B2E6) : rom_ADA2();                      // BSR.W	$ADA2
+  DEF_ROMLOC(B2E6) : animate_sprite();                      // BSR.W	$ADA2
   DEF_ROMLOC(B2EA) : rom_DC6C();                      // BSR.W	$DC6C
   DEF_ROMLOC(B2EE) : {
     rom_FD38();

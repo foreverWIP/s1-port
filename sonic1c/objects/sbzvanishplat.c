@@ -71,7 +71,7 @@ ROMFUNC(rom_167D0) {
     return;
   }                                                // BRA.B	$167F4
   DEF_ROMLOC(167E4) : move_toreg_32(0x1687E, &A1); // LEA.L	$0001687E,A1
-  DEF_ROMLOC(167EA) : rom_ADA2();                  // JSR	$0000ADA2
+  DEF_ROMLOC(167EA) : animate_sprite();                  // JSR	$0000ADA2
   rom_FD38();                                      // BRA.W	$FD38
 }
 ROMFUNC(rom_167F4) {
@@ -84,7 +84,7 @@ ROMFUNC(rom_167F4) {
       : move_tomem_16(read_16(A0 + 0x32), A0 + 0x30); // MOVE.W	50(A0),48(A0)
   DEF_ROMLOC(1680C) : bchg_tomem_8(0x0, A0 + 0x1C);   // BCHG.B	#$00,28(A0)
   DEF_ROMLOC(16812) : move_toreg_32(0x1687E, &A1);    // LEA.L	$0001687E,A1
-  DEF_ROMLOC(16818) : rom_ADA2();                     // JSR	$0000ADA2
+  DEF_ROMLOC(16818) : animate_sprite();                     // JSR	$0000ADA2
   DEF_ROMLOC(1681E) : btst_tomem_8(0x1, A0 + 0x1A);   // BTST.B	#$01,26(A0)
   DEF_ROMLOC(16824) : if (!CCR_EQ) goto rom_16858;    // BNE.B	$16858
   DEF_ROMLOC(16826) : cmp_tomem_8(0x2, A0 + 0x24);    // CMPI.B	#$02,36(A0)

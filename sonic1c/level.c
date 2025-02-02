@@ -333,8 +333,8 @@ ROMFUNC(rom_3AEC) {
   DEF_ROMLOC(3B24) : level_palette_cycle();        // BSR.W	$1934
   DEF_ROMLOC(3B28) : run_plc();                   // BSR.W	$15E4
   DEF_ROMLOC(3B2C) : rom_4170();                   // BSR.W	$4170
-  DEF_ROMLOC(3B30) : rom_4208();                   // BSR.W	$4208
-  DEF_ROMLOC(3B34) : rom_4276();                   // BSR.W	$4276
+  DEF_ROMLOC(3B30) : run_global_anims();                   // BSR.W	$4208
+  DEF_ROMLOC(3B34) : maybe_load_signpost_art();                   // BSR.W	$4276
   DEF_ROMLOC(3B38) : cmp_tomem_8(0x8, 0xFFFFF600); // CMPI.B	#$08,$F600
   DEF_ROMLOC(3B3E) : if (CCR_EQ) goto rom_3B4C;    // BEQ.B	$3B4C
   DEF_ROMLOC(3B40) : cmp_tomem_8(0xC, 0xFFFFF600); // CMPI.B	#$0C,$F600

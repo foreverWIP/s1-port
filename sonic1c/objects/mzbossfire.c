@@ -82,7 +82,7 @@ ROMFUNC(rom_18ECA) {
   }
   DEF_ROMLOC(18ED8) : rom_DC6C();                    // JSR	$0000DC6C
   DEF_ROMLOC(18EDE) : move_toreg_32(0xEB52, &A1);    // LEA.L	$0000EB52,A1
-  DEF_ROMLOC(18EE4) : rom_ADA2();                    // JSR	$0000ADA2
+  DEF_ROMLOC(18EE4) : animate_sprite();                    // JSR	$0000ADA2
   DEF_ROMLOC(18EEA) : cmp_tomem_16(0x2E8, A0 + 0xC); // CMPI.W	#$02E8,12(A0)
   DEF_ROMLOC(18EF0) : if (CCR_HI) {
     rom_18EF4();
@@ -290,7 +290,7 @@ ROMFUNC(rom_19036) {
 }
 ROMFUNC(rom_19050) {
   DEF_ROMLOC(19050) : move_toreg_32(0xEB52, &A1); // LEA.L	$0000EB52,A1
-  DEF_ROMLOC(19056) : rom_ADA2();
+  DEF_ROMLOC(19056) : animate_sprite();
   return; // JMP	$0000ADA2
 }
 ROMFUNC(rom_1905C) {

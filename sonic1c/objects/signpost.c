@@ -29,7 +29,7 @@ ROMFUNC(rom_F1B4) {
     break;
   }
   DEF_ROMLOC(F1C2) : move_toreg_32(0xF3A8, &A1); // LEA.L	$0000F3A8,A1
-  DEF_ROMLOC(F1C8) : rom_ADA2();                 // BSR.W	$ADA2
+  DEF_ROMLOC(F1C8) : animate_sprite();                 // BSR.W	$ADA2
   DEF_ROMLOC(F1CC) : rom_DC92();                 // BSR.W	$DC92
   DEF_ROMLOC(F1D0) : move_toreg_16(read_16(A0 + 0x8), &D0); // MOVE.W	8(A0),D0
   DEF_ROMLOC(F1D4) : and_toreg_16(0xFFFFFF80, &D0);         // ANDI.W	#$FF80,D0

@@ -134,7 +134,7 @@ ROMFUNC(rom_A45E) {
 }
 ROMFUNC(rom_A472) {
   DEF_ROMLOC(A472) : move_toreg_32(0xA608, &A1); // LEA.L	$0000A608,A1
-  DEF_ROMLOC(A478) : rom_ADA2();                 // BSR.W	$ADA2
+  DEF_ROMLOC(A478) : animate_sprite();                 // BSR.W	$ADA2
   rom_DC92();                                    // BRA.W	$DC92
 }
 ROMFUNC(rom_A480) {

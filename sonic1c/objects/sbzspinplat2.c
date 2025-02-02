@@ -73,7 +73,7 @@ ROMFUNC(rom_15F2A) {
   DEF_ROMLOC(15F42) : move_toreg_16(0xBB, &D0);       // MOVE.W	#$00BB,D0
   DEF_ROMLOC(15F46) : play_sound_special();           // JSR	$00001394
   DEF_ROMLOC(15F4C) : move_toreg_32(0x1600C, &A1);    // LEA.L	$0001600C,A1
-  DEF_ROMLOC(15F52) : rom_ADA2();                     // JSR	$0000ADA2
+  DEF_ROMLOC(15F52) : animate_sprite();                     // JSR	$0000ADA2
   DEF_ROMLOC(15F58) : tst_mem_8(A0 + 0x1A);           // TST.B	26(A0)
   DEF_ROMLOC(15F5C) : if (!CCR_EQ) goto rom_15F76;    // BNE.B	$15F76
   DEF_ROMLOC(15F5E) : move_toreg_16(0x4B, &D1);       // MOVE.W	#$004B,D1
@@ -109,7 +109,7 @@ ROMFUNC(rom_15F96) {
   DEF_ROMLOC(15FB8) : clr_mem_8(A0 + 0x34);           // CLR.B	52(A0)
   DEF_ROMLOC(15FBC) : bchg_tomem_8(0x0, A0 + 0x1C);   // BCHG.B	#$00,28(A0)
   DEF_ROMLOC(15FC2) : move_toreg_32(0x1600C, &A1);    // LEA.L	$0001600C,A1
-  DEF_ROMLOC(15FC8) : rom_ADA2();                     // JSR	$0000ADA2
+  DEF_ROMLOC(15FC8) : animate_sprite();                     // JSR	$0000ADA2
   DEF_ROMLOC(15FCE) : tst_mem_8(A0 + 0x1A);           // TST.B	26(A0)
   DEF_ROMLOC(15FD2) : if (!CCR_EQ) goto rom_15FEC;    // BNE.B	$15FEC
   DEF_ROMLOC(15FD4) : move_toreg_16(0x1B, &D1);       // MOVE.W	#$001B,D1

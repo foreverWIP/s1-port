@@ -70,7 +70,7 @@ ROMFUNC(rom_9BDA) {
     break;
   }
   DEF_ROMLOC(9BE8) : move_toreg_32(0x9D98, &A1); // LEA.L	$00009D98,A1
-  DEF_ROMLOC(9BEE) : rom_ADA2();                 // BSR.W	$ADA2
+  DEF_ROMLOC(9BEE) : animate_sprite();                 // BSR.W	$ADA2
   DEF_ROMLOC(9BF2) : {
     rom_FD38();
     return;
@@ -191,7 +191,7 @@ ROMFUNC(rom_9D3C) {
 }
 ROMFUNC(rom_9D72) {
   DEF_ROMLOC(9D72) : move_toreg_32(0x9D98, &A1); // LEA.L	$00009D98,A1
-  DEF_ROMLOC(9D78) : rom_ADA2();                 // BSR.W	$ADA2
+  DEF_ROMLOC(9D78) : animate_sprite();                 // BSR.W	$ADA2
   DEF_ROMLOC(9D7C) : rom_DC40();                 // BSR.W	$DC40
   DEF_ROMLOC(9D80) : rom_DC92();                 // BSR.W	$DC92
   DEF_ROMLOC(9D84)

@@ -52,5 +52,5 @@ ROMFUNC(rom_AD82) {
 }
 ROMFUNC(rom_AD84) {
   DEF_ROMLOC(AD84) : move_toreg_32(0xAD9C, &A1); // LEA.L	$0000AD9C,A1
-  DEF_ROMLOC(AD8A) : rom_ADA2();                 // BRA.W	$ADA2
+  DEF_ROMLOC(AD8A) : animate_sprite();                 // BRA.W	$ADA2
 }
