@@ -10,7 +10,7 @@ ROMFUNC(rom_6710) {
   DEF_ROMLOC(6718) : move_toreg_32(D5, &D1);     // MOVE.L	D5,D1
   DEF_ROMLOC(671A) : asl_toreg_32(0x1, &D5);     // ASL.L	#$01,D5
   DEF_ROMLOC(671C) : add_toreg_32(D1, &D5);      // ADD.L	D1,D5
-  DEF_ROMLOC(671E) : rom_6B2E();                 // BSR.W	$6B2E
+  DEF_ROMLOC(671E) : scroll_bg_y();                 // BSR.W	$6B2E
   DEF_ROMLOC(6722)
       : move_tomem_16(read_16(0xFFFFF70C),
                       0xFFFFF618);                   // MOVE.W	$F70C,$F618

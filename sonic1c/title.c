@@ -123,7 +123,7 @@ ROMFUNC(rom_3076) {
   DEF_ROMLOC(308A) : move_toreg_32(0xFFFFF708, &A3); // LEA.L	$F708,A3
   DEF_ROMLOC(308E) : move_toreg_32(0xFFFFA440, &A4); // LEA.L	$A440,A4
   DEF_ROMLOC(3092) : move_toreg_16(0x6000, &D2);     // MOVE.W	#$6000,D2
-  DEF_ROMLOC(3096) : rom_71F8();                     // BSR.W	$71F8
+  DEF_ROMLOC(3096) : draw_chunks();                     // BSR.W	$71F8
   DEF_ROMLOC(309A) : move_toreg_32(v_256x256, &A1);  // LEA.L	$00FF0000,A1
   DEF_ROMLOC(30A0) : move_toreg_32(0x1EC6C, &A0);    // LEA.L	$0001EC6C,A0
   DEF_ROMLOC(30A6) : move_toreg_16(0x0, &D0);        // MOVE.W	#$0000,D0

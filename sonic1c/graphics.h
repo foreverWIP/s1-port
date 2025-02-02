@@ -2,3 +2,23 @@
 
 void copy_tilemap_to_vram(void);
 void clear_screen(void);
+void vdp_setup(void);
+void handle_scroll_horiz(void);
+void handle_scroll_vert(void);
+void scroll_bg_full(void);
+void scroll_bg_y_relative(void);
+void scroll_bg_y(void);
+void scroll_bg_y_absolute(void);
+void scroll_bg_layer_1(void);
+void scroll_bg_layer_2(void);
+void scroll_bg_layer_3(void);
+void scroll_update_tiles_bg(void);
+void scroll_update_tiles(void);
+void draw_bg_layer_1(void);
+void draw_blocks_scroll_vert_full(void);
+void draw_blocks_scroll_vert_alt(void);
+void calc_vram_pos_relative(void);
+void calc_vram_pos(void);
+void draw_bg_layer_3_alt(void);
+void update_tiles_on_start(void);
+void draw_chunks(void);

@@ -197,7 +197,7 @@ ROMFUNC(rom_C36) {
 }
 ROMFUNC(rom_C44) {
   DEF_ROMLOC(C44) : rom_106E();                    // BSR.W	$106E
-  DEF_ROMLOC(C48) : rom_6C30();                    // BSR.W	$6C30
+  DEF_ROMLOC(C48) : scroll_update_tiles_bg();                    // BSR.W	$6C30
   DEF_ROMLOC(C4C) : plc_refresh_frame();                    // BSR.W	$163A
   DEF_ROMLOC(C50) : tst_mem_16(0xFFFFF614);        // TST.W	$F614
   DEF_ROMLOC(C54) : if (CCR_EQ) goto rom_C5C;      // BEQ.W	$0C5C
@@ -316,7 +316,7 @@ ROMFUNC(rom_C6E) {
   // rom_B64(); // BRA.W	$0B64
 }
 ROMFUNC(rom_D84) {
-  DEF_ROMLOC(D84) : rom_6C5C();                    // BSR.W	$6C5C
+  DEF_ROMLOC(D84) : scroll_update_tiles();                    // BSR.W	$6C5C
   DEF_ROMLOC(D88) : rom_1C7DA();                   // JSR	$0001C7DA
   DEF_ROMLOC(D8E) : rom_1CE84();                   // JSR	$0001CE84
   DEF_ROMLOC(D94) : dplc_process_2();                    // BSR.W	$1656
@@ -472,7 +472,7 @@ ROMFUNC(rom_E72) {
   DEF_ROMLOC(F6E) : write_32(0xFFFF30, D0);
   write_32(0xFFFF34, D1);
   // TODO; // MOVEM.L	D0-D1,$FF30
-  DEF_ROMLOC(F74) : rom_6C5C();  // BSR.W	$6C5C
+  DEF_ROMLOC(F74) : scroll_update_tiles();  // BSR.W	$6C5C
   DEF_ROMLOC(F78) : rom_1C7DA(); // JSR	$0001C7DA
   DEF_ROMLOC(F7E) : rom_1CE84(); // JSR	$0001CE84
   DEF_ROMLOC(F84) : plc_refresh_frame();  // BSR.W	$163A

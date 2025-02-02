@@ -75,7 +75,7 @@ ROMFUNC(rom_50FE) {
   DEF_ROMLOC(51AA) : rom_626E();                    // BSR.W	$626E
   DEF_ROMLOC(51AE) : bset_tomem_8(0x2, 0xFFFFF754); // BSET.B	#$02,$F754
   DEF_ROMLOC(51B4) : rom_72F0();                    // BSR.W	$72F0
-  DEF_ROMLOC(51B8) : rom_71AC();                    // BSR.W	$71AC
+  DEF_ROMLOC(51B8) : update_tiles_on_start();                    // BSR.W	$71AC
   DEF_ROMLOC(51BC)
       : move_tomem_32(0x64A00, 0xFFFFF796);       // MOVE.L	#$00064A00,$F796
   DEF_ROMLOC(51C4) : move_tosr_16(0x2300, &SR);   // MOVE.W	#$2300,SR
@@ -207,7 +207,7 @@ ROMFUNC(rom_530A) {
   DEF_ROMLOC(535E) : move_toreg_32(0xFFFFF700, &A3); // LEA.L	$F700,A3
   DEF_ROMLOC(5362) : move_toreg_32(0xFFFFA400, &A4); // LEA.L	$A400,A4
   DEF_ROMLOC(5366) : move_toreg_16(0x4000, &D2);     // MOVE.W	#$4000,D2
-  DEF_ROMLOC(536A) : rom_71F8();                     // BSR.W	$71F8
+  DEF_ROMLOC(536A) : draw_chunks();                     // BSR.W	$71F8
   DEF_ROMLOC(536E) : move_toreg_32(0x13, &D0);       // MOVEQ.L	$13,D0
   DEF_ROMLOC(5370) : load_palette_fading();          // BSR.W	$20F4
   DEF_ROMLOC(5374) : game_state = rom_5290;
