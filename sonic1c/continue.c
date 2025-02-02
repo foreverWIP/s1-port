@@ -2,13 +2,16 @@
 #include "opcodes.h"
 #include "system.h"
 
-ROMFUNC(rom_4CF0);
+void continue_screen_init_part2(void);
+void continue_screen_load_numbers(void);
+void continue_screen_loop(void);
+void continue_screen_loop_part2(void);
 
-ROMFUNC(rom_4CEC) {
-  DEF_ROMLOC(4CEC) : game_state = rom_4CF0;
+void continue_screen_init(void) {
+  DEF_ROMLOC(4CEC) : game_state = continue_screen_init_part2;
   palette_fade_out(); // BSR.W	$1E4A
 }
-ROMFUNC(rom_4CF0) {
+void continue_screen_init_part2(void) {
   DEF_ROMLOC(4CF0) : move_tosr_16(0x2700, &SR); // MOVE.W	#$2700,SR
   DEF_ROMLOC(4CF4)
       : move_toreg_16(read_16(0xFFFFF60C), &D0);     // MOVE.W	$F60C,D0
@@ -38,7 +41,7 @@ ROMFUNC(rom_4CF0) {
   DEF_ROMLOC(4D56) : move_toreg_32(0x3B64A, &A0); // LEA.L	$0003B64A,A0
   DEF_ROMLOC(4D5C) : decompress_nemesis();                  // BSR.W	$1438
   DEF_ROMLOC(4D60) : move_toreg_32(0xA, &D1);     // MOVEQ.L	$0A,D1
-  DEF_ROMLOC(4D62) : rom_1D104();                 // JSR	$0001D104
+  DEF_ROMLOC(4D62) : continue_screen_load_numbers();                 // JSR	$0001D104
   DEF_ROMLOC(4D68) : move_toreg_32(0x12, &D0);    // MOVEQ.L	$12,D0
   DEF_ROMLOC(4D6A) : load_palette_fading();       // BSR.W	$20F4
   DEF_ROMLOC(4D6E) : move_toreg_8(0xFFFFFF90, &D0); // MOVE.B	#$90,D0
@@ -66,22 +69,21 @@ ROMFUNC(rom_4CF0) {
       : move_toreg_16(read_16(0xFFFFF60C), &D0);  // MOVE.W	$F60C,D0
   DEF_ROMLOC(4DC2) : or_toreg_8(0x40, &D0);       // ORI.B	#$40,D0
   DEF_ROMLOC(4DC6) : move_tomem_16(D0, 0xC00004); // MOVE.W	D0,$00C00004
-  DEF_ROMLOC(4DCC) : game_state = rom_4DD0;
+  DEF_ROMLOC(4DCC) : game_state = continue_screen_loop;
   palette_fade_in(true); // BSR.W	$1DA4
 }
-ROMFUNC(rom_4DDA);
-ROMFUNC(rom_4DD0) {
+void continue_screen_loop(void) {
   end_frame(0x16);
-  game_state = rom_4DDA;
+  game_state = continue_screen_loop_part2;
 }
-ROMFUNC(rom_4DDA) {
+void continue_screen_loop_part2(void) {
   DEF_ROMLOC(4DDA) : cmp_tomem_8(0x6, 0xFFFFD024); // CMPI.B	#$06,$D024
   DEF_ROMLOC(4DE0) : if (CCR_CC) goto rom_4DFE;    // BCC.B	$4DFE
   DEF_ROMLOC(4DE2) : move_tosr_16(0x2700, &SR);    // MOVE.W	#$2700,SR
   DEF_ROMLOC(4DE6) : move_toreg_16(read_16(0xFFFFF614), &D1); // MOVE.W	$F614,D1
   DEF_ROMLOC(4DEA) : divu_toreg_16(0x3C, &D1);        // DIVU.W	#$003C,D1
   DEF_ROMLOC(4DEE) : and_toreg_32(0xF, &D1);          // ANDI.L	#$0000000F,D1
-  DEF_ROMLOC(4DF4) : rom_1D104();                     // JSR	$0001D104
+  DEF_ROMLOC(4DF4) : continue_screen_load_numbers();                     // JSR	$0001D104
   DEF_ROMLOC(4DFA) : move_tosr_16(0x2300, &SR);       // MOVE.W	#$2300,SR
   DEF_ROMLOC(4DFE) : rom_D9C6();                      // JSR	$0000D9C6
   DEF_ROMLOC(4E04) : rom_DCEC();                      // JSR	$0000DCEC
@@ -89,12 +91,12 @@ ROMFUNC(rom_4DDA) {
   DEF_ROMLOC(4E10) : if (CCR_CC) goto rom_4E2A;       // BCC.B	$4E2A
   DEF_ROMLOC(4E12) : cmp_tomem_8(0x6, 0xFFFFD024);    // CMPI.B	#$06,$D024
   DEF_ROMLOC(4E18) : if (CCR_CC) {
-    rom_4DD0();
+    continue_screen_loop();
     return;
   }                                          // BCC.B	$4DD0
   DEF_ROMLOC(4E1A) : tst_mem_16(0xFFFFF614); // TST.W	$F614
   DEF_ROMLOC(4E1E) : if (!CCR_EQ) {
-    rom_4DD0();
+    continue_screen_loop();
     return;
   } // BNE.W	$4DD0
   DEF_ROMLOC(4E22) : SET_GM_SEGA();
@@ -109,7 +111,7 @@ ROMFUNC(rom_4DDA) {
   DEF_ROMLOC(4E48) : sub_tomem_8(0x1, 0xFFFFFE18);  // SUBQ.B	#$01,$FE18
   DEF_ROMLOC(4E4C) : return;                        // RTS
 }
-ROMFUNC(rom_1D104) {
+void continue_screen_load_numbers(void) {
   DEF_ROMLOC(1D104)
       : move_tomem_32(0x5F800003, 0xC00004); // MOVE.L	#$5F800003,$00C00004
   DEF_ROMLOC(1D10E) : move_toreg_32(0xC00000, &A6); // LEA.L	$00C00000,A6
@@ -117,9 +119,6 @@ ROMFUNC(rom_1D104) {
   DEF_ROMLOC(1D11A) : move_toreg_32(0x1, &D6);      // MOVEQ.L	$01,D6
   DEF_ROMLOC(1D11C) : move_toreg_32(0x0, &D4);      // MOVEQ.L	$00,D4
   DEF_ROMLOC(1D11E) : move_toreg_32(0x1D2A6, &A1);  // LEA.L	390(PC),A1
-  rom_1D122(); // Detected flow into next function
-}
-ROMFUNC(rom_1D122) {
   DEF_ROMLOC(1D122) : move_toreg_32(0x0, &D2); // MOVEQ.L	$00,D2
   DEF_ROMLOC(1D124)
       : move_toreg_32(read_32((A2 += 4, A2 - 4)), &D3); // MOVE.L	(A2)+,D3

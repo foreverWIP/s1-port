@@ -13,6 +13,7 @@
 #include "enigma.h"
 #include "vblank.h"
 #include "anim.h"
+#include "continue.h"
 
 extern void (*game_state)(void);
 extern bool exit_mainloop;

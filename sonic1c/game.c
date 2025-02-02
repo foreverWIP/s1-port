@@ -39,7 +39,7 @@ void rom_388_nosega(void) {
 		case 8: game_state = rom_379E; break;
 		case 0xc: game_state = rom_379E; break;
 		case 0x10: game_state = rom_45DE; break;
-		case 0x14: game_state = rom_4CEC; break;
+		case 0x14: game_state = continue_screen_init; break;
 		case 0x18: game_state = rom_50F2; break;
 		case 0x1C: game_state = rom_57D2; break;
 	}
