@@ -135,7 +135,7 @@ ROMFUNC(rom_529E);
 ROMFUNC(rom_5294);
 ROMFUNC(rom_5290) {
   DEF_ROMLOC(5290) : game_state = rom_5294;
-  rom_13A0(); // BSR.W	$13A0
+  handle_pause_game(); // BSR.W	$13A0
 }
 ROMFUNC(rom_5294) {
   end_frame(0x18);
@@ -173,7 +173,7 @@ ROMFUNC(rom_530A);
 ROMFUNC(rom_5300);
 ROMFUNC(rom_52FC) {
   DEF_ROMLOC(52FC) : game_state = rom_5300;
-  rom_13A0(); // BSR.W	$13A0
+  handle_pause_game(); // BSR.W	$13A0
 }
 ROMFUNC(rom_5300) {
   end_frame(0x18);

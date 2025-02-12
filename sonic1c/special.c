@@ -112,7 +112,7 @@ ROMFUNC(rom_473A);
 ROMFUNC(rom_4730);
 ROMFUNC(rom_472C) {
   DEF_ROMLOC(472C) : game_state = rom_4730;
-  rom_13A0(); // BSR.W	$13A0
+  handle_pause_game(); // BSR.W	$13A0
 }
 ROMFUNC(rom_4730) {
   end_frame(0xA);
@@ -216,7 +216,7 @@ ROMFUNC(rom_47A6) {
 ROMFUNC(rom_4862);
 ROMFUNC(rom_485E) {
   DEF_ROMLOC(485E) : game_state = rom_4862;
-  rom_13A0(); // BSR.W	$13A0
+  handle_pause_game(); // BSR.W	$13A0
 }
 ROMFUNC(rom_4862) {
   end_frame(0xC);

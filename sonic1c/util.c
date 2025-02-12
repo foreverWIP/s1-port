@@ -4,7 +4,7 @@
 
 ROMFUNC(rom_13CC);
 
-ROMFUNC(rom_13A0) {
+void handle_pause_game(void) {
   DEF_ROMLOC(13A0) : {};                    // NOP
   DEF_ROMLOC(13A2) : tst_mem_8(0xFFFFFE12); // TST.B	$FE12
   DEF_ROMLOC(13A6) : if (CCR_EQ) {

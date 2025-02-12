@@ -306,7 +306,7 @@ ROMFUNC(rom_3AD8) {
 ROMFUNC(rom_3AE2);
 ROMFUNC(rom_3ADE) {
   DEF_ROMLOC(3ADE) : game_state = rom_3AE2;
-  rom_13A0(); // BSR.W	$13A0
+  handle_pause_game(); // BSR.W	$13A0
 }
 ROMFUNC(rom_3AE2) {
   end_frame(0x8);
