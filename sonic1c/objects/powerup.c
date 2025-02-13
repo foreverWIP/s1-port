@@ -142,7 +142,6 @@ ROMFUNC(rom_A9DC) {
   }                                              // JMP	$0000138E
   DEF_ROMLOC(AB04) : cmp_toreg_8(0x7, &D0);      // CMPI.B	#$07,D0
   DEF_ROMLOC(AB08) : if (!CCR_EQ) goto rom_AB0C; // BNE.B	$AB0C
-  DEF_ROMLOC(AB0A) : {};                         // NOP
   DEF_ROMLOC(AB0C) : return;                     // RTS
 }
 ROMFUNC(rom_AB0E) {

@@ -28,14 +28,10 @@ void input_read_controllers(void) {
 }
 void input_read_controller(void) {
   DEF_ROMLOC(11F4) : move_tomem_8(0x0, A1);         // MOVE.B	#$00,(A1)
-  DEF_ROMLOC(11F8) : {};                            // NOP
-  DEF_ROMLOC(11FA) : {};                            // NOP
   DEF_ROMLOC(11FC) : move_toreg_8(read_8(A1), &D0); // MOVE.B	(A1),D0
   DEF_ROMLOC(11FE) : lsl_toreg_8(0x2, &D0);         // LSL.B	#$02,D0
   DEF_ROMLOC(1200) : and_toreg_8(0xFFFFFFC0, &D0);  // ANDI.B	#$C0,D0
   DEF_ROMLOC(1204) : move_tomem_8(0x40, A1);        // MOVE.B	#$40,(A1)
-  DEF_ROMLOC(1208) : {};                            // NOP
-  DEF_ROMLOC(120A) : {};                            // NOP
   DEF_ROMLOC(120C) : move_toreg_8(read_8(A1), &D1); // MOVE.B	(A1),D1
   DEF_ROMLOC(120E) : and_toreg_8(0x3F, &D1);        // ANDI.B	#$3F,D1
   DEF_ROMLOC(1212) : or_toreg_8(D1, &D0);           // OR.B	D1,D0

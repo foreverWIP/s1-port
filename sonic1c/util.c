@@ -5,7 +5,6 @@
 ROMFUNC(rom_13CC);
 
 void handle_pause_game(void) {
-  DEF_ROMLOC(13A0) : {};                    // NOP
   DEF_ROMLOC(13A2) : tst_mem_8(0xFFFFFE12); // TST.B	$FE12
   DEF_ROMLOC(13A6) : if (CCR_EQ) {
     rom_1402();
@@ -30,7 +29,6 @@ ROMFUNC(rom_13CC) {
   DEF_ROMLOC(13D2) : btst_tomem_8(0x6, 0xFFFFF605); // BTST.B	#$06,$F605
   DEF_ROMLOC(13D8) : if (CCR_EQ) goto rom_13E4;     // BEQ.B	$13E4
   DEF_ROMLOC(13DA) : SET_GM_TITLE();
-  DEF_ROMLOC(13E0) : {};                            // NOP
   goto rom_13FC;                                    // BRA.B	$13FC
   DEF_ROMLOC(13E4) : btst_tomem_8(0x4, 0xFFFFF604); // BTST.B	#$04,$F604
   DEF_ROMLOC(13EA) : if (!CCR_EQ) {

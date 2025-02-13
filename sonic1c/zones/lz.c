@@ -320,7 +320,6 @@ ROMFUNC(rom_3F36) {
   DEF_ROMLOC(3F7C) : return;                        // RTS
   DEF_ROMLOC(3F7E) : cmp_toreg_16(0x3, &D1);        // CMPI.W	#$0003,D1
   DEF_ROMLOC(3F82) : if (CCR_CC) goto rom_3F86;     // BCC.B	$3F86
-  DEF_ROMLOC(3F84) : {};                            // NOP
   DEF_ROMLOC(3F86) : bclr_tomem_8(0x0, A1 + 0x22);  // BCLR.B	#$00,34(A1)
   DEF_ROMLOC(3F8C)
       : move_toreg_8(read_8(0x3FC2 + (s16)(D1 & 0xffff)),

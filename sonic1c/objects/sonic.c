@@ -1676,7 +1676,6 @@ ROMFUNC(rom_13BDE) {
   DEF_ROMLOC(13C18) : return;                      // RTS
 }
 ROMFUNC(rom_13C1A) {
-  DEF_ROMLOC(13C1A) : {};                          // NOP
   DEF_ROMLOC(13C1C) : tst_mem_8(A0 + 0x38);        // TST.B	56(A0)
   DEF_ROMLOC(13C20) : if (!CCR_EQ) goto rom_13C54; // BNE.B	$13C54
   DEF_ROMLOC(13C22) : tst_mem_16(A0 + 0x3E);       // TST.W	62(A0)
@@ -1876,9 +1875,6 @@ ROMFUNC(rom_13C78) {
 ROMFUNC(rom_13E74) {
   DEF_ROMLOC(13E74) : btst_tomem_8(0x4, A0 + 0x22);   // BTST.B	#$04,34(A0)
   DEF_ROMLOC(13E7A) : if (CCR_EQ) goto rom_13E82;     // BEQ.B	$13E82
-  DEF_ROMLOC(13E7C) : {};                             // NOP
-  DEF_ROMLOC(13E7E) : {};                             // NOP
-  DEF_ROMLOC(13E80) : {};                             // NOP
   DEF_ROMLOC(13E82) : bclr_tomem_8(0x5, A0 + 0x22);   // BCLR.B	#$05,34(A0)
   DEF_ROMLOC(13E88) : bclr_tomem_8(0x1, A0 + 0x22);   // BCLR.B	#$01,34(A0)
   DEF_ROMLOC(13E8E) : bclr_tomem_8(0x4, A0 + 0x22);   // BCLR.B	#$04,34(A0)

@@ -766,7 +766,6 @@ ROMFUNC(rom_15136) {
 }
 ROMFUNC(rom_153B4) { return; }
 ROMFUNC(rom_1B59A) {
-  DEF_ROMLOC(1B59A) : {}; // NOP
   DEF_ROMLOC(1B59C)
       : move_toreg_16(read_16(A0 + 0x8), &D2); // MOVE.W	8(A0),D2
   DEF_ROMLOC(1B5A0)
@@ -935,7 +934,6 @@ ROMFUNC(rom_1B796) {
   DEF_ROMLOC(1B79A) : if (CCR_EQ) goto rom_1B7A0;     // BEQ.B	$1B7A0
   DEF_ROMLOC(1B79C) : move_toreg_32(0xFFFFFFFF, &D0); // MOVEQ.L	$FF,D0
   DEF_ROMLOC(1B79E) : return;                         // RTS
-  DEF_ROMLOC(1B7A0) : {};                             // NOP
   DEF_ROMLOC(1B7A2) : tst_mem_16(A0 + 0x30);          // TST.W	48(A0)
   DEF_ROMLOC(1B7A6) : if (!CCR_EQ) goto rom_1B79C;    // BNE.B	$1B79C
   DEF_ROMLOC(1B7A8) : move_toreg_32(A1, &A2);         // MOVEA.L	A1,A2

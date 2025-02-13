@@ -175,7 +175,6 @@ ROMFUNC(rom_1C2AE) {
   DEF_ROMLOC(1C2CE) : return;                         // RTS
   DEF_ROMLOC(1C2D0) : sub_toreg_16(0x40, &D0);        // SUBI.W	#$0040,D0
   DEF_ROMLOC(1C2D4) : if (CCR_CC) goto rom_1C2D8;     // BCC.B	$1C2D8
-  DEF_ROMLOC(1C2D6) : {};                             // NOP
   DEF_ROMLOC(1C2D8) : move_tomem_16(D0, A0 + 0x14);   // MOVE.W	D0,20(A0)
   DEF_ROMLOC(1C2DC) : return;                         // RTS
 }
@@ -192,7 +191,6 @@ ROMFUNC(rom_1C2DE) {
   goto rom_1C30A;                                   // BRA.B	$1C30A
   DEF_ROMLOC(1C2FE) : add_toreg_16(0x40, &D0);      // ADDI.W	#$0040,D0
   DEF_ROMLOC(1C302) : if (CCR_CC) goto rom_1C306;   // BCC.B	$1C306
-  DEF_ROMLOC(1C304) : {};                           // NOP
   DEF_ROMLOC(1C306) : move_tomem_16(D0, A0 + 0x14); // MOVE.W	D0,20(A0)
   DEF_ROMLOC(1C30A) : return;                       // RTS
 }
