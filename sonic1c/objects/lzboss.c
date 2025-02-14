@@ -49,7 +49,7 @@ void lz_boss_main(bool skip_to_ship) {
   goto rom_1864C;                                      // BRA.B	$1864C
   DEF_ROMLOC(18632) : rom_E130();                      // JSR	$0000E130
   DEF_ROMLOC(18638) : if (!CCR_EQ) { goto rom_18686; } // BNE.B	$18686
-  DEF_ROMLOC(1863A) : move_tomem_8(0x77, A1 + 0x0);    // MOVE.B	#$77,0(A1)
+  DEF_ROMLOC(1863A) : move_tomem_8(OBJ_BOSSLABYRINTH, A1 + offsetof(object, id));    // MOVE.B	#$77,0(A1)
   DEF_ROMLOC(18640)
       : move_tomem_16(read_16(A0 + 0x8), A1 + 0x8); // MOVE.W	8(A0),8(A1)
   DEF_ROMLOC(18646)

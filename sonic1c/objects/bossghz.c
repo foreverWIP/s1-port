@@ -37,7 +37,7 @@ ROMFUNC(rom_17EC2) {
   DEF_ROMLOC(17EDA) : if (!CCR_EQ) goto rom_17F1E; // BNE.B	$17F1E
   DEF_ROMLOC(17EDC)
       : move_tomem_8(read_8(A2++), A1 + 0x24);      // MOVE.B	(A2)+,36(A1)
-  DEF_ROMLOC(17EE0) : move_tomem_8(0x3D, A1 + 0x0); // MOVE.B	#$3D,0(A1)
+  DEF_ROMLOC(17EE0) : move_tomem_8(OBJ_BOSSGREENHILL, A1 + offsetof(object, id)); // MOVE.B	#$3D,0(A1)
   DEF_ROMLOC(17EE6)
       : move_tomem_16(read_16(A0 + 0x8), A1 + 0x8); // MOVE.W	8(A0),8(A1)
   DEF_ROMLOC(17EEC)
@@ -114,7 +114,7 @@ ROMFUNC(rom_17EC8) {
   DEF_ROMLOC(17EDA) : if (!CCR_EQ) goto rom_17F1E; // BNE.B	$17F1E
   DEF_ROMLOC(17EDC)
       : move_tomem_8(read_8(A2++), A1 + 0x24);      // MOVE.B	(A2)+,36(A1)
-  DEF_ROMLOC(17EE0) : move_tomem_8(0x3D, A1 + 0x0); // MOVE.B	#$3D,0(A1)
+  DEF_ROMLOC(17EE0) : move_tomem_8(OBJ_BOSSGREENHILL, A1 + offsetof(object, id)); // MOVE.B	#$3D,0(A1)
   DEF_ROMLOC(17EE6)
       : move_tomem_16(read_16(A0 + 0x8), A1 + 0x8); // MOVE.W	8(A0),8(A1)
   DEF_ROMLOC(17EEC)
@@ -247,7 +247,7 @@ ROMFUNC(rom_1800C) {
   DEF_ROMLOC(18014) : if (!CCR_EQ) goto rom_1804E;  // BNE.B	$1804E
   DEF_ROMLOC(18016) : rom_E11A();                   // JSR	$0000E11A
   DEF_ROMLOC(1801C) : if (!CCR_EQ) goto rom_1804E;  // BNE.B	$1804E
-  DEF_ROMLOC(1801E) : move_tomem_8(0x3F, A1 + 0x0); // MOVE.B	#$3F,0(A1)
+  DEF_ROMLOC(1801E) : move_tomem_8(OBJ_EXPLOSIONBOMB, A1 + offsetof(object, id)); // MOVE.B	#$3F,0(A1)
   DEF_ROMLOC(18024)
       : move_tomem_16(read_16(A0 + 0x8), A1 + 0x8); // MOVE.W	8(A0),8(A1)
   DEF_ROMLOC(1802A)
@@ -299,7 +299,7 @@ ROMFUNC(rom_18076) {
   DEF_ROMLOC(1809A) : add_tomem_8(0x2, A0 + 0x25);   // ADDQ.B	#$02,37(A0)
   DEF_ROMLOC(1809E) : rom_E130();                    // JSR	$0000E130
   DEF_ROMLOC(180A4) : if (!CCR_EQ) goto rom_180BC;   // BNE.B	$180BC
-  DEF_ROMLOC(180A6) : move_tomem_8(0x48, A1 + 0x0);  // MOVE.B	#$48,0(A1)
+  DEF_ROMLOC(180A6) : move_tomem_8(OBJ_BOSSBALL, A1 + offsetof(object, id));  // MOVE.B	#$48,0(A1)
   DEF_ROMLOC(180AC)
       : move_tomem_16(read_16(A0 + 0x30), A1 + 0x8); // MOVE.W	48(A0),8(A1)
   DEF_ROMLOC(180B2)

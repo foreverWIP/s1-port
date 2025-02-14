@@ -74,7 +74,7 @@ ROMFUNC(rom_1AFEA) {
       : move_toreg_32(read_32(A0 + 0x34), &A1);     // MOVEA.L	52(A0),A1
   DEF_ROMLOC(1AFEE) : cmp_tomem_8(0x6, A1 + 0x34);  // CMPI.B	#$06,52(A1)
   DEF_ROMLOC(1AFF4) : if (!CCR_EQ) goto rom_1B006;  // BNE.B	$1B006
-  DEF_ROMLOC(1AFF6) : move_tomem_8(0x3F, A0);       // MOVE.B	#$3F,(A0)
+  DEF_ROMLOC(1AFF6) : move_tomem_8(OBJ_EXPLOSIONBOMB, A0 + offsetof(object, id));       // MOVE.B	#$3F,(A0)
   DEF_ROMLOC(1AFFA) : move_tomem_8(0x0, A0 + 0x24); // MOVE.B	#$00,36(A0)
   DEF_ROMLOC(1B000) : rom_DC92();
   return;                                           // JMP	$0000DC92
@@ -102,7 +102,7 @@ ROMFUNC(rom_1B060) {
   DEF_ROMLOC(1B07E) : move_toreg_32(0x3, &D2);      // MOVEQ.L	$03,D2
   DEF_ROMLOC(1B080) : rom_E130();                   // JSR	$0000E130
   DEF_ROMLOC(1B086) : if (!CCR_EQ) goto rom_1B10A;  // BNE.W	$1B10A
-  DEF_ROMLOC(1B08A) : move_tomem_8(0xFFFFFF86, A1); // MOVE.B	#$86,(A1)
+  DEF_ROMLOC(1B08A) : move_tomem_8(OBJ_BOSSPLASMA, A1 + offsetof(object, id)); // MOVE.B	#$86,(A1)
   DEF_ROMLOC(1B08E)
       : move_tomem_16(read_16(A0 + 0x8), A1 + 0x8);    // MOVE.W	8(A0),8(A1)
   DEF_ROMLOC(1B094) : move_tomem_16(0x53C, A1 + 0xC);  // MOVE.W	#$053C,12(A1)

@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <stddef.h>
 
 #ifdef _WIN32
 #define EXPORT __declspec(dllexport)

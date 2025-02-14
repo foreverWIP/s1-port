@@ -105,7 +105,7 @@ ROMFUNC(rom_C4AC) {
 ROMFUNC(rom_C4CC) {
   DEF_ROMLOC(C4CC) : tst_mem_8(A1 + 0x1);           // TST.B	1(A1)
   DEF_ROMLOC(C4D0) : if (CCR_PL) goto rom_C4D8;     // BPL.B	$C4D8
-  DEF_ROMLOC(C4D2) : cmp_tomem_8(0x33, A1);         // CMPI.B	#$33,(A1)
+  DEF_ROMLOC(C4D2) : cmp_tomem_8(OBJ_PUSHBLOCK, offsetof(object, id));         // CMPI.B	#$33,(A1)
   DEF_ROMLOC(C4D6) : if (CCR_EQ) goto rom_C4E8;     // BEQ.B	$C4E8
   DEF_ROMLOC(C4D8) : move_toreg_32(A1 + 0x40, &A1); // LEA.L	64(A1),A1
   DEF_ROMLOC(C4DC) : dec_reg_16(&D6);

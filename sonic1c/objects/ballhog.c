@@ -55,7 +55,7 @@ ROMFUNC(rom_922C) {
   DEF_ROMLOC(924E) : move_tomem_8(0x1, A0 + 0x32); // MOVE.B	#$01,50(A0)
   DEF_ROMLOC(9254) : rom_E11A();                   // BSR.W	$E11A
   DEF_ROMLOC(9258) : if (!CCR_EQ) goto rom_9298;   // BNE.B	$9298
-  DEF_ROMLOC(925A) : move_tomem_8(0x20, A1 + 0x0); // MOVE.B	#$20,0(A1)
+  DEF_ROMLOC(925A) : move_tomem_8(OBJ_CANNONBALL, A1 + offsetof(object, id)); // MOVE.B	#$20,0(A1)
   DEF_ROMLOC(9260)
       : move_tomem_16(read_16(A0 + 0x8), A1 + 0x8); // MOVE.W	8(A0),8(A1)
   DEF_ROMLOC(9266)

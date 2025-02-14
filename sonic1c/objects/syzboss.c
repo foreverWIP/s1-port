@@ -51,7 +51,7 @@ void syz_boss_loop(u8 skip_state) {
   }
   DEF_ROMLOC(198F0) : rom_E130();                  // JSR	$0000E130
   DEF_ROMLOC(198F6) : if (!CCR_EQ) goto rom_19940; // BNE.B	$19940
-  DEF_ROMLOC(198F8) : move_tomem_8(0x75, A1);      // MOVE.B	#$75,(A1)
+  DEF_ROMLOC(198F8) : move_tomem_8(OBJ_BOSSSPRINGYARD, A1 + offsetof(object, id));      // MOVE.B	#$75,(A1)
   DEF_ROMLOC(198FC)
       : move_tomem_16(read_16(A0 + 0x8), A1 + 0x8); // MOVE.W	8(A0),8(A1)
   DEF_ROMLOC(19902)

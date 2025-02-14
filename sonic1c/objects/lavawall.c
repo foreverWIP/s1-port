@@ -37,7 +37,7 @@ ROMFUNC(rom_F702) {
   DEF_ROMLOC(F70A) : goto rom_F712;                // BRA.B	$F712
   DEF_ROMLOC(F70C) : rom_E130();                   // BSR.W	$E130
   DEF_ROMLOC(F710) : if (!CCR_EQ) goto rom_F754;   // BNE.B	$F754
-  DEF_ROMLOC(F712) : move_tomem_8(0x4E, A1 + 0x0); // MOVE.B	#$4E,0(A1)
+  DEF_ROMLOC(F712) : move_tomem_8(OBJ_LAVAWALL, A1 + offsetof(object, id)); // MOVE.B	#$4E,0(A1)
   DEF_ROMLOC(F718)
       : move_tomem_32(0xFBBA, A1 + 0x4);              // MOVE.L	#$0000FBBA,4(A1)
   DEF_ROMLOC(F720) : move_tomem_16(0x63A8, A1 + 0x2); // MOVE.W	#$63A8,2(A1)

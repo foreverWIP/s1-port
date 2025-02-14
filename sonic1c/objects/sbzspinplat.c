@@ -141,7 +141,7 @@ ROMFUNC(rom_16A2E) {
   goto rom_16B24;                                       // BRA.B	$16B24
   DEF_ROMLOC(16B1C) : rom_E11A();                       // JSR	$0000E11A
   DEF_ROMLOC(16B22) : if (!CCR_EQ) goto rom_16B38;      // BNE.B	$16B38
-  DEF_ROMLOC(16B24) : move_tomem_8(0x6F, A1 + 0x0);     // MOVE.B	#$6F,0(A1)
+  DEF_ROMLOC(16B24) : move_tomem_8(OBJ_SPINCONVEY, A1 + offsetof(object, id));     // MOVE.B	#$6F,0(A1)
   DEF_ROMLOC(16B2A)
       : move_tomem_16(read_16((A2 += 2, A2 - 2)),
                       A1 + 0x8); // MOVE.W	(A2)+,8(A1)

@@ -73,7 +73,7 @@ ROMFUNC(rom_BA6C) {
   DEF_ROMLOC(BA9E) : if (!CCR_EQ) goto rom_BB0A;    // BNE.B	$BB0A
   DEF_ROMLOC(BAA0)
       : move_tomem_8(read_8(A2++), A1 + 0x24);     // MOVE.B	(A2)+,36(A1)
-  DEF_ROMLOC(BAA4) : move_tomem_8(0x30, A1 + 0x0); // MOVE.B	#$30,0(A1)
+  DEF_ROMLOC(BAA4) : move_tomem_8(OBJ_GLASSBLOCK, A1 + offsetof(object, id)); // MOVE.B	#$30,0(A1)
   DEF_ROMLOC(BAAA)
       : move_tomem_16(read_16(A0 + 0x8), A1 + 0x8);   // MOVE.W	8(A0),8(A1)
   DEF_ROMLOC(BAB0) : move_toreg_8(read_8(A2++), &D0); // MOVE.B	(A2)+,D0
@@ -179,7 +179,7 @@ ROMFUNC(rom_BA72) {
   DEF_ROMLOC(BA9E) : if (!CCR_EQ) goto rom_BB0A;    // BNE.B	$BB0A
   DEF_ROMLOC(BAA0)
       : move_tomem_8(read_8(A2++), A1 + 0x24);     // MOVE.B	(A2)+,36(A1)
-  DEF_ROMLOC(BAA4) : move_tomem_8(0x30, A1 + 0x0); // MOVE.B	#$30,0(A1)
+  DEF_ROMLOC(BAA4) : move_tomem_8(OBJ_GLASSBLOCK, A1 + offsetof(object, id)); // MOVE.B	#$30,0(A1)
   DEF_ROMLOC(BAAA)
       : move_tomem_16(read_16(A0 + 0x8), A1 + 0x8);   // MOVE.W	8(A0),8(A1)
   DEF_ROMLOC(BAB0) : move_toreg_8(read_8(A2++), &D0); // MOVE.B	(A2)+,D0

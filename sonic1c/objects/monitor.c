@@ -168,7 +168,7 @@ ROMFUNC(rom_A926) {
   DEF_ROMLOC(A92A) : move_tomem_8(0x0, A0 + 0x20); // MOVE.B	#$00,32(A0)
   DEF_ROMLOC(A930) : rom_E11A();                   // BSR.W	$E11A
   DEF_ROMLOC(A934) : if (!CCR_EQ) goto rom_A94E;   // BNE.B	$A94E
-  DEF_ROMLOC(A936) : move_tomem_8(0x2E, A1 + 0x0); // MOVE.B	#$2E,0(A1)
+  DEF_ROMLOC(A936) : move_tomem_8(OBJ_POWERUP, A1 + offsetof(object, id)); // MOVE.B	#$2E,0(A1)
   DEF_ROMLOC(A93C)
       : move_tomem_16(read_16(A0 + 0x8), A1 + 0x8); // MOVE.W	8(A0),8(A1)
   DEF_ROMLOC(A942)
@@ -177,7 +177,7 @@ ROMFUNC(rom_A926) {
       : move_tomem_8(read_8(A0 + 0x1C), A1 + 0x1C); // MOVE.B	28(A0),28(A1)
   DEF_ROMLOC(A94E) : rom_E11A();                    // BSR.W	$E11A
   DEF_ROMLOC(A952) : if (!CCR_EQ) goto rom_A96A;    // BNE.B	$A96A
-  DEF_ROMLOC(A954) : move_tomem_8(0x27, A1 + 0x0);  // MOVE.B	#$27,0(A1)
+  DEF_ROMLOC(A954) : move_tomem_8(OBJ_EXPLOSIONITEM, A1 + offsetof(object, id));  // MOVE.B	#$27,0(A1)
   DEF_ROMLOC(A95A) : add_tomem_8(0x2, A1 + 0x24);   // ADDQ.B	#$02,36(A1)
   DEF_ROMLOC(A95E)
       : move_tomem_16(read_16(A0 + 0x8), A1 + 0x8); // MOVE.W	8(A0),8(A1)

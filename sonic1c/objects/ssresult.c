@@ -57,7 +57,7 @@ ROMFUNC(rom_CE60) {
   DEF_ROMLOC(CE72) : cmp_tomem_16(0x32, 0xFFFFFE20); // CMPI.W	#$0032,$FE20
   DEF_ROMLOC(CE78) : if (CCR_CS) goto rom_CE7C;      // BCS.B	$CE7C
   DEF_ROMLOC(CE7A) : add_toreg_16(0x1, &D1);         // ADDQ.W	#$01,D1
-  DEF_ROMLOC(CE7C) : move_tomem_8(0x7E, A1 + 0x0);   // MOVE.B	#$7E,0(A1)
+  DEF_ROMLOC(CE7C) : move_tomem_8(OBJ_SSRESULT, A1 + offsetof(object, id));   // MOVE.B	#$7E,0(A1)
   DEF_ROMLOC(CE82)
       : move_tomem_16(read_16((A2 += 2, A2 - 2)),
                       A1 + 0x8); // MOVE.W	(A2)+,8(A1)

@@ -44,7 +44,7 @@ ROMFUNC(rom_E960) {
   DEF_ROMLOC(E970) : if (!CCR_EQ) goto rom_E990;    // BNE.B	$E990
   DEF_ROMLOC(E972) : rom_E11A();                    // BSR.W	$E11A
   DEF_ROMLOC(E976) : if (!CCR_EQ) goto rom_E990;    // BNE.B	$E990
-  DEF_ROMLOC(E978) : move_tomem_8(0x14, A1 + 0x0);  // MOVE.B	#$14,0(A1)
+  DEF_ROMLOC(E978) : move_tomem_8(OBJ_LAVABALL, A1 + offsetof(object, id));  // MOVE.B	#$14,0(A1)
   DEF_ROMLOC(E97E)
       : move_tomem_16(read_16(A0 + 0x8), A1 + 0x8); // MOVE.W	8(A0),8(A1)
   DEF_ROMLOC(E984)

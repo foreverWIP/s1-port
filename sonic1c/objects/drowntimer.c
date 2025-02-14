@@ -269,7 +269,7 @@ ROMFUNC(rom_145F0) {
   DEF_ROMLOC(1471A) : move_tomem_16(D0, A0 + 0x3A);     // MOVE.W	D0,58(A0)
   DEF_ROMLOC(1471E) : rom_E11A();                       // JSR	$0000E11A
   DEF_ROMLOC(14724) : if (!CCR_EQ) goto rom_147E0;      // BNE.W	$147E0
-  DEF_ROMLOC(14728) : move_tomem_8(0xA, A1 + 0x0);      // MOVE.B	#$0A,0(A1)
+  DEF_ROMLOC(14728) : move_tomem_8(OBJ_DROWNCOUNT, A1 + offsetof(object, id));      // MOVE.B	#$0A,0(A1)
   DEF_ROMLOC(1472E)
       : move_tomem_16(read_16(0xFFFFD008), A1 + 0x8); // MOVE.W	$D008,8(A1)
   DEF_ROMLOC(14734) : move_toreg_32(0x6, &D0);        // MOVEQ.L	$06,D0

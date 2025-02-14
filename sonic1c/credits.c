@@ -307,7 +307,7 @@ ROMFUNC(rom_5AE8) {
   DEF_ROMLOC(5AEE) : move_toreg_32(0x5, &D1); // MOVEQ.L	$05,D1
   DEF_ROMLOC(5AF0)
       : sub_toreg_8(read_8(0xFFFFFE57), &D1);      // SUB.B	$FE57,D1
-  DEF_ROMLOC(5AF4) : move_tomem_8(0xFFFFFF8C, A1); // MOVE.B	#$8C,(A1)
+  DEF_ROMLOC(5AF4) : move_tomem_8(OBJ_TRYCHAOS, A1 + offsetof(object, id)); // MOVE.B	#$8C,(A1)
   DEF_ROMLOC(5AF8) : add_tomem_8(0x2, A1 + 0x24);  // ADDQ.B	#$02,36(A1)
   DEF_ROMLOC(5AFC)
       : move_tomem_32(0x5788, A1 + 0x4);              // MOVE.L	#$00005788,4(A1)

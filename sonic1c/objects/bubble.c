@@ -174,7 +174,7 @@ ROMFUNC(rom_12EE6) {
   DEF_ROMLOC(12F5A) : move_tomem_16(D0, A0 + 0x38); // MOVE.W	D0,56(A0)
   DEF_ROMLOC(12F5E) : rom_E11A();                   // BSR.W	$E11A
   DEF_ROMLOC(12F62) : if (!CCR_EQ) goto rom_12FCC;  // BNE.B	$12FCC
-  DEF_ROMLOC(12F64) : move_tomem_8(0x64, A1 + 0x0); // MOVE.B	#$64,0(A1)
+  DEF_ROMLOC(12F64) : move_tomem_8(OBJ_BUBBLE, A1 + offsetof(object, id)); // MOVE.B	#$64,0(A1)
   DEF_ROMLOC(12F6A)
       : move_tomem_16(read_16(A0 + 0x8), A1 + 0x8); // MOVE.W	8(A0),8(A1)
   DEF_ROMLOC(12F70) : rom_29AC();                   // JSR	$000029AC

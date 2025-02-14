@@ -43,7 +43,7 @@ ROMFUNC(rom_A34C) {
   DEF_ROMLOC(A362) : goto rom_A36C;                // BRA.B	$A36C
   DEF_ROMLOC(A364) : rom_E11A();                   // BSR.W	$E11A
   DEF_ROMLOC(A368) : if (!CCR_EQ) goto rom_A3F0;   // BNE.W	$A3F0
-  DEF_ROMLOC(A36C) : move_tomem_8(0x37, A1 + 0x0); // MOVE.B	#$37,0(A1)
+  DEF_ROMLOC(A36C) : move_tomem_8(OBJ_RINGLOSS, A1 + offsetof(object, id)); // MOVE.B	#$37,0(A1)
   DEF_ROMLOC(A372) : add_tomem_8(0x2, A1 + 0x24);  // ADDQ.B	#$02,36(A1)
   DEF_ROMLOC(A376) : move_tomem_8(0x8, A1 + 0x16); // MOVE.B	#$08,22(A1)
   DEF_ROMLOC(A37C) : move_tomem_8(0x8, A1 + 0x17); // MOVE.B	#$08,23(A1)

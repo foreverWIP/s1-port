@@ -153,7 +153,7 @@ ROMFUNC(rom_12A6E) {
   goto rom_12B6A;                                       // BRA.B	$12B6A
   DEF_ROMLOC(12B64) : rom_E11A();                       // BSR.W	$E11A
   DEF_ROMLOC(12B68) : if (!CCR_EQ) goto rom_12B7E;      // BNE.B	$12B7E
-  DEF_ROMLOC(12B6A) : move_tomem_8(0x63, A1 + 0x0);     // MOVE.B	#$63,0(A1)
+  DEF_ROMLOC(12B6A) : move_tomem_8(OBJ_LABYRINTHCONVEY, A1 + offsetof(object, id));     // MOVE.B	#$63,0(A1)
   DEF_ROMLOC(12B70)
       : move_tomem_16(read_16((A2 += 2, A2 - 2)),
                       A1 + 0x8); // MOVE.W	(A2)+,8(A1)

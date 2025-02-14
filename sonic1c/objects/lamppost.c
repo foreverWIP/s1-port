@@ -110,7 +110,7 @@ ROMFUNC(rom_1765A) {
   DEF_ROMLOC(176CC) : add_tomem_8(0x2, A0 + 0x24);  // ADDQ.B	#$02,36(A0)
   DEF_ROMLOC(176D0) : rom_E11A();                   // JSR	$0000E11A
   DEF_ROMLOC(176D6) : if (!CCR_EQ) goto rom_17722;  // BNE.B	$17722
-  DEF_ROMLOC(176D8) : move_tomem_8(0x79, A1 + 0x0); // MOVE.B	#$79,0(A1)
+  DEF_ROMLOC(176D8) : move_tomem_8(OBJ_LAMPPOST, A1 + offsetof(object, id)); // MOVE.B	#$79,0(A1)
   DEF_ROMLOC(176DE) : move_tomem_8(0x6, A1 + 0x24); // MOVE.B	#$06,36(A1)
   DEF_ROMLOC(176E4)
       : move_tomem_16(read_16(A0 + 0x8), A1 + 0x30); // MOVE.W	8(A0),48(A1)

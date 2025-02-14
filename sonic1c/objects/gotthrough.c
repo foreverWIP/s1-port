@@ -49,7 +49,7 @@ ROMFUNC(rom_CC20) {
   DEF_ROMLOC(CC28) : move_toreg_32(A0, &A1);               // MOVEA.L	A0,A1
   DEF_ROMLOC(CC2A) : move_toreg_32(0xCE04, &A2);           // LEA.L	$0000CE04,A2
   DEF_ROMLOC(CC30) : move_toreg_32(0x6, &D1);              // MOVEQ.L	$06,D1
-  DEF_ROMLOC(CC32) : move_tomem_8(0x3A, A1 + 0x0);         // MOVE.B	#$3A,0(A1)
+  DEF_ROMLOC(CC32) : move_tomem_8(OBJ_GOTTHROUGHCARD, A1 + offsetof(object, id));         // MOVE.B	#$3A,0(A1)
   DEF_ROMLOC(CC38) : move_tomem_16(read_16(A2), A1 + 0x8); // MOVE.W
                                                            // (A2),8(A1)
   DEF_ROMLOC(CC3C)

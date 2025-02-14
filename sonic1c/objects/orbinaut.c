@@ -160,7 +160,7 @@ ROMFUNC(rom_124D4) {
 ROMFUNC(rom_1252E) {
   DEF_ROMLOC(1252E)
       : move_toreg_32(read_32(A0 + 0x3C), &A1);    // MOVEA.L	60(A0),A1
-  DEF_ROMLOC(12532) : cmp_tomem_8(0x60, A1 + 0x0); // CMPI.B	#$60,0(A1)
+  DEF_ROMLOC(12532) : cmp_tomem_8(OBJ_ORBINAUT, A1 + offsetof(object, id)); // CMPI.B	#$60,0(A1)
   DEF_ROMLOC(12538) : if (!CCR_EQ) {
     rom_DCCE();
     return;

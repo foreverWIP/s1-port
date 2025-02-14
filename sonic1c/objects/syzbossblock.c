@@ -31,7 +31,7 @@ ROMFUNC(rom_19E56) {
   goto rom_19E6A;                                  // BRA.B	$19E6A
   DEF_ROMLOC(19E62) : rom_E11A();                  // JSR	$0000E11A
   DEF_ROMLOC(19E68) : if (!CCR_EQ) goto rom_19EB2; // BNE.B	$19EB2
-  DEF_ROMLOC(19E6A) : move_tomem_8(0x76, A1);      // MOVE.B	#$76,(A1)
+  DEF_ROMLOC(19E6A) : move_tomem_8(OBJ_BOSSBLOCK, A1 + offsetof(object, id));      // MOVE.B	#$76,(A1)
   DEF_ROMLOC(19E6E)
       : move_tomem_32(0x19FAE, A1 + 0x4); // MOVE.L	#$00019FAE,4(A1)
   DEF_ROMLOC(19E76)

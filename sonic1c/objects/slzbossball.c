@@ -335,7 +335,7 @@ ROMFUNC(rom_19752) {
   rom_1962A();                                          // BRA.W	$1962A
 }
 ROMFUNC(rom_197DA) {
-  DEF_ROMLOC(197DA) : move_tomem_8(0x3F, A0);        // MOVE.B	#$3F,(A0)
+  DEF_ROMLOC(197DA) : move_tomem_8(OBJ_EXPLOSIONBOMB, A0 + offsetof(object, id));        // MOVE.B	#$3F,(A0)
   DEF_ROMLOC(197DE) : clr_mem_8(A0 + 0x24);          // CLR.B	36(A0)
   DEF_ROMLOC(197E2) : cmp_tomem_16(0x20, A0 + 0x28); // CMPI.W	#$0020,40(A0)
   DEF_ROMLOC(197E8) : if (CCR_EQ) goto rom_197EC;    // BEQ.B	$197EC
@@ -349,7 +349,7 @@ ROMFUNC(rom_197DA) {
 ROMFUNC(rom_197F8) {
   DEF_ROMLOC(197F8) : rom_E11A();                   // JSR	$0000E11A
   DEF_ROMLOC(197FE) : if (!CCR_EQ) goto rom_1984A;  // BNE.B	$1984A
-  DEF_ROMLOC(19800) : move_tomem_8(0x7B, A1);       // MOVE.B	#$7B,(A1)
+  DEF_ROMLOC(19800) : move_tomem_8(OBJ_BOSSSPIKEBALL, A1 + offsetof(object, id));       // MOVE.B	#$7B,(A1)
   DEF_ROMLOC(19804) : move_tomem_8(0xA, A1 + 0x24); // MOVE.B	#$0A,36(A1)
   DEF_ROMLOC(1980A)
       : move_tomem_32(0x1988E, A1 + 0x4);             // MOVE.L	#$0001988E,4(A1)

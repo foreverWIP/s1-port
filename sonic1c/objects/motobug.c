@@ -98,7 +98,7 @@ ROMFUNC(rom_FD98) {
   DEF_ROMLOC(FDB8) : move_tomem_8(0xF, A0 + 0x33);  // MOVE.B	#$0F,51(A0)
   DEF_ROMLOC(FDBE) : rom_E11A();                    // BSR.W	$E11A
   DEF_ROMLOC(FDC2) : if (!CCR_EQ) goto rom_FDE2;    // BNE.B	$FDE2
-  DEF_ROMLOC(FDC4) : move_tomem_8(0x40, A1 + 0x0);  // MOVE.B	#$40,0(A1)
+  DEF_ROMLOC(FDC4) : move_tomem_8(OBJ_MOTOBUG, A1 + offsetof(object, id));  // MOVE.B	#$40,0(A1)
   DEF_ROMLOC(FDCA)
       : move_tomem_16(read_16(A0 + 0x8), A1 + 0x8); // MOVE.W	8(A0),8(A1)
   DEF_ROMLOC(FDD0)

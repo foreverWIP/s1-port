@@ -58,7 +58,7 @@ ROMFUNC(rom_1159A) {
     return;
   }                                                 // BNE.W	$1161A
   DEF_ROMLOC(115C0) : move_tomem_8(0x4, A1 + 0x24); // MOVE.B	#$04,36(A1)
-  DEF_ROMLOC(115C6) : move_tomem_8(0x5B, A1 + 0x0); // MOVE.B	#$5B,0(A1)
+  DEF_ROMLOC(115C6) : move_tomem_8(OBJ_STAIRCASE, A1 + offsetof(object, id)); // MOVE.B	#$5B,0(A1)
   DEF_ROMLOC(115CC)
       : move_tomem_32(0x11710, A1 + 0x4); // MOVE.L	#$00011710,4(A1)
   DEF_ROMLOC(115D4) : move_tomem_16(0x4000, A1 + 0x2); // MOVE.W

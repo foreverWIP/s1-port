@@ -47,7 +47,7 @@ ROMFUNC(rom_1908C) {
   goto rom_190D4;                                    // BRA.B	$190D4
   DEF_ROMLOC(190BA) : rom_E130();                    // JSR	$0000E130
   DEF_ROMLOC(190C0) : if (!CCR_EQ) goto rom_1910C;   // BNE.B	$1910C
-  DEF_ROMLOC(190C2) : move_tomem_8(0x7A, A1 + 0x0);  // MOVE.B	#$7A,0(A1)
+  DEF_ROMLOC(190C2) : move_tomem_8(OBJ_BOSSSTARLIGHT, A1 + offsetof(object, id));  // MOVE.B	#$7A,0(A1)
   DEF_ROMLOC(190C8)
       : move_tomem_16(read_16(A0 + 0x8), A1 + 0x8); // MOVE.W	8(A0),8(A1)
   DEF_ROMLOC(190CE)
@@ -368,7 +368,7 @@ ROMFUNC(rom_19282) {
   DEF_ROMLOC(192C2)
       : move_toreg_32(read_32((A7 += 4, A7 - 4)), &A0); // MOVEA.L	(A7)+,A0
   DEF_ROMLOC(192C4) : if (!CCR_EQ) goto rom_192F0;      // BNE.B	$192F0
-  DEF_ROMLOC(192C6) : move_tomem_8(0x7B, A1);           // MOVE.B	#$7B,(A1)
+  DEF_ROMLOC(192C6) : move_tomem_8(OBJ_BOSSSPIKEBALL, A1 + offsetof(object, id));           // MOVE.B	#$7B,(A1)
   DEF_ROMLOC(192CA)
       : move_tomem_16(read_16(A0 + 0x8), A1 + 0x8); // MOVE.W	8(A0),8(A1)
   DEF_ROMLOC(192D0)

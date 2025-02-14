@@ -3,8 +3,6 @@
 #include "../opcodes.h"
 #include "../system.h"
 
-EXPORT object obj_sonic;
-
 static bool skiprestfromjump;
 
 ROMFUNC(rom_3FD2) {
@@ -1940,7 +1938,7 @@ ROMFUNC(rom_1B7AA) {
   DEF_ROMLOC(1B7B4) : if (CCR_EQ) goto rom_1B846;   // BEQ.W	$1B846
   DEF_ROMLOC(1B7B8) : rom_E11A();                   // JSR	$0000E11A
   DEF_ROMLOC(1B7BE) : if (!CCR_EQ) goto rom_1B7D2;  // BNE.B	$1B7D2
-  DEF_ROMLOC(1B7C0) : move_tomem_8(0x37, A1 + 0x0); // MOVE.B	#$37,0(A1)
+  DEF_ROMLOC(1B7C0) : move_tomem_8(OBJ_RINGLOSS, A1 + offsetof(object, id)); // MOVE.B	#$37,0(A1)
   DEF_ROMLOC(1B7C6)
       : move_tomem_16(read_16(A0 + 0x8), A1 + 0x8); // MOVE.W	8(A0),8(A1)
   DEF_ROMLOC(1B7CC)
@@ -1968,9 +1966,9 @@ ROMFUNC(rom_1B7AA) {
   DEF_ROMLOC(1B81C) : move_tomem_8(0x1A, A0 + 0x1C);  // MOVE.B	#$1A,28(A0)
   DEF_ROMLOC(1B822) : move_tomem_16(0x78, A0 + 0x30); // MOVE.W	#$0078,48(A0)
   DEF_ROMLOC(1B828) : move_toreg_16(0xA3, &D0);       // MOVE.W	#$00A3,D0
-  DEF_ROMLOC(1B82C) : cmp_tomem_8(0x36, A2);          // CMPI.B	#$36,(A2)
+  DEF_ROMLOC(1B82C) : cmp_tomem_8(OBJ_SPIKES, A2 + offsetof(object, id));          // CMPI.B	#$36,(A2)
   DEF_ROMLOC(1B830) : if (!CCR_EQ) goto rom_1B83C;    // BNE.B	$1B83C
-  DEF_ROMLOC(1B832) : cmp_tomem_8(0x16, A2);          // CMPI.B	#$16,(A2)
+  DEF_ROMLOC(1B832) : cmp_tomem_8(OBJ_HARPOON, A2 + offsetof(object, id));          // CMPI.B	#$16,(A2)
   DEF_ROMLOC(1B836) : if (!CCR_EQ) goto rom_1B83C;    // BNE.B	$1B83C
   DEF_ROMLOC(1B838) : move_toreg_16(0xA6, &D0);       // MOVE.W	#$00A6,D0
   DEF_ROMLOC(1B83C) : play_sound_special();           // JSR	$00001394
@@ -1996,7 +1994,7 @@ ROMFUNC(rom_1B84E) {
   DEF_ROMLOC(1B882) : move_tomem_8(0x18, A0 + 0x1C);  // MOVE.B	#$18,28(A0)
   DEF_ROMLOC(1B888) : bset_tomem_8(0x7, A0 + 0x2);    // BSET.B	#$07,2(A0)
   DEF_ROMLOC(1B88E) : move_toreg_16(0xA3, &D0);       // MOVE.W	#$00A3,D0
-  DEF_ROMLOC(1B892) : cmp_tomem_8(0x36, A2);          // CMPI.B	#$36,(A2)
+  DEF_ROMLOC(1B892) : cmp_tomem_8(OBJ_SPIKES, A2 + offsetof(object, id));          // CMPI.B	#$36,(A2)
   DEF_ROMLOC(1B896) : if (!CCR_EQ) goto rom_1B89C;    // BNE.B	$1B89C
   DEF_ROMLOC(1B898) : move_toreg_16(0xA6, &D0);       // MOVE.W	#$00A6,D0
   DEF_ROMLOC(1B89C) : play_sound_special();           // JSR	$00001394

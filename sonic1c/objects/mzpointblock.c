@@ -80,7 +80,7 @@ ROMFUNC(rom_10360) {
     rom_10430();
     return;
   }                                                 // BNE.B	$10430
-  DEF_ROMLOC(103EE) : move_tomem_8(0x29, A1 + 0x0); // MOVE.B	#$29,0(A1)
+  DEF_ROMLOC(103EE) : move_tomem_8(OBJ_POINTS, A1 + offsetof(object, id)); // MOVE.B	#$29,0(A1)
   DEF_ROMLOC(103F4)
       : move_tomem_16(read_16(A0 + 0x8), A1 + 0x8); // MOVE.W	8(A0),8(A1)
   DEF_ROMLOC(103FA)

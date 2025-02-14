@@ -42,7 +42,7 @@ ROMFUNC(rom_D002) {
   rom_D018(); // Detected flow into next function
 }
 ROMFUNC(rom_D018) {
-  DEF_ROMLOC(D018) : move_tomem_8(0x7F, A1 + 0x0); // MOVE.B	#$7F,0(A1)
+  DEF_ROMLOC(D018) : move_tomem_8(OBJ_SSRCHAOS, A1 + offsetof(object, id)); // MOVE.B	#$7F,0(A1)
   DEF_ROMLOC(D01E)
       : move_tomem_16(read_16((A2 += 2, A2 - 2)),
                       A1 + 0x8);                     // MOVE.W	(A2)+,8(A1)

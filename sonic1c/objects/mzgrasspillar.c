@@ -144,7 +144,7 @@ ROMFUNC(rom_B688) {
 	DEF_ROMLOC(B6CA): move_tomem_8(0x1, A0 + 0x35); // MOVE.B	#$01,53(A0)
 	DEF_ROMLOC(B6D0): rom_E130(); // BSR.W	$E130
 	DEF_ROMLOC(B6D4): if (!CCR_EQ) goto rom_B704; // BNE.B	$B704
-	DEF_ROMLOC(B6D6): move_tomem_8(0x35, A1 + 0x0); // MOVE.B	#$35,0(A1)
+	DEF_ROMLOC(B6D6): move_tomem_8(OBJ_GRASSFIRE, A1 + offsetof(object, id)); // MOVE.B	#$35,0(A1)
 	DEF_ROMLOC(B6DC): move_tomem_16(read_16(A0 + 0x8), A1 + 0x8); // MOVE.W	8(A0),8(A1)
 	DEF_ROMLOC(B6E2): move_tomem_16(read_16(A0 + 0x2C), A1 + 0x2C); // MOVE.W	44(A0),44(A1)
 	DEF_ROMLOC(B6E8): add_tomem_16(0x8, A1 + 0x2C); // ADDQ.W	#$08,44(A1)

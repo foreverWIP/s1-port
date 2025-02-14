@@ -39,7 +39,7 @@ ROMFUNC(rom_19FFC) {
 	DEF_ROMLOC(1A04E): rom_E130(); // JSR	$0000E130
 	DEF_ROMLOC(1A054): if (!CCR_EQ) {rom_1A0A0();return;} // BNE.B	$1A0A0
 	DEF_ROMLOC(1A056): move_tomem_32(A0, A1 + 0x34); // MOVE.L	A0,52(A1)
-	DEF_ROMLOC(1A05A): move_tomem_8(0xFFFFFF82, A1); // MOVE.B	#$82,(A1)
+	DEF_ROMLOC(1A05A): move_tomem_8(OBJ_SCRAPEGGMAN, A1 + offsetof(object, id)); // MOVE.B	#$82,(A1)
 	DEF_ROMLOC(1A05E): move_tomem_16(0x2130, A1 + 0x8); // MOVE.W	#$2130,8(A1)
 	DEF_ROMLOC(1A064): move_tomem_16(0x5BC, A1 + 0xC); // MOVE.W	#$05BC,12(A1)
 	DEF_ROMLOC(1A06A): clr_mem_8(A0 + 0x25); // CLR.B	37(A0)
@@ -119,7 +119,7 @@ ROMFUNC(rom_1A106) {
 	DEF_ROMLOC(1A160): move_toreg_32(0x3E, &D0); // MOVEQ.L	$3E,D0
 	DEF_ROMLOC(1A162): move_toreg_32(0x40, &D1); // MOVEQ.L	$40,D1
 	DEF_ROMLOC(1A164): add_toreg_16(D1, &A1); // ADDA.W	D1,A1
-	DEF_ROMLOC(1A166): cmp_tomem_8(0xFFFFFF83, A1); // CMPI.B	#$83,(A1)
+	DEF_ROMLOC(1A166): cmp_tomem_8(OBJ_FALSEFLOOR, A1 + offsetof(object, id)); // CMPI.B	#$83,(A1)
 	DEF_ROMLOC(1A16A): if (!CCR_EQ) {dec_reg_16(&D0); if ((D0 & 0xffff) != 0xffff) goto rom_1A164;}; // DBEQ.W	D0,$1A164
 	DEF_ROMLOC(1A16E): if (!CCR_EQ) goto rom_1A180; // BNE.B	$1A180
 	DEF_ROMLOC(1A170): move_tomem_16(0x474F, A1 + 0x28); // MOVE.W	#$474F,40(A1)

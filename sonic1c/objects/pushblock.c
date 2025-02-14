@@ -192,7 +192,7 @@ ROMFUNC(rom_C7A4) {
   DEF_ROMLOC(C7E6) : return;                          // RTS
   DEF_ROMLOC(C7E8) : rom_E11A();                      // BSR.W	$E11A
   DEF_ROMLOC(C7EC) : if (!CCR_EQ) goto rom_C80E;      // BNE.B	$C80E
-  DEF_ROMLOC(C7EE) : move_tomem_8(0x4C, A1 + 0x0);    // MOVE.B	#$4C,0(A1)
+  DEF_ROMLOC(C7EE) : move_tomem_8(OBJ_GEYSERMAKER, A1 + offsetof(object, id));    // MOVE.B	#$4C,0(A1)
   DEF_ROMLOC(C7F4)
       : move_tomem_16(read_16(A0 + 0x8), A1 + 0x8); // MOVE.W	8(A0),8(A1)
   DEF_ROMLOC(C7FA) : add_tomem_16(D2, A1 + 0x8);    // ADD.W	D2,8(A1)

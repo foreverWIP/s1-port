@@ -172,7 +172,7 @@ ROMFUNC(rom_18F80) {
       : move_tomem_16(read_16(A0 + 0x8), A1 + 0x8); // MOVE.W	8(A0),8(A1)
   DEF_ROMLOC(18F8E)
       : move_tomem_16(read_16(A0 + 0xC), A1 + 0xC);   // MOVE.W	12(A0),12(A1)
-  DEF_ROMLOC(18F94) : move_tomem_8(0x74, A1);         // MOVE.B	#$74,(A1)
+  DEF_ROMLOC(18F94) : move_tomem_8(OBJ_BOSSFIRE, A1 + offsetof(object, id));         // MOVE.B	#$74,(A1)
   DEF_ROMLOC(18F98) : move_tomem_16(0x67, A1 + 0x28); // MOVE.W	#$0067,40(A1)
   rom_18F9E(); // Detected flow into next function
 }

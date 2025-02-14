@@ -93,7 +93,7 @@ ROMFUNC(rom_F248) {
                       &A2);                                // LEA.L	78(PC,D0),A2
   DEF_ROMLOC(F284) : rom_E11A();                           // BSR.W	$E11A
   DEF_ROMLOC(F288) : if (!CCR_EQ) goto rom_F2CE;           // BNE.B	$F2CE
-  DEF_ROMLOC(F28A) : move_tomem_8(0x25, A1 + 0x0);         // MOVE.B	#$25,0(A1)
+  DEF_ROMLOC(F28A) : move_tomem_8(OBJ_RINGS, A1 + offsetof(object, id));         // MOVE.B	#$25,0(A1)
   DEF_ROMLOC(F290) : move_tomem_8(0x6, A1 + 0x24);         // MOVE.B	#$06,36(A1)
   DEF_ROMLOC(F296) : move_toreg_8(read_8(A2++), &D0);      // MOVE.B	(A2)+,D0
   DEF_ROMLOC(F298) : ext_reg_16(&D0);                      // EXT.W	D0

@@ -64,7 +64,7 @@ ROMFUNC(rom_A012) {
 ROMFUNC(rom_A022) {
   DEF_ROMLOC(A022)
       : move_toreg_32(read_32(A0 + 0x3C), &A1);   // MOVEA.L	60(A0),A1
-  DEF_ROMLOC(A026) : cmp_tomem_8(0x27, A1 + 0x0); // CMPI.B	#$27,0(A1)
+  DEF_ROMLOC(A026) : cmp_tomem_8(OBJ_EXPLOSIONITEM, A1 + offsetof(object, id)); // CMPI.B	#$27,0(A1)
   DEF_ROMLOC(A02C) : if (CCR_EQ) {
     rom_A076();
     return;
@@ -91,7 +91,7 @@ ROMFUNC(rom_A030) {
     return;
   }                                                // BCS.B	$A076
   DEF_ROMLOC(A064) : return;                       // RTS
-  DEF_ROMLOC(A066) : move_tomem_8(0x24, A0 + 0x0); // MOVE.B	#$24,0(A0)
+  DEF_ROMLOC(A066) : move_tomem_8(OBJ_MISSILEDISSOLVE, A0 + offsetof(object, id)); // MOVE.B	#$24,0(A0)
   DEF_ROMLOC(A06C) : move_tomem_8(0x0, A0 + 0x24); // MOVE.B	#$00,36(A0)
   rom_9370();
   return; // BRA.W	$9370

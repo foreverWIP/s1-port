@@ -45,7 +45,7 @@ ROMFUNC(rom_C9A6) {
   DEF_ROMLOC(C9CE) : add_toreg_16(D0, &A3);           // ADDA.W	D0,A3
   DEF_ROMLOC(C9D0) : move_toreg_32(0xCAC2, &A2);      // LEA.L	$0000CAC2,A2
   DEF_ROMLOC(C9D6) : move_toreg_32(0x3, &D1);         // MOVEQ.L	$03,D1
-  DEF_ROMLOC(C9D8) : move_tomem_8(0x34, A1 + 0x0);    // MOVE.B	#$34,0(A1)
+  DEF_ROMLOC(C9D8) : move_tomem_8(OBJ_TITLECARD, A1 + offsetof(object, id));    // MOVE.B	#$34,0(A1)
   DEF_ROMLOC(C9DE)
       : move_tomem_16(read_16(A3), A1 + 0x8); // MOVE.W	(A3),8(A1)
   DEF_ROMLOC(C9E2)
