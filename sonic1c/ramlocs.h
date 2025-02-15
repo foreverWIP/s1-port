@@ -3,6 +3,7 @@
 #define RAMLOC32(word) (0xff0000 | (word))
 
 #define v_256x256 RAMLOC32(0x0000)
+#define v_ssbuffer1 RAMLOC32(0x0000)
 #define v_ngfx_buffer RAMLOC32(0xaa00)
 #define v_16x16 RAMLOC32(0xb000)
 #define v_soundqueue0 RAMLOC32(0xf00a)

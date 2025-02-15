@@ -97,7 +97,11 @@ void clear_screen(void) {
     goto rom_1342;           // DBF.W	D1,$1342
   DEF_ROMLOC(1348) : return; // RTS
 }
-void copy_tilemap_to_vram(void) {
+void copy_tilemap_to_vram(u32 src_addr, u32 dst_command, u8 width, u8 height) {
+  A1 = src_addr;
+  D0 = dst_command;
+  D1 = width;
+  D2 = height;
   A6 = 0xC00000; // LEA.L	$00C00000,A6
   D4 = 0x800000; // MOVE.L	#$00800000,D4
   do {

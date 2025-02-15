@@ -3,9 +3,9 @@
 #include <math.h>
 #include <setjmp.h>
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
-#include <stddef.h>
 
 #ifdef _WIN32
 #define EXPORT __declspec(dllexport)
@@ -103,6 +103,8 @@ extern jmp_buf speedshoes__desync_jumpbuf;
   (0x40000000 + (((loc) & 0x3FFF) << 16) + (((loc) & 0xC000) >> 14))
 #define set_vram_ptr(loc)                                                      \
   write_32(VDP_CONTROL_PORT, VRAM_PTR_TO_VDP_COMMAND((u32)loc))
+
+#define PLANE_SIZE_64X32 0x1000
 
 extern void print(const char *msg, ...);
 

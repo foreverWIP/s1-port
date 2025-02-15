@@ -17,6 +17,7 @@
 #include "system.h"
 #include "util.h"
 #include "vblank.h"
+#include "special.h"
 
 enum {
   GM_SEGA = 4 * 0,

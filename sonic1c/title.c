@@ -47,11 +47,7 @@ ROMFUNC(rom_2F04) {
   DEF_ROMLOC(2F74) : move_toreg_32(0x2178E, &A0);    // LEA.L	$0002178E,A0
   DEF_ROMLOC(2F7A) : move_toreg_16(0x0, &D0);        // MOVE.W	#$0000,D0
   DEF_ROMLOC(2F7E) : decompress_enigma();            // BSR.W	$1716
-  DEF_ROMLOC(2F82) : move_toreg_32(v_256x256, &A1);  // LEA.L	$00FF0000,A1
-  DEF_ROMLOC(2F88) : move_toreg_32(0x40000003, &D0); // MOVE.L	#$40000003,D0
-  DEF_ROMLOC(2F8E) : move_toreg_32(0x27, &D1);       // MOVEQ.L	$27,D1
-  DEF_ROMLOC(2F90) : move_toreg_32(0x1B, &D2);       // MOVEQ.L	$1B,D2
-  DEF_ROMLOC(2F92) : copy_tilemap_to_vram();         // BSR.W	$1418
+  copy_tilemap(v_256x256, VRAM_FG, 0, 0, 40, 28);
   DEF_ROMLOC(2F96) : move_toreg_32(0xFFFFFB80, &A1); // LEA.L	$FB80,A1
   DEF_ROMLOC(2F9A) : move_toreg_32(0x0, &D0);        // MOVEQ.L	$00,D0
   DEF_ROMLOC(2F9C) : move_toreg_16(0x1F, &D1);       // MOVE.W	#$001F,D1
@@ -129,13 +125,8 @@ ROMFUNC(rom_3076) {
   DEF_ROMLOC(30A0) : move_toreg_32(0x1EC6C, &A0);    // LEA.L	$0001EC6C,A0
   DEF_ROMLOC(30A6) : move_toreg_16(0x0, &D0);        // MOVE.W	#$0000,D0
   DEF_ROMLOC(30AA) : decompress_enigma();            // BSR.W	$1716
-  DEF_ROMLOC(30AE) : move_toreg_32(v_256x256, &A1);  // LEA.L	$00FF0000,A1
-  DEF_ROMLOC(30B4) : move_toreg_32(0x42060003, &D0); // MOVE.L	#$42060003,D0
-  DEF_ROMLOC(30BA) : move_toreg_32(0x21, &D1);       // MOVEQ.L	$21,D1
-  DEF_ROMLOC(30BC) : move_toreg_32(0x15, &D2);       // MOVEQ.L	$15,D2
-  DEF_ROMLOC(30BE) : copy_tilemap_to_vram();         // BSR.W	$1418
-  DEF_ROMLOC(30C2)
-      : move_tomem_32(0x40000000, 0xC00004);      // MOVE.L	#$40000000,$00C00004
+  copy_tilemap(v_256x256, VRAM_FG, 3, 4, 34, 22);
+  DEF_ROMLOC(30C2) : move_tomem_32(0x40000000, 0xC00004);      // MOVE.L	#$40000000,$00C00004
   DEF_ROMLOC(30CC) : move_toreg_32(0x3CB3C, &A0); // LEA.L	$0003CB3C,A0
   DEF_ROMLOC(30D2) : decompress_nemesis();        // BSR.W	$1438
   DEF_ROMLOC(30D6) : move_toreg_32(0x1, &D0);     // MOVEQ.L	$01,D0
