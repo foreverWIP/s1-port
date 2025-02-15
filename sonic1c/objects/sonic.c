@@ -18,11 +18,11 @@ ROMFUNC(rom_4012) {
   DEF_ROMLOC(4016) : if (CCR_PL) goto rom_4024; // BPL.B	$4024
   DEF_ROMLOC(4018) : tst_mem_16(0xFFFFFFF0);    // TST.W	$FFF0
   DEF_ROMLOC(401C) : if (CCR_MI) goto rom_4024; // BMI.B	$4024
-  DEF_ROMLOC(401E) : SET_GM_TITLE();
+  DEF_ROMLOC(401E) : move_tomem_8(GM_TITLE, v_gamemode);
   DEF_ROMLOC(4024) : move_toreg_32(0x4082, &A1);        // LEA.L	$00004082,A1
   DEF_ROMLOC(402A) : move_toreg_32(0x0, &D0);           // MOVEQ.L	$00,D0
   DEF_ROMLOC(402C) : move_toreg_8(read_8(v_zone), &D0); // MOVE.B	$FE10,D0
-  DEF_ROMLOC(4030) : cmp_tomem_8(0x10, 0xFFFFF600);     // CMPI.B	#$10,$F600
+  DEF_ROMLOC(4030) : cmp_tomem_8(GM_SPECIAL, v_gamemode);     // CMPI.B	#$10,$F600
   DEF_ROMLOC(4036) : if (!CCR_EQ) goto rom_403A;        // BNE.B	$403A
   DEF_ROMLOC(4038) : move_toreg_32(0x6, &D0);           // MOVEQ.L	$06,D0
   DEF_ROMLOC(403A) : lsl_toreg_16(0x2, &D0);            // LSL.W	#$02,D0

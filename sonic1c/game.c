@@ -2,7 +2,6 @@
 #include "opcodes.h"
 #include "system.h"
 
-
 void (*game_state)(void);
 bool exit_mainloop = false;
 
@@ -12,42 +11,58 @@ jmp_buf speedshoes__desync_jumpbuf;
 
 ROMFUNC(rom_388);
 ROMFUNC(rom_300) {
-  DEF_ROMLOC(34E) : move_toreg_8(read_8(0xA10001), &D0); // MOVE.B
-                                                         // $00A10001,D0
-  DEF_ROMLOC(354) : and_toreg_8(0xFFFFFFC0, &D0);        // ANDI.B	#$C0,D0
-  DEF_ROMLOC(358) : move_tomem_8(D0, 0xFFFFFFF8);        // MOVE.B	D0,$FFF8
+  DEF_ROMLOC(34E)
+      : move_toreg_8(read_8(0xA10001), &D0);      // MOVE.B
+                                                  // $00A10001,D0
+  DEF_ROMLOC(354) : and_toreg_8(0xFFFFFFC0, &D0); // ANDI.B	#$C0,D0
+  DEF_ROMLOC(358) : move_tomem_8(D0, 0xFFFFFFF8); // MOVE.B	D0,$FFF8
   DEF_ROMLOC(35C)
       : move_tomem_32(0x696E6974, 0xFFFFFFFC); // MOVE.L	#$696E6974,$FFFC
-  DEF_ROMLOC(376) : vdp_setup();                // BSR.W	$1222
-  DEF_ROMLOC(37E) : input_init();                // BSR.W	$11B6
-  DEF_ROMLOC(382) : move_tomem_8(0x0, 0xFFFFF600);
+  DEF_ROMLOC(376) : vdp_setup();               // BSR.W	$1222
+  DEF_ROMLOC(37E) : input_init();              // BSR.W	$11B6
+  DEF_ROMLOC(382) : move_tomem_8(GM_SEGA, v_gamemode);
   rom_388(); // Detected flow into next function
 }
 ROMFUNC(rom_388) {
   DEF_ROMLOC(388)
-      : move_toreg_8(read_8(0xFFFFF600), &D0); // MOVE.B	$F600,D0
-  DEF_ROMLOC(38C) : and_toreg_16(0x1C, &D0);   // ANDI.W	#$001C,D0
+      : move_toreg_8(read_8(v_gamemode), &D0); // MOVE.B	$F600,D0
+  DEF_ROMLOC(38C) : and_toreg_16(GM_MASK, &D0);   // ANDI.W	#$001C,D0
   sega_init();
 }
 
 void rom_388_nosega(void) {
-  DEF_ROMLOC(388): move_toreg_8(read_8(0xFFFFF600), &D0); // MOVE.B	$F600,D0
-  DEF_ROMLOC(38C): and_toreg_16(0x1C, &D0);   // ANDI.W	#$001C,D0
-	switch (D0 & 0x1C) {
-		case 0: game_state = sega_init; break;
-		case 4: game_state = rom_2EF4; break;
-		case 8: game_state = rom_379E; break;
-		case 0xc: game_state = rom_379E; break;
-		case 0x10: game_state = rom_45DE; break;
-		case 0x14: game_state = continue_screen_init; break;
-		case 0x18: game_state = rom_50F2; break;
-		case 0x1C: game_state = rom_57D2; break;
-	}
+  DEF_ROMLOC(388)
+      : move_toreg_8(read_8(v_gamemode), &D0); // MOVE.B	$F600,D0
+  DEF_ROMLOC(38C) : and_toreg_16(0x1C, &D0);   // ANDI.W	#$001C,D0
+  switch (D0 & 0x1C) {
+  case 0:
+    game_state = sega_init;
+    break;
+  case 4:
+    game_state = rom_2EF4;
+    break;
+  case 8:
+    game_state = rom_379E;
+    break;
+  case 0xc:
+    game_state = rom_379E;
+    break;
+  case 0x10:
+    game_state = rom_45DE;
+    break;
+  case 0x14:
+    game_state = continue_screen_init;
+    break;
+  case 0x18:
+    game_state = rom_50F2;
+    break;
+  case 0x1C:
+    game_state = rom_57D2;
+    break;
+  }
 }
 
-EXPORT u32 get_test_level(void) {
-	return TEST_LEVEL;
-}
+EXPORT u32 get_test_level(void) { return TEST_LEVEL; }
 
 EXPORT void reset_game(void) {
   // print("reseting game");
@@ -77,18 +92,18 @@ EXPORT void reset_game(void) {
 EXPORT void run_game_frame(void) {
   exit_mainloop = false;
   while (true) {
-	if (game_state) {
-		if (setjmp(speedshoes__desync_jumpbuf)) {
-			break;
-		} else {
-			game_state();
-		}
-	}
-	if (exit_mainloop) {
-		break;
-	} else {
-		rom_388_nosega();
-	}
+    if (game_state) {
+      if (setjmp(speedshoes__desync_jumpbuf)) {
+        break;
+      } else {
+        game_state();
+      }
+    }
+    if (exit_mainloop) {
+      break;
+    } else {
+      rom_388_nosega();
+    }
   }
   DEF_ROMLOC(29A0) : rom_B10(); // JMP	$00000B10
 }

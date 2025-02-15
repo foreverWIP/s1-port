@@ -187,7 +187,7 @@ ROMFUNC(rom_62BC) {
   DEF_ROMLOC(62F8) : move_tomem_16(D0, 0xFFFFF618); // MOVE.W	D0,$F618
   DEF_ROMLOC(62FC)
       : move_toreg_16(read_16(0xFFFFF700), &D0);     // MOVE.W	$F700,D0
-  DEF_ROMLOC(6300) : cmp_tomem_8(0x4, 0xFFFFF600);   // CMPI.B	#$04,$F600
+  DEF_ROMLOC(6300) : cmp_tomem_8(GM_TITLE, v_gamemode);   // CMPI.B	#$04,$F600
   DEF_ROMLOC(6306) : if (!CCR_EQ) goto rom_630A;     // BNE.B	$630A
   DEF_ROMLOC(6308) : move_toreg_32(0x0, &D0);        // MOVEQ.L	$00,D0
   DEF_ROMLOC(630A) : neg_reg_16(&D0);                // NEG.W	D0

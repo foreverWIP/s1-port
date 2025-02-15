@@ -31,7 +31,7 @@ ROMFUNC(rom_13CC) {
   DEF_ROMLOC(13D0) : if (CCR_EQ) goto rom_13F4;     // BEQ.B	$13F4
   DEF_ROMLOC(13D2) : btst_tomem_8(0x6, 0xFFFFF605); // BTST.B	#$06,$F605
   DEF_ROMLOC(13D8) : if (CCR_EQ) goto rom_13E4;     // BEQ.B	$13E4
-  DEF_ROMLOC(13DA) : SET_GM_TITLE();
+  DEF_ROMLOC(13DA) : move_tomem_8(GM_TITLE, v_gamemode);
   goto rom_13FC;                                    // BRA.B	$13FC
   DEF_ROMLOC(13E4) : btst_tomem_8(0x4, 0xFFFFF604); // BTST.B	#$04,$F604
   DEF_ROMLOC(13EA) : if (!CCR_EQ) {
@@ -47,9 +47,10 @@ ROMFUNC(rom_13CC) {
   DEF_ROMLOC(13FA) : if (CCR_EQ) {
     rom_13C2();
     return;
-  }                                                        // BEQ.B	$13C2
-  DEF_ROMLOC(13FC) : move_tomem_8(0xFFFFFF80, 0xFFFFF003); // MOVE.B
-                                                           // #$80,$F003
+  } // BEQ.B	$13C2
+  DEF_ROMLOC(13FC)
+      : move_tomem_8(0xFFFFFF80, 0xFFFFF003); // MOVE.B
+                                              // #$80,$F003
   rom_1402();
 }
 ROMFUNC(rom_1402) {
@@ -64,7 +65,8 @@ ROMFUNC(rom_1408) {
 }
 ROMFUNC(rom_140A) {
   DEF_ROMLOC(140A) : move_tomem_16(0x1, 0xFFFFF63A); // MOVE.W	#$0001,$F63A
-  DEF_ROMLOC(1410) : move_tomem_8(0xFFFFFF80, 0xFFFFF003); // MOVE.B
-                                                           // #$80,$F003
-  DEF_ROMLOC(1416) : return;                               // RTS
+  DEF_ROMLOC(1410)
+      : move_tomem_8(0xFFFFFF80, 0xFFFFF003); // MOVE.B
+                                              // #$80,$F003
+  DEF_ROMLOC(1416) : return;                  // RTS
 }

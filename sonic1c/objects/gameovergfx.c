@@ -3,7 +3,6 @@
 #include "../opcodes.h"
 #include "../system.h"
 
-
 ROMFUNC(rom_CB42) {
   u8 switchindex = 0;
   DEF_ROMLOC(CB42) : move_toreg_32(0x0, &D0); // MOVEQ.L	$00,D0
@@ -26,7 +25,7 @@ ROMFUNC(rom_CB42) {
   }
 }
 ROMFUNC(rom_CB56) {
-  DEF_ROMLOC(CB56) : tst_mem_32(v_plc_buffer);         // TST.L	$F680
+  DEF_ROMLOC(CB56) : tst_mem_32(v_plc_buffer);       // TST.L	$F680
   DEF_ROMLOC(CB5A) : if (CCR_EQ) goto rom_CB5E;      // BEQ.B	$CB5E
   DEF_ROMLOC(CB5C) : return;                         // RTS
   DEF_ROMLOC(CB5E) : add_tomem_8(0x2, A0 + 0x24);    // ADDQ.B	#$02,36(A0)
@@ -70,10 +69,10 @@ ROMFUNC(rom_CBB8) {
   return;                                        // BRA.W	$DC92
   DEF_ROMLOC(CBD8) : tst_mem_8(0xFFFFFE1A);      // TST.B	$FE1A
   DEF_ROMLOC(CBDC) : if (!CCR_EQ) goto rom_CBF2; // BNE.B	$CBF2
-  DEF_ROMLOC(CBDE) : SET_GM_CONTINUE();
+  DEF_ROMLOC(CBDE) : move_tomem_8(GM_CONTINUE, v_gamemode);
   DEF_ROMLOC(CBE4) : tst_mem_8(0xFFFFFE18);      // TST.B	$FE18
   DEF_ROMLOC(CBE8) : if (!CCR_EQ) goto rom_CBFC; // BNE.B	$CBFC
-  DEF_ROMLOC(CBEA) : SET_GM_SEGA();
+  DEF_ROMLOC(CBEA) : move_tomem_8(GM_SEGA, v_gamemode);
   goto rom_CBFC;                                     // BRA.B	$CBFC
   DEF_ROMLOC(CBF2) : clr_mem_32(0xFFFFFE38);         // CLR.L	$FE38
   DEF_ROMLOC(CBF6) : move_tomem_16(0x1, 0xFFFFFE02); // MOVE.W	#$0001,$FE02

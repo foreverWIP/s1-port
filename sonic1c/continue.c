@@ -101,9 +101,9 @@ void continue_screen_loop_part2(void) {
     continue_screen_loop();
     return;
   } // BNE.W	$4DD0
-  DEF_ROMLOC(4E22) : SET_GM_SEGA();
+  DEF_ROMLOC(4E22) : move_tomem_8(GM_SEGA, v_gamemode);
   DEF_ROMLOC(4E28) : return; // RTS
-  DEF_ROMLOC(4E2A) : SET_GM_LEVEL();
+  DEF_ROMLOC(4E2A) : move_tomem_8(GM_LEVEL, v_gamemode);
   DEF_ROMLOC(4E30) : move_tomem_8(0x3, v_lives);    // MOVE.B	#$03,$FE12
   DEF_ROMLOC(4E36) : move_toreg_32(0x0, &D0);       // MOVEQ.L	$00,D0
   DEF_ROMLOC(4E38) : move_tomem_16(D0, 0xFFFFFE20); // MOVE.W	D0,$FE20

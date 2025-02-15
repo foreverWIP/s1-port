@@ -130,10 +130,11 @@ ROMFUNC(rom_B64) {
 }
 ROMFUNC(rom_B88) {
   DEF_ROMLOC(B88)
-      : cmp_tomem_8(0xFFFFFF8C, 0xFFFFF600);      // CMPI.B
-                                                  // #$8C,$F600
-  DEF_ROMLOC(B8E) : if (CCR_EQ) goto rom_B9A;     // BEQ.B	$B9A
-  DEF_ROMLOC(B90) : cmp_tomem_8(0xC, 0xFFFFF600); // CMPI.B	#$0C,$F600
+      : cmp_tomem_8(GM_TITLECARD_FLAG|GM_LEVEL, v_gamemode);           // CMPI.B
+                                                       // #$8C,$F600
+  DEF_ROMLOC(B8E) : if (CCR_EQ) goto rom_B9A;          // BEQ.B	$B9A
+  DEF_ROMLOC(B90) : cmp_tomem_8(GM_LEVEL, v_gamemode); // CMPI.B
+                                                       // #$0C,$F600
   DEF_ROMLOC(B96) : if (!CCR_EQ) {
     rom_B5E();
     return;
@@ -150,10 +151,9 @@ ROMFUNC(rom_B88) {
   DEF_ROMLOC(BB2) : move_toreg_16(0x700, &D0);     // MOVE.W	#$0700,D0
   DEF_ROMLOC(BB6) : dec_reg_16(&D0);
   if ((D0 & 0xffff) != 0xffff)
-    goto rom_BB6;                                   // DBF.W	D0,$0BB6
-  DEF_ROMLOC(BBA) : move_tomem_16(0x1, 0xFFFFF644); // MOVE.W	#$0001,$F644
-  DEF_ROMLOC(BC0)
-      : move_tomem_16(0x100, 0xA11100);              // MOVE.W	#$0100,$00A11100
+    goto rom_BB6;                                    // DBF.W	D0,$0BB6
+  DEF_ROMLOC(BBA) : move_tomem_16(0x1, 0xFFFFF644);  // MOVE.W	#$0001,$F644
+  DEF_ROMLOC(BC0) : move_tomem_16(0x100, 0xA11100);  // MOVE.W	#$0100,$00A11100
   DEF_ROMLOC(BC8) : btst_tomem_8(0x0, 0xA11100);     // BTST.B	#$00,$00A11100
   DEF_ROMLOC(BD0) : if (!CCR_EQ) goto rom_BC8;       // BNE.B	$BC8
   DEF_ROMLOC(BD2) : tst_mem_8(0xFFFFF64E);           // TST.B	$F64E
@@ -204,7 +204,8 @@ ROMFUNC(rom_C5E) {
   DEF_ROMLOC(C62) : return;     // RTS
 }
 ROMFUNC(rom_C64) {
-  DEF_ROMLOC(C64) : cmp_tomem_8(0x10, 0xFFFFF600); // CMPI.B	#$10,$F600
+  DEF_ROMLOC(C64)
+      : cmp_tomem_8(GM_SPECIAL, v_gamemode); // CMPI.B	#$10,$F600
   DEF_ROMLOC(C6A) : if (CCR_EQ) {
     rom_DA6();
     return;
@@ -212,8 +213,7 @@ ROMFUNC(rom_C64) {
   rom_C6E(); // Detected flow into next function
 }
 ROMFUNC(rom_C6E) {
-  DEF_ROMLOC(C6E)
-      : move_tomem_16(0x100, 0xA11100);              // MOVE.W	#$0100,$00A11100
+  DEF_ROMLOC(C6E) : move_tomem_16(0x100, 0xA11100);  // MOVE.W	#$0100,$00A11100
   DEF_ROMLOC(C76) : btst_tomem_8(0x0, 0xA11100);     // BTST.B	#$00,$00A11100
   DEF_ROMLOC(C7E) : if (!CCR_EQ) goto rom_C76;       // BNE.B	$C76
   DEF_ROMLOC(C80) : input_read_controllers();        // BSR.W	$11E6
@@ -310,8 +310,7 @@ ROMFUNC(rom_D84) {
   DEF_ROMLOC(DA4) : return;                        // RTS
 }
 ROMFUNC(rom_DA6) {
-  DEF_ROMLOC(DA6)
-      : move_tomem_16(0x100, 0xA11100);              // MOVE.W	#$0100,$00A11100
+  DEF_ROMLOC(DA6) : move_tomem_16(0x100, 0xA11100);  // MOVE.W	#$0100,$00A11100
   DEF_ROMLOC(DAE) : btst_tomem_8(0x0, 0xA11100);     // BTST.B	#$00,$00A11100
   DEF_ROMLOC(DB6) : if (!CCR_EQ) goto rom_DAE;       // BNE.B	$DAE
   DEF_ROMLOC(DB8) : input_read_controllers();        // BSR.W	$11E6
@@ -358,8 +357,7 @@ ROMFUNC(rom_DA6) {
   DEF_ROMLOC(E70) : return;                        // RTS
 }
 ROMFUNC(rom_E72) {
-  DEF_ROMLOC(E72)
-      : move_tomem_16(0x100, 0xA11100);              // MOVE.W	#$0100,$00A11100
+  DEF_ROMLOC(E72) : move_tomem_16(0x100, 0xA11100);  // MOVE.W	#$0100,$00A11100
   DEF_ROMLOC(E7A) : btst_tomem_8(0x0, 0xA11100);     // BTST.B	#$00,$00A11100
   DEF_ROMLOC(E82) : if (!CCR_EQ) goto rom_E7A;       // BNE.B	$E7A
   DEF_ROMLOC(E84) : input_read_controllers();        // BSR.W	$11E6
@@ -455,8 +453,7 @@ ROMFUNC(rom_F9A) {
   plc_refresh_frame();                          // BRA.W	$163A
 }
 ROMFUNC(rom_FA6) {
-  DEF_ROMLOC(FA6)
-      : move_tomem_16(0x100, 0xA11100);              // MOVE.W	#$0100,$00A11100
+  DEF_ROMLOC(FA6) : move_tomem_16(0x100, 0xA11100);  // MOVE.W	#$0100,$00A11100
   DEF_ROMLOC(FAE) : btst_tomem_8(0x0, 0xA11100);     // BTST.B	#$00,$00A11100
   DEF_ROMLOC(FB6) : if (!CCR_EQ) goto rom_FAE;       // BNE.B	$FAE
   DEF_ROMLOC(FB8) : input_read_controllers();        // BSR.W	$11E6
@@ -502,8 +499,7 @@ ROMFUNC(rom_FA6) {
   DEF_ROMLOC(106C) : return;                        // RTS
 }
 ROMFUNC(rom_106E) {
-  DEF_ROMLOC(106E)
-      : move_tomem_16(0x100, 0xA11100);               // MOVE.W	#$0100,$00A11100
+  DEF_ROMLOC(106E) : move_tomem_16(0x100, 0xA11100);  // MOVE.W	#$0100,$00A11100
   DEF_ROMLOC(1076) : btst_tomem_8(0x0, 0xA11100);     // BTST.B	#$00,$00A11100
   DEF_ROMLOC(107E) : if (!CCR_EQ) goto rom_1076;      // BNE.B	$1076
   DEF_ROMLOC(1080) : input_read_controllers();        // BSR.W	$11E6

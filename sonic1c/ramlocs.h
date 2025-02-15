@@ -7,6 +7,7 @@
 #define v_16x16 RAMLOC32(0xb000)
 #define v_soundqueue0 RAMLOC32(0xf00a)
 #define v_soundqueue1 RAMLOC32(0xf00b)
+#define v_gamemode RAMLOC32(0xf600)
 #define v_plc_buffer RAMLOC32(0xf680)
 #define v_plc_patternsleft RAMLOC32(0xf6f8)
 #define v_plc_framepatternsleft RAMLOC32(0xf6fa)
