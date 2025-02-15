@@ -65,7 +65,7 @@ ROMFUNC(rom_C400) {
   goto rom_C468;                                   // BRA.B	$C468
   DEF_ROMLOC(C452) : tst_mem_8(A3);                // TST.B	(A3)
   DEF_ROMLOC(C454) : if (!CCR_EQ) goto rom_C460;   // BNE.B	$C460
-  DEF_ROMLOC(C456) : move_toreg_16(0xCD, &D0);     // MOVE.W	#$00CD,D0
+  DEF_ROMLOC(C456) : move_toreg_16(SFX_SPRING, &D0);     // MOVE.W	#$00CD,D0
   DEF_ROMLOC(C45A) : play_sound_special();         // JSR	$00001394
   DEF_ROMLOC(C460) : bset_tomem_8(D3, A3);         // BSET.B	D3,(A3)
   DEF_ROMLOC(C462) : bset_tomem_8(0x0, A0 + 0x1A); // BSET.B	#$00,26(A0)

@@ -35,7 +35,7 @@ ROMFUNC(rom_B87A) {
   DEF_ROMLOC(B89E)
       : move_tomem_8(0xFFFFFF8B, A0 + 0x20);       // MOVE.B	#$8B,32(A0)
   DEF_ROMLOC(B8A4) : move_tomem_8(0x8, A0 + 0x19); // MOVE.B	#$08,25(A0)
-  DEF_ROMLOC(B8AA) : move_toreg_16(0xC8, &D0);     // MOVE.W	#$00C8,D0
+  DEF_ROMLOC(B8AA) : move_toreg_16(SFX_BURNING, &D0);     // MOVE.W	#$00C8,D0
   DEF_ROMLOC(B8AE) : play_sound_special();         // JSR	$00001394
   DEF_ROMLOC(B8B4) : tst_mem_8(A0 + 0x28);         // TST.B	40(A0)
   DEF_ROMLOC(B8B8) : if (CCR_EQ) {

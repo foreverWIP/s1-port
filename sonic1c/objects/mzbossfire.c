@@ -52,7 +52,7 @@ ROMFUNC(rom_18E70) {
 }
 ROMFUNC(rom_18EBA) {
   DEF_ROMLOC(18EBA) : move_tomem_8(0x1E, A0 + 0x29); // MOVE.B	#$1E,41(A0)
-  DEF_ROMLOC(18EC0) : move_toreg_16(0xAE, &D0);      // MOVE.W	#$00AE,D0
+  DEF_ROMLOC(18EC0) : move_toreg_16(SFX_FIREBALL, &D0);      // MOVE.W	#$00AE,D0
   DEF_ROMLOC(18EC4) : play_sound_special();          // JSR	$00001394
   rom_18ECA(); // Detected flow into next function
 }

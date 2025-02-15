@@ -139,7 +139,7 @@ ROMFUNC(rom_F51A) {
   DEF_ROMLOC(F5F0)
       : move_tomem_32(read_32(A0 + 0x3C), A1 + 0x3C); // MOVE.L	60(A0),60(A1)
   DEF_ROMLOC(F5F6) : move_tomem_8(0x0, A0 + 0x28);    // MOVE.B	#$00,40(A0)
-  DEF_ROMLOC(F5FC) : move_toreg_16(0xC8, &D0);        // MOVE.W	#$00C8,D0
+  DEF_ROMLOC(F5FC) : move_toreg_16(SFX_BURNING, &D0);        // MOVE.W	#$00C8,D0
   DEF_ROMLOC(F600) : play_sound_special();            // JSR	$00001394
   rom_F606(); // Detected flow into next function
 }

@@ -131,7 +131,7 @@ ROMFUNC(rom_CCD0) {
   DEF_ROMLOC(CCF6) : sub_tomem_16(0xA, 0xFFFFF7D4);  // SUBI.W	#$000A,$F7D4
   DEF_ROMLOC(CCFC) : tst_reg_16(&D0);                // TST.W	D0
   DEF_ROMLOC(CCFE) : if (!CCR_EQ) goto rom_CD22;     // BNE.B	$CD22
-  DEF_ROMLOC(CD00) : move_toreg_16(0xC5, &D0);       // MOVE.W	#$00C5,D0
+  DEF_ROMLOC(CD00) : move_toreg_16(SFX_CASH, &D0);       // MOVE.W	#$00C5,D0
   DEF_ROMLOC(CD04) : play_sound_special();           // JSR	$00001394
   DEF_ROMLOC(CD0A) : add_tomem_8(0x2, A0 + 0x24);    // ADDQ.B	#$02,36(A0)
   DEF_ROMLOC(CD0E) : cmp_tomem_16(ZONE16_SBZ|1, v_zone);    // CMPI.W	#$0501,$FE10
@@ -144,7 +144,7 @@ ROMFUNC(rom_CCD0) {
       : move_toreg_8(read_8(0xFFFFFE0F), &D0);   // MOVE.B	$FE0F,D0
   DEF_ROMLOC(CD2C) : and_toreg_8(0x3, &D0);      // ANDI.B	#$03,D0
   DEF_ROMLOC(CD30) : if (!CCR_EQ) goto rom_CD20; // BNE.B	$CD20
-  DEF_ROMLOC(CD32) : move_toreg_16(0xCD, &D0);   // MOVE.W	#$00CD,D0
+  DEF_ROMLOC(CD32) : move_toreg_16(SFX_SPRING, &D0);   // MOVE.W	#$00CD,D0
   DEF_ROMLOC(CD36) : {
     play_sound_special();
     return;
@@ -209,7 +209,7 @@ ROMFUNC(rom_CDD8) {
   }                                               // BNE.W	$DCCE
   DEF_ROMLOC(CDE2) : add_tomem_8(0x2, A0 + 0x24); // ADDQ.B	#$02,36(A0)
   DEF_ROMLOC(CDE6) : clr_mem_8(0xFFFFF7CC);       // CLR.B	$F7CC
-  DEF_ROMLOC(CDEA) : move_toreg_16(0x8D, &D0);    // MOVE.W	#$008D,D0
+  DEF_ROMLOC(CDEA) : move_toreg_16(BGM_GOTTHROUGH, &D0);    // MOVE.W	#$008D,D0
   DEF_ROMLOC(CDEE) : {
     play_sound();
     return;

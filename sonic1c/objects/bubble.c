@@ -99,7 +99,7 @@ ROMFUNC(rom_12E0A) {
   DEF_ROMLOC(12E48) : rom_13032();                           // BSR.W	$13032
   DEF_ROMLOC(12E4C) : if (CCR_EQ) goto rom_12EAE;            // BEQ.B	$12EAE
   DEF_ROMLOC(12E4E) : resume_music();                           // BSR.W	$147E2
-  DEF_ROMLOC(12E52) : move_toreg_16(0xAD, &D0);              // MOVE.W	#$00AD,D0
+  DEF_ROMLOC(12E52) : move_toreg_16(SFX_BUBBLE, &D0);              // MOVE.W	#$00AD,D0
   DEF_ROMLOC(12E56) : play_sound_special();                  // JSR	$00001394
   DEF_ROMLOC(12E5C) : move_toreg_32(0xFFFFD000, &A1);        // LEA.L	$D000,A1
   DEF_ROMLOC(12E60) : clr_mem_16(A1 + 0x10);                 // CLR.W	16(A1)

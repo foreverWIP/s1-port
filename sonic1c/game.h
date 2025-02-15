@@ -1,22 +1,33 @@
 #pragma once
 
-#include "system.h"
-#include "palette.h"
-#include "object.h"
-#include "romlocs.h"
-#include "ramlocs.h"
-#include "graphics.h"
-#include "sound.h"
-#include "plc.h"
-#include "sega.h"
-#include "nemesis.h"
-#include "enigma.h"
-#include "vblank.h"
 #include "anim.h"
 #include "continue.h"
+#include "enigma.h"
+#include "graphics.h"
 #include "input.h"
-#include "util.h"
 #include "level.h"
+#include "nemesis.h"
+#include "object.h"
+#include "palette.h"
+#include "plc.h"
+#include "ramlocs.h"
+#include "romlocs.h"
+#include "sega.h"
+#include "sound.h"
+#include "system.h"
+#include "util.h"
+#include "vblank.h"
+
+enum {
+  GM_SEGA = 4 * 0,
+  GM_TITLE = 4 * 1,
+  GM_DEMO = 4 * 2,
+  GM_LEVEL = 4 * 3,
+  GM_SPECIAL = 4 * 4,
+  GM_CONTINUE = 4 * 5,
+  GM_ENDING = 4 * 6,
+  GM_CREDITS = 4 * 7,
+};
 
 extern void (*game_state)(void);
 extern bool exit_mainloop;

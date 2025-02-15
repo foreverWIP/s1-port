@@ -201,7 +201,7 @@ ROMFUNC(rom_1A444) {
   DEF_ROMLOC(1A496) : dec_reg_16(&D1);
   if ((D1 & 0xffff) != 0xffff)
     goto rom_1A466;                             // DBF.W	D1,$1A466
-  DEF_ROMLOC(1A49A) : move_toreg_16(0xCB, &D0); // MOVE.W	#$00CB,D0
+  DEF_ROMLOC(1A49A) : move_toreg_16(SFX_WALLSMASH, &D0); // MOVE.W	#$00CB,D0
   DEF_ROMLOC(1A49E) : play_sound_special();     // JSR	$00001394
   DEF_ROMLOC(1A4A4) : rom_DC92();
   return; // JMP	$0000DC92

@@ -61,7 +61,7 @@ ROMFUNC(rom_EBE4) {
   DEF_ROMLOC(EBF6) : if (CCR_EQ) goto rom_EC08;       // BEQ.B	$EC08
   DEF_ROMLOC(EBF8)
       : move_tomem_16(read_16(A0 + 0x32), A0 + 0x30); // MOVE.W	50(A0),48(A0)
-  DEF_ROMLOC(EBFE) : move_toreg_16(0xB3, &D0);        // MOVE.W	#$00B3,D0
+  DEF_ROMLOC(EBFE) : move_toreg_16(SFX_FLAMETHROWER, &D0);        // MOVE.W	#$00B3,D0
   DEF_ROMLOC(EC02) : play_sound_special();            // JSR	$00001394
   DEF_ROMLOC(EC08) : move_toreg_32(0xEC4A, &A1);      // LEA.L	$0000EC4A,A1
   DEF_ROMLOC(EC0E) : animate_sprite();                      // BSR.W	$ADA2

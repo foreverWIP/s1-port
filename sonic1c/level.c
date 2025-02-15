@@ -13,7 +13,7 @@ ROMFUNC(rom_379E) {
   DEF_ROMLOC(379E) : bset_tomem_8(0x7, 0xFFFFF600); // BSET.B	#$07,$F600
   DEF_ROMLOC(37A4) : tst_mem_16(0xFFFFFFF0);        // TST.W	$FFF0
   DEF_ROMLOC(37A8) : if (CCR_MI) goto rom_37B2;     // BMI.B	$37B2
-  DEF_ROMLOC(37AA) : move_toreg_8(0xFFFFFFE0, &D0); // MOVE.B	#$E0,D0
+  DEF_ROMLOC(37AA) : move_toreg_8(COMSFX_FADE, &D0); // MOVE.B	#$E0,D0
   DEF_ROMLOC(37AE) : play_sound_special();          // BSR.W	$1394
   DEF_ROMLOC(37B2) : clear_plc();                   // BSR.W	$15D6
   DEF_ROMLOC(37B6) : game_state = rom_37BA;

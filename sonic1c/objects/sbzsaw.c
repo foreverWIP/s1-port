@@ -125,7 +125,7 @@ ROMFUNC(rom_1617C) {
       : move_toreg_16(read_16(0xFFFFFE04), &D0);   // MOVE.W	$FE04,D0
   DEF_ROMLOC(161B8) : and_toreg_16(0xF, &D0);      // ANDI.W	#$000F,D0
   DEF_ROMLOC(161BC) : if (!CCR_EQ) goto rom_161C8; // BNE.B	$161C8
-  DEF_ROMLOC(161BE) : move_toreg_16(0xB0, &D0);    // MOVE.W	#$00B0,D0
+  DEF_ROMLOC(161BE) : move_toreg_16(SFX_SAW, &D0);    // MOVE.W	#$00B0,D0
   DEF_ROMLOC(161C2) : play_sound_special();        // JSR	$00001394
   DEF_ROMLOC(161C8) : return;                      // RTS
 }
@@ -152,7 +152,7 @@ ROMFUNC(rom_161CA) {
       : move_toreg_8(read_8(0xFFFFFE64), &D0);     // MOVE.B	$FE64,D0
   DEF_ROMLOC(16208) : cmp_toreg_8(0x18, &D0);      // CMPI.B	#$18,D0
   DEF_ROMLOC(1620C) : if (!CCR_EQ) goto rom_16218; // BNE.B	$16218
-  DEF_ROMLOC(1620E) : move_toreg_16(0xB0, &D0);    // MOVE.W	#$00B0,D0
+  DEF_ROMLOC(1620E) : move_toreg_16(SFX_SAW, &D0);    // MOVE.W	#$00B0,D0
   DEF_ROMLOC(16212) : play_sound_special();        // JSR	$00001394
   DEF_ROMLOC(16218) : return;                      // RTS
 }
@@ -183,7 +183,7 @@ ROMFUNC(rom_1621A) {
   DEF_ROMLOC(16254)
       : move_tomem_8(0xFFFFFFA2, A0 + 0x20);        // MOVE.B	#$A2,32(A0)
   DEF_ROMLOC(1625A) : move_tomem_8(0x2, A0 + 0x1A); // MOVE.B	#$02,26(A0)
-  DEF_ROMLOC(16260) : move_toreg_16(0xB0, &D0);     // MOVE.W	#$00B0,D0
+  DEF_ROMLOC(16260) : move_toreg_16(SFX_SAW, &D0);     // MOVE.W	#$00B0,D0
   DEF_ROMLOC(16264) : play_sound_special();         // JSR	$00001394
   DEF_ROMLOC(1626A) : return_early = true;          // TODO; // ADDQ.L	#$04,A7
   DEF_ROMLOC(1626C) : return;                       // RTS
@@ -221,7 +221,7 @@ ROMFUNC(rom_1628E) {
   DEF_ROMLOC(162C6)
       : move_tomem_8(0xFFFFFFA2, A0 + 0x20);        // MOVE.B	#$A2,32(A0)
   DEF_ROMLOC(162CC) : move_tomem_8(0x2, A0 + 0x1A); // MOVE.B	#$02,26(A0)
-  DEF_ROMLOC(162D2) : move_toreg_16(0xB0, &D0);     // MOVE.W	#$00B0,D0
+  DEF_ROMLOC(162D2) : move_toreg_16(SFX_SAW, &D0);     // MOVE.W	#$00B0,D0
   DEF_ROMLOC(162D6) : play_sound_special();         // JSR	$00001394
   DEF_ROMLOC(162DC) : return_early = true;          // TODO; // ADDQ.L	#$04,A7
   DEF_ROMLOC(162DE) : return;                       // RTS

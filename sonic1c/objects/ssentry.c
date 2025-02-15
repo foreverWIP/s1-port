@@ -48,7 +48,7 @@ ROMFUNC(rom_14A02) {
   DEF_ROMLOC(14A28) : tst_mem_8(0xFFFFD000);         // TST.B	$D000
   DEF_ROMLOC(14A2C) : if (CCR_EQ) goto rom_14A3E;    // BEQ.B	$14A3E
   DEF_ROMLOC(14A2E) : move_tomem_8(0x0, 0xFFFFD000); // MOVE.B	#$00,$D000
-  DEF_ROMLOC(14A34) : move_toreg_16(0xA8, &D0);      // MOVE.W	#$00A8,D0
+  DEF_ROMLOC(14A34) : move_toreg_16(SFX_SSGOAL, &D0);      // MOVE.W	#$00A8,D0
   DEF_ROMLOC(14A38) : play_sound_special();          // JSR	$00001394
   DEF_ROMLOC(14A3E) : rom_DC92();
   return; // JMP	$0000DC92

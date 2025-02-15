@@ -119,7 +119,7 @@ ROMFUNC(rom_10818) {
       : move_toreg_8(read_8(0xFFFFFE0F), &D0);     // MOVE.B	$FE0F,D0
   DEF_ROMLOC(1081C) : and_toreg_8(0xF, &D0);       // ANDI.B	#$0F,D0
   DEF_ROMLOC(10820) : if (!CCR_EQ) goto rom_1082C; // BNE.B	$1082C
-  DEF_ROMLOC(10822) : move_toreg_16(0xC0, &D0);    // MOVE.W	#$00C0,D0
+  DEF_ROMLOC(10822) : move_toreg_16(SFX_BASARAN, &D0);    // MOVE.W	#$00C0,D0
   DEF_ROMLOC(10826) : play_sound_special();        // JSR	$00001394
   DEF_ROMLOC(1082C) : rom_DC6C();                  // BSR.W	$DC6C
   DEF_ROMLOC(10830)

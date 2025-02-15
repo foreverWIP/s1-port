@@ -332,6 +332,6 @@ ROMFUNC(rom_8B04) {
   if ((D1 & 0xffff) != 0xffff)
     goto rom_8B28;                             // DBF.W	D1,$8B28
   DEF_ROMLOC(8B70) : rom_DC92();               // BSR.W	$DC92
-  DEF_ROMLOC(8B74) : move_toreg_16(0xB9, &D0); // MOVE.W	#$00B9,D0
+  DEF_ROMLOC(8B74) : move_toreg_16(SFX_COLLAPSE, &D0); // MOVE.W	#$00B9,D0
   DEF_ROMLOC(8B78) : play_sound_special();     // JMP	$00001394
 }

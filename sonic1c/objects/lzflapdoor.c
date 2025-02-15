@@ -45,7 +45,7 @@ ROMFUNC(rom_11A58) {
   DEF_ROMLOC(11A64) : bchg_tomem_8(0x0, A0 + 0x1C);   // BCHG.B	#$00,28(A0)
   DEF_ROMLOC(11A6A) : tst_mem_8(A0 + 0x1);            // TST.B	1(A0)
   DEF_ROMLOC(11A6E) : if (CCR_PL) goto rom_11A7A;     // BPL.B	$11A7A
-  DEF_ROMLOC(11A70) : move_toreg_16(0xBB, &D0);       // MOVE.W	#$00BB,D0
+  DEF_ROMLOC(11A70) : move_toreg_16(SFX_DOOR, &D0);       // MOVE.W	#$00BB,D0
   DEF_ROMLOC(11A74) : play_sound_special();           // JSR	$00001394
   DEF_ROMLOC(11A7A) : move_toreg_32(0x11AB6, &A1);    // LEA.L	$00011AB6,A1
   DEF_ROMLOC(11A80) : animate_sprite();                     // BSR.W	$ADA2

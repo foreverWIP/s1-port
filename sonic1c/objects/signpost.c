@@ -63,7 +63,7 @@ ROMFUNC(rom_F21E) {
   DEF_ROMLOC(F226) : if (CCR_CS) goto rom_F246; // BCS.B	$F246
   DEF_ROMLOC(F228) : cmp_toreg_16(0x20, &D0);   // CMPI.W	#$0020,D0
   DEF_ROMLOC(F22C) : if (CCR_CC) goto rom_F246; // BCC.B	$F246
-  DEF_ROMLOC(F22E) : move_toreg_16(0xCF, &D0);  // MOVE.W	#$00CF,D0
+  DEF_ROMLOC(F22E) : move_toreg_16(SFX_SIGNPOST, &D0);  // MOVE.W	#$00CF,D0
   DEF_ROMLOC(F232) : play_sound();              // JSR	$0000138E
   DEF_ROMLOC(F238) : clr_mem_8(0xFFFFFE1E);     // CLR.B	$FE1E
   DEF_ROMLOC(F23C)
@@ -165,7 +165,7 @@ ROMFUNC(rom_F316) {
       : move_toreg_16(read_16(0xFFFFFE20), &D0);    // MOVE.W	$FE20,D0
   DEF_ROMLOC(F368) : mulu_toreg_16(0xA, &D0);       // MULU.W	#$000A,D0
   DEF_ROMLOC(F36C) : move_tomem_16(D0, 0xFFFFF7D4); // MOVE.W	D0,$F7D4
-  DEF_ROMLOC(F370) : move_toreg_16(0x8E, &D0);      // MOVE.W	#$008E,D0
+  DEF_ROMLOC(F370) : move_toreg_16(BGM_GAMEOVER, &D0);      // MOVE.W	#$008E,D0
   DEF_ROMLOC(F374) : play_sound_special();          // JSR	$00001394
   DEF_ROMLOC(F37A) : return;                        // RTS
 }

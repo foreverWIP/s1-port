@@ -50,7 +50,7 @@ ROMFUNC(rom_9416) {
   DEF_ROMLOC(943A) : move_tomem_8(0xC, A0 + 0x19);   // MOVE.B	#$0C,25(A0)
   DEF_ROMLOC(9440) : move_tomem_8(0x7, A0 + 0x1E);   // MOVE.B	#$07,30(A0)
   DEF_ROMLOC(9446) : move_tomem_8(0x0, A0 + 0x1A);   // MOVE.B	#$00,26(A0)
-  DEF_ROMLOC(944C) : move_toreg_16(0xC1, &D0);       // MOVE.W	#$00C1,D0
+  DEF_ROMLOC(944C) : move_toreg_16(SFX_BREAKITEM, &D0);       // MOVE.W	#$00C1,D0
   DEF_ROMLOC(9450) : play_sound_special();           // JSR	$00001394
   rom_9456();
 }
@@ -98,7 +98,7 @@ ROMFUNC(rom_9486) {
   DEF_ROMLOC(94AA) : move_tomem_8(0xC, A0 + 0x19);   // MOVE.B	#$0C,25(A0)
   DEF_ROMLOC(94B0) : move_tomem_8(0x7, A0 + 0x1E);   // MOVE.B	#$07,30(A0)
   DEF_ROMLOC(94B6) : move_tomem_8(0x0, A0 + 0x1A);   // MOVE.B	#$00,26(A0)
-  DEF_ROMLOC(94BC) : move_toreg_16(0xC4, &D0);       // MOVE.W	#$00C4,D0
+  DEF_ROMLOC(94BC) : move_toreg_16(SFX_BOMB, &D0);       // MOVE.W	#$00C4,D0
   DEF_ROMLOC(94C0) : {
     play_sound_special();
     return;

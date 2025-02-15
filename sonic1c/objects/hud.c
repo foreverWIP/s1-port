@@ -71,7 +71,7 @@ ROMFUNC(rom_1CE42) {
   DEF_ROMLOC(1CE6E) : if (CCR_MI) goto rom_1CE82;   // BMI.B	$1CE82
   DEF_ROMLOC(1CE70) : add_tomem_8(0x1, v_lives);    // ADDQ.B	#$01,$FE12
   DEF_ROMLOC(1CE74) : add_tomem_8(0x1, 0xFFFFFE1C); // ADDQ.B	#$01,$FE1C
-  DEF_ROMLOC(1CE78) : move_toreg_16(0x88, &D0);     // MOVE.W	#$0088,D0
+  DEF_ROMLOC(1CE78) : move_toreg_16(BGM_EXTRALIFE, &D0);     // MOVE.W	#$0088,D0
   DEF_ROMLOC(1CE7C) : play_sound();                 // JMP	$0000138E
   DEF_ROMLOC(1CE82) : return;                       // RTS
 }

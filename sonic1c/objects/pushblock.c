@@ -376,7 +376,7 @@ ROMFUNC(rom_C810) {
   DEF_ROMLOC(C926) : move_tomem_16(D1, A1 + 0x14);   // MOVE.W	D1,20(A1)
   DEF_ROMLOC(C92A) : move_tomem_16(0x0, A1 + 0x10);  // MOVE.W	#$0000,16(A1)
   DEF_ROMLOC(C930) : move_tomem_16(D0, A7 -= 2);     // MOVE.W	D0,-(A7)
-  DEF_ROMLOC(C932) : move_toreg_16(0xA7, &D0);       // MOVE.W	#$00A7,D0
+  DEF_ROMLOC(C932) : move_toreg_16(SFX_PUSH, &D0);       // MOVE.W	#$00A7,D0
   DEF_ROMLOC(C936) : play_sound_special();           // JSR	$00001394
   DEF_ROMLOC(C93C)
       : move_toreg_16(read_16((A7 += 2, A7 - 2)), &D0); // MOVE.W	(A7)+,D0

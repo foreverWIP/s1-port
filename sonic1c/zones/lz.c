@@ -147,7 +147,7 @@ ROMFUNC(rom_3D1A) {
   DEF_ROMLOC(3D3E) : move_toreg_16(0x4C8, &D1);       // MOVE.W	#$04C8,D1
   DEF_ROMLOC(3D42) : move_tomem_8(0x4B, 0xFFFFA506);  // MOVE.B	#$4B,$A506
   DEF_ROMLOC(3D48) : move_tomem_8(0x1, 0xFFFFF64D);   // MOVE.B	#$01,$F64D
-  DEF_ROMLOC(3D4E) : move_toreg_16(0xB7, &D0);        // MOVE.W	#$00B7,D0
+  DEF_ROMLOC(3D4E) : move_toreg_16(SFX_RUMBLING, &D0);        // MOVE.W	#$00B7,D0
   DEF_ROMLOC(3D52) : play_sound_special();            // BSR.W	$1394
   DEF_ROMLOC(3D56) : move_tomem_16(D1, 0xFFFFF64A);   // MOVE.W	D1,$F64A
   DEF_ROMLOC(3D5A) : move_tomem_16(D1, 0xFFFFF648);   // MOVE.W	D1,$F648
@@ -252,7 +252,7 @@ ROMFUNC(rom_3E34) {
   DEF_ROMLOC(3E7E) : move_toreg_8(read_8(0xFFFFFE0F), &D0); // MOVE.B	$FE0F,D0
   DEF_ROMLOC(3E82) : and_toreg_8(0x3F, &D0);                // ANDI.B	#$3F,D0
   DEF_ROMLOC(3E86) : if (!CCR_EQ) goto rom_3E92;            // BNE.B	$3E92
-  DEF_ROMLOC(3E88) : move_toreg_16(0xD0, &D0);              // MOVE.W	#$00D0,D0
+  DEF_ROMLOC(3E88) : move_toreg_16(SPECSFX_WATERFALL, &D0);              // MOVE.W	#$00D0,D0
   DEF_ROMLOC(3E8C) : play_sound_special();                  // JSR	$00001394
   DEF_ROMLOC(3E92) : tst_mem_8(0xFFFFF7C9);                 // TST.B	$F7C9
   DEF_ROMLOC(3E96) : if (!CCR_EQ) goto rom_3F0C;            // BNE.W	$3F0C
@@ -334,7 +334,7 @@ ROMFUNC(rom_3F36) {
       : move_toreg_8(read_8(0xFFFFFE0F), &D0);   // MOVE.B	$FE0F,D0
   DEF_ROMLOC(3FB0) : and_toreg_8(0x1F, &D0);     // ANDI.B	#$1F,D0
   DEF_ROMLOC(3FB4) : if (!CCR_EQ) goto rom_3FC0; // BNE.B	$3FC0
-  DEF_ROMLOC(3FB6) : move_toreg_16(0xD0, &D0);   // MOVE.W	#$00D0,D0
+  DEF_ROMLOC(3FB6) : move_toreg_16(SPECSFX_WATERFALL, &D0);   // MOVE.W	#$00D0,D0
   DEF_ROMLOC(3FBA) : play_sound_special();       // JSR	$00001394
   DEF_ROMLOC(3FC0) : return;                     // RTS
 }

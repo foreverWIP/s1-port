@@ -33,7 +33,7 @@ ROMFUNC(rom_D768) {
     rom_D77C();
     return;
   }                                            // BNE.B	$D77C
-  DEF_ROMLOC(D772) : move_toreg_16(0xD0, &D0); // MOVE.W	#$00D0,D0
+  DEF_ROMLOC(D772) : move_toreg_16(SPECSFX_WATERFALL, &D0); // MOVE.W	#$00D0,D0
   DEF_ROMLOC(D776) : play_sound_special();     // JSR	$00001394
   rom_D77C(); // Detected flow into next function
 }

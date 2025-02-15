@@ -254,7 +254,7 @@ ROMFUNC(rom_BEDE) {
   DEF_ROMLOC(BF0A) : if (!CCR_EQ) goto rom_BF1C;            // BNE.B	$BF1C
   DEF_ROMLOC(BF0C) : tst_mem_8(A0 + 0x1);                   // TST.B	1(A0)
   DEF_ROMLOC(BF10) : if (CCR_PL) goto rom_BF1C;             // BPL.B	$BF1C
-  DEF_ROMLOC(BF12) : move_toreg_16(0xC7, &D0);              // MOVE.W	#$00C7,D0
+  DEF_ROMLOC(BF12) : move_toreg_16(SFX_CHAINRISE, &D0);              // MOVE.W	#$00C7,D0
   DEF_ROMLOC(BF16) : play_sound_special();                  // JSR	$00001394
   DEF_ROMLOC(BF1C) : sub_tomem_16(0x80, A0 + 0x32); // SUBI.W	#$0080,50(A0)
   DEF_ROMLOC(BF22) : if (CCR_CC) {
@@ -290,7 +290,7 @@ ROMFUNC(rom_BEDE) {
     rom_BF6A();
     return;
   }                                            // BPL.B	$BF6A
-  DEF_ROMLOC(BF60) : move_toreg_16(0xBD, &D0); // MOVE.W	#$00BD,D0
+  DEF_ROMLOC(BF60) : move_toreg_16(SFX_CHAINSTOMP, &D0); // MOVE.W	#$00BD,D0
   DEF_ROMLOC(BF64) : play_sound_special();     // JSR	$00001394
   rom_BF6A();
 }
@@ -306,7 +306,7 @@ ROMFUNC(rom_BF7A) {
   DEF_ROMLOC(BF94) : if (!CCR_EQ) goto rom_BFA6;            // BNE.B	$BFA6
   DEF_ROMLOC(BF96) : tst_mem_8(A0 + 0x1);                   // TST.B	1(A0)
   DEF_ROMLOC(BF9A) : if (CCR_PL) goto rom_BFA6;             // BPL.B	$BFA6
-  DEF_ROMLOC(BF9C) : move_toreg_16(0xC7, &D0);              // MOVE.W	#$00C7,D0
+  DEF_ROMLOC(BF9C) : move_toreg_16(SFX_CHAINRISE, &D0);              // MOVE.W	#$00C7,D0
   DEF_ROMLOC(BFA0) : play_sound_special();                  // JSR	$00001394
   DEF_ROMLOC(BFA6) : sub_tomem_16(0x80, A0 + 0x32); // SUBI.W	#$0080,50(A0)
   DEF_ROMLOC(BFAC) : if (CCR_CC) goto rom_C006;     // BCC.B	$C006
@@ -332,7 +332,7 @@ ROMFUNC(rom_BF7A) {
   DEF_ROMLOC(BFF0) : move_tomem_16(0x3C, A0 + 0x38); // MOVE.W	#$003C,56(A0)
   DEF_ROMLOC(BFF6) : tst_mem_8(A0 + 0x1);            // TST.B	1(A0)
   DEF_ROMLOC(BFFA) : if (CCR_PL) goto rom_C006;      // BPL.B	$C006
-  DEF_ROMLOC(BFFC) : move_toreg_16(0xBD, &D0);       // MOVE.W	#$00BD,D0
+  DEF_ROMLOC(BFFC) : move_toreg_16(SFX_CHAINSTOMP, &D0);       // MOVE.W	#$00BD,D0
   DEF_ROMLOC(C000) : play_sound_special();           // JSR	$00001394
   DEF_ROMLOC(C006) : rom_BF6A();                     // BRA.W	$BF6A
 }

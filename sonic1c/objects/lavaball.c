@@ -60,7 +60,7 @@ ROMFUNC(rom_E9BC) {
   DEF_ROMLOC(EA32)
       : move_tomem_16(read_16(A0 + 0x12), A0 + 0x10); // MOVE.W	18(A0),16(A0)
   DEF_ROMLOC(EA38) : move_tomem_16(0x0, A0 + 0x12);   // MOVE.W	#$0000,18(A0)
-  DEF_ROMLOC(EA3E) : move_toreg_16(0xAE, &D0);        // MOVE.W	#$00AE,D0
+  DEF_ROMLOC(EA3E) : move_toreg_16(SFX_FIREBALL, &D0);        // MOVE.W	#$00AE,D0
   DEF_ROMLOC(EA42) : play_sound_special();            // JSR	$00001394
   rom_EA48(); // Detected flow into next function
 }

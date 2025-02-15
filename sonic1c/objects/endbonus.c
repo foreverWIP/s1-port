@@ -54,7 +54,7 @@ ROMFUNC(rom_1791C) {
   DEF_ROMLOC(17972)
       : move_tomem_8(read_8(A0 + 0x28), A0 + 0x1A);   // MOVE.B	40(A0),26(A0)
   DEF_ROMLOC(17978) : move_tomem_16(0x77, A0 + 0x30); // MOVE.W	#$0077,48(A0)
-  DEF_ROMLOC(1797E) : move_toreg_16(0xC9, &D0);       // MOVE.W	#$00C9,D0
+  DEF_ROMLOC(1797E) : move_toreg_16(SFX_BONUS, &D0);       // MOVE.W	#$00C9,D0
   DEF_ROMLOC(17982) : play_sound_special();           // JSR	$00001394
   DEF_ROMLOC(17988) : move_toreg_32(0x0, &D0);        // MOVEQ.L	$00,D0
   DEF_ROMLOC(1798A) : move_toreg_8(read_8(A0 + 0x28), &D0); // MOVE.B

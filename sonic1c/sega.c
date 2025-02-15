@@ -94,7 +94,7 @@ bool sega_cycle_palette(void) {
 void sega_init_part2(void);
 void sega_init(void) {
   SETBYTE(SR, 0x04);
-  DEF_ROMLOC(2DD2) : move_toreg_8(0xFFFFFFE4, &D0); // MOVE.B	#$E4,D0
+  DEF_ROMLOC(2DD2) : move_toreg_8(COMSFX_STOP, &D0); // MOVE.B	#$E4,D0
   DEF_ROMLOC(2DD6) : play_sound_special();                    // BSR.W	$1394
   DEF_ROMLOC(2DDA) : clear_plc();                    // BSR.W	$15D6
   DEF_ROMLOC(2DDE) : game_state = sega_init_part2; palette_fade_out(); // BSR.W	$1E4A
@@ -160,7 +160,7 @@ void sega_wait_palette_loop(void) {
     sega_wait_palette();
     return;
   }                                                  // BNE.B	$2EAC
-  DEF_ROMLOC(2EBC) : move_toreg_8(0xFFFFFFE1, &D0);  // MOVE.B	#$E1,D0
+  DEF_ROMLOC(2EBC) : move_toreg_8(COMSFX_SEGA, &D0);  // MOVE.B	#$E1,D0
   DEF_ROMLOC(2EC0) : play_sound_special();                     // BSR.W	$1394
   end_frame(0x14);
   game_state = sega_end_wait_start;

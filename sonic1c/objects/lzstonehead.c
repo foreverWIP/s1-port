@@ -90,7 +90,7 @@ ROMFUNC(rom_12958) {
   DEF_ROMLOC(1299E) : btst_tomem_8(0x0, A0 + 0x22); // BTST.B	#$00,34(A0)
   DEF_ROMLOC(129A4) : if (!CCR_EQ) goto rom_129AA;  // BNE.B	$129AA
   DEF_ROMLOC(129A6) : neg_mem_16(A0 + 0x10);        // NEG.W	16(A0)
-  DEF_ROMLOC(129AA) : move_toreg_16(0xAE, &D0);     // MOVE.W	#$00AE,D0
+  DEF_ROMLOC(129AA) : move_toreg_16(SFX_FIREBALL, &D0);     // MOVE.W	#$00AE,D0
   DEF_ROMLOC(129AE) : play_sound_special();         // JSR	$00001394
   rom_129B4(); // Detected flow into next function
 }

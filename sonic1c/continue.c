@@ -44,7 +44,7 @@ void continue_screen_init_part2(void) {
   DEF_ROMLOC(4D62) : continue_screen_load_numbers(); // JSR	$0001D104
   DEF_ROMLOC(4D68) : move_toreg_32(0x12, &D0);       // MOVEQ.L	$12,D0
   DEF_ROMLOC(4D6A) : load_palette_fading();          // BSR.W	$20F4
-  DEF_ROMLOC(4D6E) : move_toreg_8(0xFFFFFF90, &D0);  // MOVE.B	#$90,D0
+  DEF_ROMLOC(4D6E) : move_toreg_8(BGM_CONTINUE, &D0);  // MOVE.B	#$90,D0
   DEF_ROMLOC(4D72) : play_sound();                   // BSR.W	$138E
   DEF_ROMLOC(4D76)
       : move_tomem_16(0x293, 0xFFFFF614);    // MOVE.W

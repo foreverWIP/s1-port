@@ -105,7 +105,7 @@ ROMFUNC(rom_1765A) {
   DEF_ROMLOC(176B8) : add_toreg_16(0x40, &D0);      // ADDI.W	#$0040,D0
   DEF_ROMLOC(176BC) : cmp_toreg_16(0x68, &D0);      // CMPI.W	#$0068,D0
   DEF_ROMLOC(176C0) : if (CCR_CC) goto rom_1773C;   // BCC.B	$1773C
-  DEF_ROMLOC(176C2) : move_toreg_16(0xA1, &D0);     // MOVE.W	#$00A1,D0
+  DEF_ROMLOC(176C2) : move_toreg_16(SFX_LAMPPOST, &D0);     // MOVE.W	#$00A1,D0
   DEF_ROMLOC(176C6) : play_sound_special();         // JSR	$00001394
   DEF_ROMLOC(176CC) : add_tomem_8(0x2, A0 + 0x24);  // ADDQ.B	#$02,36(A0)
   DEF_ROMLOC(176D0) : rom_E11A();                   // JSR	$0000E11A

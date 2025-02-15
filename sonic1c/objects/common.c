@@ -855,7 +855,7 @@ ROMFUNC(rom_13F52) {
   DEF_ROMLOC(13F86) : move_tomem_8(0x39, 0xFFFFD0C0); // MOVE.B	#$39,$D0C0
   DEF_ROMLOC(13F8C) : move_tomem_8(0x1, 0xFFFFD0DA);  // MOVE.B	#$01,$D0DA
   DEF_ROMLOC(13F92) : clr_mem_8(0xFFFFFE1A);          // CLR.B	$FE1A
-  DEF_ROMLOC(13F96) : move_toreg_16(0x8F, &D0);       // MOVE.W	#$008F,D0
+  DEF_ROMLOC(13F96) : move_toreg_16(BGM_GAMEOVER, &D0);       // MOVE.W	#$008F,D0
   DEF_ROMLOC(13F9A) : play_sound();                   // JSR	$0000138E
   DEF_ROMLOC(13FA0) : move_toreg_32(0x3, &D0);        // MOVEQ.L	$03,D0
   DEF_ROMLOC(13FA2) : {
@@ -1475,7 +1475,7 @@ ROMFUNC(rom_D87C) {
   DEF_ROMLOC(D8F6) : dec_reg_16(&D1);
   if ((D1 & 0xffff) != 0xffff)
     goto rom_D8A0;                             // DBF.W	D1,$D8A0
-  DEF_ROMLOC(D8FA) : move_toreg_16(0xCB, &D0); // MOVE.W	#$00CB,D0
+  DEF_ROMLOC(D8FA) : move_toreg_16(SFX_WALLSMASH, &D0); // MOVE.W	#$00CB,D0
   DEF_ROMLOC(D8FE) : {
     play_sound_special();
     return;

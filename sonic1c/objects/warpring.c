@@ -87,7 +87,7 @@ ROMFUNC(rom_A50C) {
       : cmp_toreg_16(read_16(A0 + 0x8), &D0);     // CMP.W	8(A0),D0
   DEF_ROMLOC(A53C) : if (CCR_CS) goto rom_A544;   // BCS.B	$A544
   DEF_ROMLOC(A53E) : bset_tomem_8(0x0, A1 + 0x1); // BSET.B	#$00,1(A1)
-  DEF_ROMLOC(A544) : move_toreg_16(0xC3, &D0);    // MOVE.W	#$00C3,D0
+  DEF_ROMLOC(A544) : move_toreg_16(SFX_GIANTRING, &D0);    // MOVE.W	#$00C3,D0
   DEF_ROMLOC(A548) : play_sound_special();        // JSR	$00001394
   rom_A4E4();                                     // BRA.B	$A4E4
 }

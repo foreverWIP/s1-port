@@ -139,7 +139,7 @@ ROMFUNC(rom_19F2A) {
   DEF_ROMLOC(19F80) : dec_reg_16(&D1);
   if ((D1 & 0xffff) != 0xffff)
     goto rom_19F4C;                             // DBF.W	D1,$19F4C
-  DEF_ROMLOC(19F84) : move_toreg_16(0xCB, &D0); // MOVE.W	#$00CB,D0
+  DEF_ROMLOC(19F84) : move_toreg_16(SFX_WALLSMASH, &D0); // MOVE.W	#$00CB,D0
   DEF_ROMLOC(19F88) : play_sound_special();
   return; // JMP	$00001394
 }

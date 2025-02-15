@@ -285,7 +285,7 @@ ROMFUNC(rom_11F50) {
   DEF_ROMLOC(11FE6) : clr_mem_8(A2 + 0x3C);           // CLR.B	60(A2)
   DEF_ROMLOC(11FEA) : move_tomem_8(0x10, A2 + 0x1C);  // MOVE.B	#$10,28(A2)
   DEF_ROMLOC(11FF0) : move_tomem_8(0x2, A2 + 0x24);   // MOVE.B	#$02,36(A2)
-  DEF_ROMLOC(11FF6) : move_toreg_16(0xCC, &D0);       // MOVE.W	#$00CC,D0
+  DEF_ROMLOC(11FF6) : move_toreg_16(SFX_SPRING, &D0);       // MOVE.W	#$00CC,D0
   DEF_ROMLOC(11FFA) : play_sound_special();           // JSR	$00001394
   DEF_ROMLOC(12000) : clr_mem_16(A0 + 0x10);          // CLR.W	16(A0)
   DEF_ROMLOC(12004) : clr_mem_16(A0 + 0x12);          // CLR.W	18(A0)

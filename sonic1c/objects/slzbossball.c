@@ -327,7 +327,7 @@ ROMFUNC(rom_19752) {
   DEF_ROMLOC(197A6)
       : move_toreg_32(read_32((A7 += 4, A7 - 4)), &A0); // MOVEA.L	(A7)+,A0
   DEF_ROMLOC(197A8) : move_tomem_8(0x2, A2 + 0x24);     // MOVE.B	#$02,36(A2)
-  DEF_ROMLOC(197AE) : move_toreg_16(0xCC, &D0);         // MOVE.W	#$00CC,D0
+  DEF_ROMLOC(197AE) : move_toreg_16(SFX_SPRING, &D0);         // MOVE.W	#$00CC,D0
   DEF_ROMLOC(197B2) : play_sound_special();             // JSR	$00001394
   DEF_ROMLOC(197B8) : clr_mem_16(A0 + 0x10);            // CLR.W	16(A0)
   DEF_ROMLOC(197BC) : clr_mem_16(A0 + 0x12);            // CLR.W	18(A0)

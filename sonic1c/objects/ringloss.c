@@ -85,7 +85,7 @@ ROMFUNC(rom_A34C) {
   DEF_ROMLOC(A3F6)
       : move_tomem_8(0xFFFFFF80, 0xFFFFFE1D);       // MOVE.B	#$80,$FE1D
   DEF_ROMLOC(A3FC) : move_tomem_8(0x0, 0xFFFFFE1B); // MOVE.B	#$00,$FE1B
-  DEF_ROMLOC(A402) : move_toreg_16(0xC6, &D0);      // MOVE.W	#$00C6,D0
+  DEF_ROMLOC(A402) : move_toreg_16(SFX_RINGLOSS, &D0);      // MOVE.W	#$00C6,D0
   DEF_ROMLOC(A406) : play_sound_special();          // JSR	$00001394
   rom_A40C(); // Detected flow into next function
 }

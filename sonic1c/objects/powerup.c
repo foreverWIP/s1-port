@@ -66,7 +66,7 @@ ROMFUNC(rom_A9DC) {
   DEF_ROMLOC(AA0A) : if (!CCR_EQ) goto rom_AA1E;   // BNE.B	$AA1E
   DEF_ROMLOC(AA0C) : add_tomem_8(0x1, v_lives);    // ADDQ.B	#$01,$FE12
   DEF_ROMLOC(AA10) : add_tomem_8(0x1, 0xFFFFFE1C); // ADDQ.B	#$01,$FE1C
-  DEF_ROMLOC(AA14) : move_toreg_16(0x88, &D0);     // MOVE.W	#$0088,D0
+  DEF_ROMLOC(AA14) : move_toreg_16(BGM_EXTRALIFE, &D0);     // MOVE.W	#$0088,D0
   DEF_ROMLOC(AA18) : {
     play_sound();
     return;
@@ -84,7 +84,7 @@ ROMFUNC(rom_A9DC) {
       : move_tomem_16(0x18, 0xFFFFF762); // MOVE.W	#$0018,$F762
   DEF_ROMLOC(AA3C)
       : move_tomem_16(0x80, 0xFFFFF764);       // MOVE.W	#$0080,$F764
-  DEF_ROMLOC(AA42) : move_toreg_16(0xE2, &D0); // MOVE.W	#$00E2,D0
+  DEF_ROMLOC(AA42) : move_toreg_16(COMSFX_SPEEDUP, &D0); // MOVE.W	#$00E2,D0
   DEF_ROMLOC(AA46) : {
     play_sound();
     return;
@@ -93,7 +93,7 @@ ROMFUNC(rom_A9DC) {
   DEF_ROMLOC(AA50) : if (!CCR_EQ) goto rom_AA68;     // BNE.B	$AA68
   DEF_ROMLOC(AA52) : move_tomem_8(0x1, 0xFFFFFE2C);  // MOVE.B	#$01,$FE2C
   DEF_ROMLOC(AA58) : move_tomem_8(0x38, 0xFFFFD180); // MOVE.B	#$38,$D180
-  DEF_ROMLOC(AA5E) : move_toreg_16(0xAF, &D0);       // MOVE.W	#$00AF,D0
+  DEF_ROMLOC(AA5E) : move_toreg_16(SFX_SHIELD, &D0);       // MOVE.W	#$00AF,D0
   DEF_ROMLOC(AA62) : {
     play_sound();
     return;
@@ -116,7 +116,7 @@ ROMFUNC(rom_A9DC) {
   DEF_ROMLOC(AAAE) : if (!CCR_EQ) goto rom_AAC2;     // BNE.B	$AAC2
   DEF_ROMLOC(AAB0) : cmp_tomem_16(0xC, 0xFFFFFE14);  // CMPI.W	#$000C,$FE14
   DEF_ROMLOC(AAB6) : if (CCR_LS) goto rom_AAC2;      // BLS.B	$AAC2
-  DEF_ROMLOC(AAB8) : move_toreg_16(0x87, &D0);       // MOVE.W	#$0087,D0
+  DEF_ROMLOC(AAB8) : move_toreg_16(BGM_INVINCIBLE, &D0);       // MOVE.W	#$0087,D0
   DEF_ROMLOC(AABC) : {
     play_sound();
     return;
@@ -134,7 +134,7 @@ ROMFUNC(rom_A9DC) {
   DEF_ROMLOC(AAEE) : if (CCR_CS) goto rom_AAFA;      // BCS.B	$AAFA
   DEF_ROMLOC(AAF0) : bset_tomem_8(0x2, 0xFFFFFE1B);  // BSET.B	#$02,$FE1B
   DEF_ROMLOC(AAF6) : if (CCR_EQ) goto rom_AA0C;      // BEQ.W	$AA0C
-  DEF_ROMLOC(AAFA) : move_toreg_16(0xB5, &D0);       // MOVE.W	#$00B5,D0
+  DEF_ROMLOC(AAFA) : move_toreg_16(SFX_RING, &D0);       // MOVE.W	#$00B5,D0
   DEF_ROMLOC(AAFE) : {
     play_sound();
     return;

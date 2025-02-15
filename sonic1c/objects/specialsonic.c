@@ -212,7 +212,7 @@ ROMFUNC(rom_1C30C) {
   DEF_ROMLOC(1C338) : asr_toreg_32(0x8, &D0);       // ASR.L	#$08,D0
   DEF_ROMLOC(1C33A) : move_tomem_16(D0, A0 + 0x12); // MOVE.W	D0,18(A0)
   DEF_ROMLOC(1C33E) : bset_tomem_8(0x1, A0 + 0x22); // BSET.B	#$01,34(A0)
-  DEF_ROMLOC(1C344) : move_toreg_16(0xA0, &D0);     // MOVE.W	#$00A0,D0
+  DEF_ROMLOC(1C344) : move_toreg_16(SFX_JUMP, &D0);     // MOVE.W	#$00A0,D0
   DEF_ROMLOC(1C348) : play_sound_special();         // JSR	$00001394
   DEF_ROMLOC(1C34E) : return;                       // RTS
 }
