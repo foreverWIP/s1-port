@@ -138,7 +138,7 @@ ROMFUNC(rom_14466) {
   } // JMP	$0000DCCE
 }
 ROMFUNC(rom_1446C) {
-  DEF_ROMLOC(1446C) : cmp_tomem_16(0xC, 0xFFFFFE14); // CMPI.W	#$000C,$FE14
+  DEF_ROMLOC(1446C) : cmp_tomem_16(AIR_COUNTDOWN_THRESHOLD, v_air); // CMPI.W	#$000C,$FE14
   DEF_ROMLOC(14472) : if (CCR_HI) goto rom_1449E;    // BHI.B	$1449E
   DEF_ROMLOC(14474) : sub_tomem_16(0x1, A0 + 0x38);  // SUBQ.W	#$01,56(A0)
   DEF_ROMLOC(14478) : if (!CCR_EQ) goto rom_14486;   // BNE.B	$14486
@@ -203,7 +203,7 @@ ROMFUNC(rom_145F0) {
   DEF_ROMLOC(14626) : and_toreg_16(0x1, &D0);         // ANDI.W	#$0001,D0
   DEF_ROMLOC(1462A) : move_tomem_8(D0, A0 + 0x34);    // MOVE.B	D0,52(A0)
   DEF_ROMLOC(1462E)
-      : move_toreg_16(read_16(0xFFFFFE14), &D0);   // MOVE.W	$FE14,D0
+      : move_toreg_16(read_16(v_air), &D0);   // MOVE.W	$FE14,D0
   DEF_ROMLOC(14632) : cmp_toreg_16(0x19, &D0);     // CMPI.W	#$0019,D0
   DEF_ROMLOC(14636) : if (CCR_EQ) goto rom_1466A;  // BEQ.B	$1466A
   DEF_ROMLOC(14638) : cmp_toreg_16(0x14, &D0);     // CMPI.W	#$0014,D0
@@ -223,7 +223,7 @@ ROMFUNC(rom_145F0) {
   DEF_ROMLOC(14668) : goto rom_14674;                // BRA.B	$14674
   DEF_ROMLOC(1466A) : move_toreg_16(SFX_WARNING, &D0);      // MOVE.W	#$00C2,D0
   DEF_ROMLOC(1466E) : play_sound_special();          // JSR	$00001394
-  DEF_ROMLOC(14674) : sub_tomem_16(0x1, 0xFFFFFE14); // SUBQ.W	#$01,$FE14
+  DEF_ROMLOC(14674) : sub_tomem_16(0x1, v_air); // SUBQ.W	#$01,$FE14
   DEF_ROMLOC(14678) : if (CCR_CC) goto rom_146FE;    // BCC.W	$146FE
   DEF_ROMLOC(1467C) : resume_music();                   // BSR.W	$147E2
   DEF_ROMLOC(14680)
@@ -300,7 +300,7 @@ ROMFUNC(rom_145F0) {
   DEF_ROMLOC(14792) : btst_tomem_8(0x7, A0 + 0x36); // BTST.B	#$07,54(A0)
   DEF_ROMLOC(14798) : if (CCR_EQ) goto rom_147D6;   // BEQ.B	$147D6
   DEF_ROMLOC(1479A)
-      : move_toreg_16(read_16(0xFFFFFE14), &D2);      // MOVE.W	$FE14,D2
+      : move_toreg_16(read_16(v_air), &D2);      // MOVE.W	$FE14,D2
   DEF_ROMLOC(1479E) : lsr_toreg_16(0x1, &D2);         // LSR.W	#$01,D2
   DEF_ROMLOC(147A0) : rom_29AC();                     // JSR	$000029AC
   DEF_ROMLOC(147A6) : and_toreg_16(0x3, &D0);         // ANDI.W	#$0003,D0

@@ -100,7 +100,7 @@ ROMFUNC(rom_37BA) {
   DEF_ROMLOC(389C) : clr_mem_8(0xFFFFF64D);           // CLR.B	$F64D
   DEF_ROMLOC(38A0) : clr_mem_8(0xFFFFF64E);           // CLR.B	$F64E
   DEF_ROMLOC(38A4) : move_tomem_8(0x1, 0xFFFFF64C);   // MOVE.B	#$01,$F64C
-  DEF_ROMLOC(38AA) : move_tomem_16(0x1E, 0xFFFFFE14); // MOVE.W	#$001E,$FE14
+  DEF_ROMLOC(38AA) : move_tomem_16(MAX_AIR_SECONDS, v_air); // MOVE.W	#$001E,$FE14
   DEF_ROMLOC(38B0) : move_tosr_16(0x2300, &SR);       // MOVE.W	#$2300,SR
   DEF_ROMLOC(38B4) : move_toreg_32(0x3, &D0);         // MOVEQ.L	$03,D0
   DEF_ROMLOC(38B6) : load_palette();                  // BSR.W	$2110

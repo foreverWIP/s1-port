@@ -122,7 +122,7 @@ ROMFUNC(rom_1B3B4) {
   DEF_ROMLOC(1B3E6) : move_tomem_8(0xA, A0 + 0x24);     // MOVE.B	#$0A,36(A0)
   DEF_ROMLOC(1B3EC) : move_tomem_16(0x3C, A0 + 0x1E);   // MOVE.W	#$003C,30(A0)
   DEF_ROMLOC(1B3F2) : clr_mem_8(0xFFFFFE1E);            // CLR.B	$FE1E
-  DEF_ROMLOC(1B3F6) : clr_mem_8(0xFFFFF7AA);            // CLR.B	$F7AA
+  DEF_ROMLOC(1B3F6) : clr_mem_8(f_lockscreen);            // CLR.B	$F7AA
   DEF_ROMLOC(1B3FA) : move_tomem_8(0x1, 0xFFFFF7CC);    // MOVE.B	#$01,$F7CC
   DEF_ROMLOC(1B400) : move_tomem_16(0x800, 0xFFFFF602); // MOVE.W
                                                         // #$0800,$F602

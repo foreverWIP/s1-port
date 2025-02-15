@@ -112,9 +112,9 @@ ROMFUNC(rom_A9DC) {
   DEF_ROMLOC(AA98) : move_tomem_8(0x3, 0xFFFFD29C);  // MOVE.B	#$03,$D29C
   DEF_ROMLOC(AA9E) : move_tomem_8(0x38, 0xFFFFD2C0); // MOVE.B	#$38,$D2C0
   DEF_ROMLOC(AAA4) : move_tomem_8(0x4, 0xFFFFD2DC);  // MOVE.B	#$04,$D2DC
-  DEF_ROMLOC(AAAA) : tst_mem_8(0xFFFFF7AA);          // TST.B	$F7AA
+  DEF_ROMLOC(AAAA) : tst_mem_8(f_lockscreen);          // TST.B	$F7AA
   DEF_ROMLOC(AAAE) : if (!CCR_EQ) goto rom_AAC2;     // BNE.B	$AAC2
-  DEF_ROMLOC(AAB0) : cmp_tomem_16(0xC, 0xFFFFFE14);  // CMPI.W	#$000C,$FE14
+  DEF_ROMLOC(AAB0) : cmp_tomem_16(AIR_COUNTDOWN_THRESHOLD, v_air);  // CMPI.W	#$000C,$FE14
   DEF_ROMLOC(AAB6) : if (CCR_LS) goto rom_AAC2;      // BLS.B	$AAC2
   DEF_ROMLOC(AAB8) : move_toreg_16(BGM_INVINCIBLE, &D0);       // MOVE.W	#$0087,D0
   DEF_ROMLOC(AABC) : {

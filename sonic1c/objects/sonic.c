@@ -170,7 +170,7 @@ ROMFUNC(rom_139D8) {
   DEF_ROMLOC(139F4)
       : move_toreg_16(read_16(0xFFFFF72A), &D0);   // MOVE.W	$F72A,D0
   DEF_ROMLOC(139F8) : add_toreg_16(0x128, &D0);    // ADDI.W	#$0128,D0
-  DEF_ROMLOC(139FC) : tst_mem_8(0xFFFFF7AA);       // TST.B	$F7AA
+  DEF_ROMLOC(139FC) : tst_mem_8(f_lockscreen);       // TST.B	$F7AA
   DEF_ROMLOC(13A00) : if (!CCR_EQ) goto rom_13A06; // BNE.B	$13A06
   DEF_ROMLOC(13A02) : add_toreg_16(0x40, &D0);     // ADDI.W	#$0040,D0
   DEF_ROMLOC(13A06) : cmp_toreg_16(D1, &D0);       // CMP.W	D1,D0
@@ -1090,9 +1090,9 @@ ROMFUNC(rom_133A2) {
   DEF_ROMLOC(133C0) : if (CCR_EQ) goto rom_133FC;        // BEQ.B	$133FC
   DEF_ROMLOC(133C2) : sub_tomem_16(0x1, A0 + 0x32);      // SUBQ.W	#$01,50(A0)
   DEF_ROMLOC(133C6) : if (!CCR_EQ) goto rom_133FC;       // BNE.B	$133FC
-  DEF_ROMLOC(133C8) : tst_mem_8(0xFFFFF7AA);             // TST.B	$F7AA
+  DEF_ROMLOC(133C8) : tst_mem_8(f_lockscreen);             // TST.B	$F7AA
   DEF_ROMLOC(133CC) : if (!CCR_EQ) goto rom_133F6;       // BNE.B	$133F6
-  DEF_ROMLOC(133CE) : cmp_tomem_16(0xC, 0xFFFFFE14);     // CMPI.W	#$000C,$FE14
+  DEF_ROMLOC(133CE) : cmp_tomem_16(AIR_COUNTDOWN_THRESHOLD, v_air);     // CMPI.W	#$000C,$FE14
   DEF_ROMLOC(133D4) : if (CCR_CS) goto rom_133F6;        // BCS.B	$133F6
   DEF_ROMLOC(133D6) : move_toreg_32(0x0, &D0);           // MOVEQ.L	$00,D0
   DEF_ROMLOC(133D8) : move_toreg_8(read_8(v_zone), &D0); // MOVE.B	$FE10,D0

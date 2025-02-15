@@ -320,7 +320,7 @@ ROMFUNC(rom_188A2) {
   DEF_ROMLOC(188B8) : move_tomem_8(0x32, A0 + 0x3C);  // MOVE.B	#$32,60(A0)
   DEF_ROMLOC(188BE) : move_toreg_16(BGM_LZ, &D0);       // MOVE.W	#$0082,D0
   DEF_ROMLOC(188C2) : play_sound();                   // JSR	$0000138E
-  DEF_ROMLOC(188C8) : clr_mem_8(0xFFFFF7AA);          // CLR.B	$F7AA
+  DEF_ROMLOC(188C8) : clr_mem_8(f_lockscreen);          // CLR.B	$F7AA
   DEF_ROMLOC(188CC) : bset_tomem_8(0x0, A0 + 0x22);   // BSET.B	#$00,34(A0)
   DEF_ROMLOC(188D2) : add_tomem_8(0x2, A0 + 0x25);    // ADDQ.B	#$02,37(A0)
   DEF_ROMLOC(188D6) : rom_186E4();

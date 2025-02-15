@@ -59,7 +59,7 @@ ROMFUNC(rom_50FE) {
   DEF_ROMLOC(517C)
       : move_tomem_16(read_16(0xFFFFF624), A6); // MOVE.W	$F624,(A6)
   DEF_ROMLOC(5180)
-      : move_tomem_16(0x1E, 0xFFFFFE14); // MOVE.W	#$001E,$FE14
+      : move_tomem_16(MAX_AIR_SECONDS, v_air); // MOVE.W	#$001E,$FE14
   DEF_ROMLOC(5186)
       : move_tomem_16(ZONE16_END|0, v_zone);              // MOVE.W
                                                    // #$0600,$FE10

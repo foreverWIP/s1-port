@@ -1,5 +1,7 @@
 #pragma once
 
+#include "game.h"
+
 enum {
   ZONE_GHZ,
   ZONE_LZ,
@@ -21,3 +23,6 @@ enum {
   ZONE16_END = ZONE_END << 8,
   ZONE16_SS = ZONE_SS << 8,
 };
+
+#define MAX_AIR_SECONDS 30
+#define AIR_COUNTDOWN_THRESHOLD 12
