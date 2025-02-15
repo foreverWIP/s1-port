@@ -64,7 +64,7 @@ ROMFUNC(rom_6E16) {
   draw_bg_layer_3_alt();               // BRA.W	$6FEC
 }
 ROMFUNC(rom_67BC) {
-  DEF_ROMLOC(67BC) : tst_mem_8(0xFFFFFE11); // TST.B	$FE11
+  DEF_ROMLOC(67BC) : tst_mem_8(v_act); // TST.B	$FE11
   DEF_ROMLOC(67C0) : if (!CCR_EQ) {
     rom_68A2();
     return;

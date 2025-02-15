@@ -16,6 +16,7 @@
 #include "continue.h"
 #include "input.h"
 #include "util.h"
+#include "level.h"
 
 extern void (*game_state)(void);
 extern bool exit_mainloop;

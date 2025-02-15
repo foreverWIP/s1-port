@@ -38,7 +38,7 @@ void run_global_anims(void) {
 void maybe_load_signpost_art(void) {
   DEF_ROMLOC(4276) : tst_mem_16(0xFFFFFE08);       // TST.W	$FE08
   DEF_ROMLOC(427A) : if (!CCR_EQ) goto rom_42AC;   // BNE.W	$42AC
-  DEF_ROMLOC(427E) : cmp_tomem_8(0x2, 0xFFFFFE11); // CMPI.B	#$02,$FE11
+  DEF_ROMLOC(427E) : cmp_tomem_8(0x2, v_act); // CMPI.B	#$02,$FE11
   DEF_ROMLOC(4284) : if (CCR_EQ) goto rom_42AC;    // BEQ.B	$42AC
   DEF_ROMLOC(4286)
       : move_toreg_16(read_16(0xFFFFF700), &D0); // MOVE.W	$F700,D0

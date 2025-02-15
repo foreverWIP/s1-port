@@ -31,22 +31,24 @@ ROMFUNC(rom_E9BC) {
   DEF_ROMLOC(E9CC)
       : move_tomem_32(0xB9F8, A0 + 0x4);             // MOVE.L	#$0000B9F8,4(A0)
   DEF_ROMLOC(E9D4) : move_tomem_16(0x345, A0 + 0x2); // MOVE.W	#$0345,2(A0)
-  DEF_ROMLOC(E9DA) : cmp_tomem_8(0x3, 0xFFFFFE10);   // CMPI.B	#$03,$FE10
+  DEF_ROMLOC(E9DA) : cmp_tomem_8(ZONE_SLZ, v_zone);  // CMPI.B	#$03,$FE10
   DEF_ROMLOC(E9E0) : if (!CCR_EQ) goto rom_E9E8;     // BNE.B	$E9E8
   DEF_ROMLOC(E9E2) : move_tomem_16(0x480, A0 + 0x2); // MOVE.W	#$0480,2(A0)
   DEF_ROMLOC(E9E8) : move_tomem_8(0x4, A0 + 0x1);    // MOVE.B	#$04,1(A0)
   DEF_ROMLOC(E9EE) : move_tomem_8(0x3, A0 + 0x18);   // MOVE.B	#$03,24(A0)
-  DEF_ROMLOC(E9F4) : move_tomem_8(0xFFFFFF8B, A0 + 0x20); // MOVE.B
-                                                          // #$8B,32(A0)
+  DEF_ROMLOC(E9F4)
+      : move_tomem_8(0xFFFFFF8B, A0 + 0x20); // MOVE.B
+                                             // #$8B,32(A0)
   DEF_ROMLOC(E9FA)
       : move_tomem_16(read_16(A0 + 0xC), A0 + 0x30); // MOVE.W	12(A0),48(A0)
   DEF_ROMLOC(EA00) : tst_mem_8(A0 + 0x29);           // TST.B	41(A0)
   DEF_ROMLOC(EA04) : if (CCR_EQ) goto rom_EA0A;      // BEQ.B	$EA0A
   DEF_ROMLOC(EA06) : add_tomem_8(0x2, A0 + 0x18);    // ADDQ.B	#$02,24(A0)
   DEF_ROMLOC(EA0A) : move_toreg_32(0x0, &D0);        // MOVEQ.L	$00,D0
-  DEF_ROMLOC(EA0C) : move_toreg_8(read_8(A0 + 0x28), &D0); // MOVE.B
-                                                           // 40(A0),D0
-  DEF_ROMLOC(EA10) : add_toreg_16(D0, &D0);                // ADD.W	D0,D0
+  DEF_ROMLOC(EA0C)
+      : move_toreg_8(read_8(A0 + 0x28), &D0); // MOVE.B
+                                              // 40(A0),D0
+  DEF_ROMLOC(EA10) : add_toreg_16(D0, &D0);   // ADD.W	D0,D0
   DEF_ROMLOC(EA12)
       : move_tomem_16(read_16(0xE9AA + (s16)(D0 & 0xffff)),
                       A0 + 0x12);                   // MOVE.W	-106(PC,D0),18(A0)
@@ -103,7 +105,7 @@ ROMFUNC(rom_EA48) {
   }
   DEF_ROMLOC(EA58) : rom_DC6C();                 // BSR.W	$DC6C
   DEF_ROMLOC(EA5C) : move_toreg_32(0xEB52, &A1); // LEA.L	$0000EB52,A1
-  DEF_ROMLOC(EA62) : animate_sprite();                 // BSR.W	$ADA2
+  DEF_ROMLOC(EA62) : animate_sprite();           // BSR.W	$ADA2
   rom_EA66(); // Detected flow into next function
 }
 ROMFUNC(rom_EA66) {

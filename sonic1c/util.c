@@ -5,15 +5,18 @@
 ROMFUNC(rom_13CC);
 
 void handle_pause_game(void) {
-  DEF_ROMLOC(13A2) : tst_mem_8(0xFFFFFE12); // TST.B	$FE12
+  DEF_ROMLOC(13A2) : tst_mem_8(v_lives); // TST.B	$FE12
   DEF_ROMLOC(13A6) : if (CCR_EQ) {
     rom_1402();
     return;
-  }                                                  // BEQ.B	$1402
-  DEF_ROMLOC(13A8) : tst_mem_16(0xFFFFF63A);         // TST.W	$F63A
-  DEF_ROMLOC(13AC) : if (!CCR_EQ) goto rom_13B6;     // BNE.B	$13B6
-  DEF_ROMLOC(13AE) : btst_tomem_8(0x7, 0xFFFFF605);  // BTST.B	#$07,$F605
-  DEF_ROMLOC(13B4) : if (CCR_EQ) {rom_1408();return;}             // BEQ.B	$1408
+  }                                                 // BEQ.B	$1402
+  DEF_ROMLOC(13A8) : tst_mem_16(0xFFFFF63A);        // TST.W	$F63A
+  DEF_ROMLOC(13AC) : if (!CCR_EQ) goto rom_13B6;    // BNE.B	$13B6
+  DEF_ROMLOC(13AE) : btst_tomem_8(0x7, 0xFFFFF605); // BTST.B	#$07,$F605
+  DEF_ROMLOC(13B4) : if (CCR_EQ) {
+    rom_1408();
+    return;
+  }                                                  // BEQ.B	$1408
   DEF_ROMLOC(13B6) : move_tomem_16(0x1, 0xFFFFF63A); // MOVE.W	#$0001,$F63A
   game_state_pause = game_state;
   DEF_ROMLOC(13BC) : move_tomem_8(0x1, 0xFFFFF003); // MOVE.B	#$01,$F003
@@ -44,9 +47,9 @@ ROMFUNC(rom_13CC) {
   DEF_ROMLOC(13FA) : if (CCR_EQ) {
     rom_13C2();
     return;
-  } // BEQ.B	$13C2
-  DEF_ROMLOC(13FC)
-      : move_tomem_8(0xFFFFFF80, 0xFFFFF003); // MOVE.B	#$80,$F003
+  }                                                        // BEQ.B	$13C2
+  DEF_ROMLOC(13FC) : move_tomem_8(0xFFFFFF80, 0xFFFFF003); // MOVE.B
+                                                           // #$80,$F003
   rom_1402();
 }
 ROMFUNC(rom_1402) {
@@ -56,11 +59,12 @@ ROMFUNC(rom_1402) {
   rom_1408();
 }
 ROMFUNC(rom_1408) {
-  DEF_ROMLOC(1408) : if (game_state) game_state(); return; // RTS
+  DEF_ROMLOC(1408) : if (game_state) game_state();
+  return; // RTS
 }
 ROMFUNC(rom_140A) {
   DEF_ROMLOC(140A) : move_tomem_16(0x1, 0xFFFFF63A); // MOVE.W	#$0001,$F63A
-  DEF_ROMLOC(1410)
-      : move_tomem_8(0xFFFFFF80, 0xFFFFF003); // MOVE.B	#$80,$F003
-  DEF_ROMLOC(1416) : return;                  // RTS
+  DEF_ROMLOC(1410) : move_tomem_8(0xFFFFFF80, 0xFFFFF003); // MOVE.B
+                                                           // #$80,$F003
+  DEF_ROMLOC(1416) : return;                               // RTS
 }

@@ -37,7 +37,7 @@ ROMFUNC(rom_169D2) {
   DEF_ROMLOC(169FA) : if (CCR_HI) goto rom_16A02;    // BHI.B	$16A02
   DEF_ROMLOC(169FC) : rom_DC92();
   return;                                            // JMP	$0000DC92
-  DEF_ROMLOC(16A02) : cmp_tomem_8(0x2, 0xFFFFFE11);  // CMPI.B	#$02,$FE11
+  DEF_ROMLOC(16A02) : cmp_tomem_8(0x2, v_act);  // CMPI.B	#$02,$FE11
   DEF_ROMLOC(16A08) : if (!CCR_EQ) goto rom_16A10;   // BNE.B	$16A10
   DEF_ROMLOC(16A0A) : cmp_toreg_16(0xFFFFFF80, &D0); // CMPI.W	#$FF80,D0
   DEF_ROMLOC(16A0E) : if (CCR_CC) goto rom_169FC;    // BCC.B	$169FC

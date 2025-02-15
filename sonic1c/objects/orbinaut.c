@@ -2,7 +2,6 @@
 #include "../opcodes.h"
 #include "../system.h"
 
-
 ROMFUNC(rom_123A2) {
   u8 switchindex = 0;
   DEF_ROMLOC(123A2) : move_toreg_32(0x0, &D0); // MOVEQ.L	$00,D0
@@ -34,30 +33,31 @@ ROMFUNC(rom_123BA) {
   DEF_ROMLOC(123BA)
       : move_tomem_32(0x125B8, A0 + 0x4);             // MOVE.L	#$000125B8,4(A0)
   DEF_ROMLOC(123C2) : move_tomem_16(0x429, A0 + 0x2); // MOVE.W	#$0429,2(A0)
-  DEF_ROMLOC(123C8) : cmp_tomem_8(0x5, 0xFFFFFE10);   // CMPI.B	#$05,$FE10
+  DEF_ROMLOC(123C8) : cmp_tomem_8(ZONE_SBZ, v_zone);  // CMPI.B	#$05,$FE10
   DEF_ROMLOC(123CE) : if (CCR_EQ) goto rom_123D6;     // BEQ.B	$123D6
-  DEF_ROMLOC(123D0) : move_tomem_16(0x2429, A0 + 0x2); // MOVE.W
-                                                       // #$2429,2(A0)
-  DEF_ROMLOC(123D6) : cmp_tomem_8(0x1, 0xFFFFFE10);    // CMPI.B	#$01,$FE10
-  DEF_ROMLOC(123DC) : if (!CCR_EQ) goto rom_123E4;     // BNE.B	$123E4
-  DEF_ROMLOC(123DE) : move_tomem_16(0x467, A0 + 0x2);  // MOVE.W	#$0467,2(A0)
-  DEF_ROMLOC(123E4) : or_tomem_8(0x4, A0 + 0x1);       // ORI.B	#$04,1(A0)
-  DEF_ROMLOC(123EA) : move_tomem_8(0x4, A0 + 0x18);    // MOVE.B	#$04,24(A0)
-  DEF_ROMLOC(123F0) : move_tomem_8(0xB, A0 + 0x20);    // MOVE.B	#$0B,32(A0)
-  DEF_ROMLOC(123F6) : move_tomem_8(0xC, A0 + 0x19);    // MOVE.B	#$0C,25(A0)
-  DEF_ROMLOC(123FC) : move_toreg_32(0x0, &D2);         // MOVEQ.L	$00,D2
-  DEF_ROMLOC(123FE) : move_toreg_32(A0 + 0x37, &A2);   // LEA.L	55(A0),A2
-  DEF_ROMLOC(12402) : move_toreg_32(A2, &A3);          // MOVEA.L	A2,A3
-  DEF_ROMLOC(12404) : add_toreg_16(0x1, &A2);          // ADDQ.W	#$01,A2
-  DEF_ROMLOC(12406) : move_toreg_32(0x3, &D1);         // MOVEQ.L	$03,D1
-  DEF_ROMLOC(12408) : rom_E130();                      // BSR.W	$E130
-  DEF_ROMLOC(1240C) : if (!CCR_EQ) goto rom_12464;     // BNE.B	$12464
-  DEF_ROMLOC(1240E) : add_tomem_8(0x1, A3);            // ADDQ.B	#$01,(A3)
-  DEF_ROMLOC(12410) : move_toreg_16(A1, &D5);          // MOVE.W	A1,D5
-  DEF_ROMLOC(12412) : sub_toreg_16(0xFFFFD000, &D5);   // SUBI.W	#$D000,D5
-  DEF_ROMLOC(12416) : lsr_toreg_16(0x6, &D5);          // LSR.W	#$06,D5
-  DEF_ROMLOC(12418) : and_toreg_16(0x7F, &D5);         // ANDI.W	#$007F,D5
-  DEF_ROMLOC(1241C) : move_tomem_8(D5, A2++);          // MOVE.B	D5,(A2)+
+  DEF_ROMLOC(123D0)
+      : move_tomem_16(0x2429, A0 + 0x2);              // MOVE.W
+                                                      // #$2429,2(A0)
+  DEF_ROMLOC(123D6) : cmp_tomem_8(ZONE_LZ, v_zone);   // CMPI.B	#$01,$FE10
+  DEF_ROMLOC(123DC) : if (!CCR_EQ) goto rom_123E4;    // BNE.B	$123E4
+  DEF_ROMLOC(123DE) : move_tomem_16(0x467, A0 + 0x2); // MOVE.W	#$0467,2(A0)
+  DEF_ROMLOC(123E4) : or_tomem_8(0x4, A0 + 0x1);      // ORI.B	#$04,1(A0)
+  DEF_ROMLOC(123EA) : move_tomem_8(0x4, A0 + 0x18);   // MOVE.B	#$04,24(A0)
+  DEF_ROMLOC(123F0) : move_tomem_8(0xB, A0 + 0x20);   // MOVE.B	#$0B,32(A0)
+  DEF_ROMLOC(123F6) : move_tomem_8(0xC, A0 + 0x19);   // MOVE.B	#$0C,25(A0)
+  DEF_ROMLOC(123FC) : move_toreg_32(0x0, &D2);        // MOVEQ.L	$00,D2
+  DEF_ROMLOC(123FE) : move_toreg_32(A0 + 0x37, &A2);  // LEA.L	55(A0),A2
+  DEF_ROMLOC(12402) : move_toreg_32(A2, &A3);         // MOVEA.L	A2,A3
+  DEF_ROMLOC(12404) : add_toreg_16(0x1, &A2);         // ADDQ.W	#$01,A2
+  DEF_ROMLOC(12406) : move_toreg_32(0x3, &D1);        // MOVEQ.L	$03,D1
+  DEF_ROMLOC(12408) : rom_E130();                     // BSR.W	$E130
+  DEF_ROMLOC(1240C) : if (!CCR_EQ) goto rom_12464;    // BNE.B	$12464
+  DEF_ROMLOC(1240E) : add_tomem_8(0x1, A3);           // ADDQ.B	#$01,(A3)
+  DEF_ROMLOC(12410) : move_toreg_16(A1, &D5);         // MOVE.W	A1,D5
+  DEF_ROMLOC(12412) : sub_toreg_16(0xFFFFD000, &D5);  // SUBI.W	#$D000,D5
+  DEF_ROMLOC(12416) : lsr_toreg_16(0x6, &D5);         // LSR.W	#$06,D5
+  DEF_ROMLOC(12418) : and_toreg_16(0x7F, &D5);        // ANDI.W	#$007F,D5
+  DEF_ROMLOC(1241C) : move_tomem_8(D5, A2++);         // MOVE.B	D5,(A2)+
   DEF_ROMLOC(1241E)
       : move_tomem_8(read_8(A0 + 0x0), A1 + 0x0);   // MOVE.B	0(A0),0(A1)
   DEF_ROMLOC(12424) : move_tomem_8(0x6, A1 + 0x24); // MOVE.B	#$06,36(A1)
@@ -113,7 +113,7 @@ ROMFUNC(rom_12492) {
   DEF_ROMLOC(124BA) : if (!CCR_EQ) goto rom_124C2;  // BNE.B	$124C2
   DEF_ROMLOC(124BC) : move_tomem_8(0x1, A0 + 0x1C); // MOVE.B	#$01,28(A0)
   DEF_ROMLOC(124C2) : move_toreg_32(0x125AA, &A1);  // LEA.L	$000125AA,A1
-  DEF_ROMLOC(124C8) : animate_sprite();                   // BSR.W	$ADA2
+  DEF_ROMLOC(124C8) : animate_sprite();             // BSR.W	$ADA2
   rom_124D4();                                      // BRA.W	$124D4
 }
 ROMFUNC(rom_124D0) {
@@ -121,9 +121,8 @@ ROMFUNC(rom_124D0) {
   rom_124D4();                    // Detected flow into next function
 }
 ROMFUNC(rom_124D4) {
-  DEF_ROMLOC(124D4)
-      : move_toreg_16(read_16(A0 + 0x8), &D0);       // MOVE.W	8(A0),D0
-  DEF_ROMLOC(124D8) : and_toreg_16(0xFFFFFF80, &D0); // ANDI.W	#$FF80,D0
+  DEF_ROMLOC(124D4) : move_toreg_16(read_16(A0 + 0x8), &D0); // MOVE.W	8(A0),D0
+  DEF_ROMLOC(124D8) : and_toreg_16(0xFFFFFF80, &D0);         // ANDI.W	#$FF80,D0
   DEF_ROMLOC(124DC)
       : move_toreg_16(read_16(0xFFFFF700), &D1);     // MOVE.W	$F700,D1
   DEF_ROMLOC(124E0) : sub_toreg_16(0x80, &D1);       // SUBI.W	#$0080,D1
@@ -159,8 +158,10 @@ ROMFUNC(rom_124D4) {
 }
 ROMFUNC(rom_1252E) {
   DEF_ROMLOC(1252E)
-      : move_toreg_32(read_32(A0 + 0x3C), &A1);    // MOVEA.L	60(A0),A1
-  DEF_ROMLOC(12532) : cmp_tomem_8(OBJ_ORBINAUT, A1 + offsetof(object, id)); // CMPI.B	#$60,0(A1)
+      : move_toreg_32(read_32(A0 + 0x3C), &A1); // MOVEA.L	60(A0),A1
+  DEF_ROMLOC(12532)
+      : cmp_tomem_8(OBJ_ORBINAUT,
+                    A1 + offsetof(object, id)); // CMPI.B	#$60,0(A1)
   DEF_ROMLOC(12538) : if (!CCR_EQ) {
     rom_DCCE();
     return;
@@ -181,7 +182,8 @@ ROMFUNC(rom_1252E) {
   DEF_ROMLOC(1256C) : rom_DC92();
   return; // BRA.W	$DC92
   DEF_ROMLOC(12570)
-      : move_toreg_8(read_8(A0 + 0x26), &D0); // MOVE.B	38(A0),D0
+      : move_toreg_8(read_8(A0 + 0x26), &D0); // MOVE.B
+                                              // 38(A0),D0
   DEF_ROMLOC(12574) : rom_29D2();             // JSR	$000029D2
   DEF_ROMLOC(1257A) : asr_toreg_16(0x4, &D1); // ASR.W	#$04,D1
   DEF_ROMLOC(1257C)

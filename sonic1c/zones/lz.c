@@ -3,7 +3,7 @@
 #include "../system.h"
 
 ROMFUNC(rom_3BCC) {
-  DEF_ROMLOC(3BCC) : cmp_tomem_8(0x1, 0xFFFFFE10); // CMPI.B	#$01,$FE10
+  DEF_ROMLOC(3BCC) : cmp_tomem_8(ZONE_LZ, v_zone); // CMPI.B	#$01,$FE10
   DEF_ROMLOC(3BD2) : if (!CCR_EQ) goto rom_3C2A;   // BNE.B	$3C2A
   DEF_ROMLOC(3BD4) : tst_mem_8(0xFFFFF744);        // TST.B	$F744
   DEF_ROMLOC(3BD8) : if (!CCR_EQ) goto rom_3BEE;   // BNE.B	$3BEE
@@ -39,7 +39,7 @@ ROMFUNC(rom_3BCC) {
 ROMFUNC(rom_3C34) {
   u8 switchindex = 0;
   DEF_ROMLOC(3C34) : move_toreg_32(0x0, &D0); // MOVEQ.L	$00,D0
-  DEF_ROMLOC(3C36) : move_toreg_8(read_8(0xFFFFFE11), &D0);
+  DEF_ROMLOC(3C36) : move_toreg_8(read_8(v_act), &D0);
   switchindex = D0;                         // MOVE.B	$FE11,D0
   DEF_ROMLOC(3C3A) : add_toreg_16(D0, &D0); // ADD.W	D0,D0
   DEF_ROMLOC(3C3C)
@@ -226,11 +226,11 @@ ROMFUNC(rom_3E34) {
   DEF_ROMLOC(3E38) : if (!CCR_EQ) goto rom_3F0C; // BNE.W	$3F0C
   DEF_ROMLOC(3E3C) : move_toreg_32(0x3F16, &A2); // LEA.L	$00003F16,A2
   DEF_ROMLOC(3E42) : move_toreg_32(0x0, &D0);    // MOVEQ.L	$00,D0
-  DEF_ROMLOC(3E44) : move_toreg_8(read_8(0xFFFFFE11), &D0); // MOVE.B	$FE11,D0
+  DEF_ROMLOC(3E44) : move_toreg_8(read_8(v_act), &D0); // MOVE.B	$FE11,D0
   DEF_ROMLOC(3E48) : lsl_toreg_16(0x3, &D0);                // LSL.W	#$03,D0
   DEF_ROMLOC(3E4A) : add_toreg_16(D0, &A2);                 // ADDA.W	D0,A2
   DEF_ROMLOC(3E4C) : move_toreg_32(0x0, &D1);               // MOVEQ.L	$00,D1
-  DEF_ROMLOC(3E4E) : tst_mem_8(0xFFFFFE11);                 // TST.B	$FE11
+  DEF_ROMLOC(3E4E) : tst_mem_8(v_act);                 // TST.B	$FE11
   DEF_ROMLOC(3E52) : if (!CCR_EQ) goto rom_3E58;            // BNE.B	$3E58
   DEF_ROMLOC(3E54) : move_toreg_32(0x1, &D1);               // MOVEQ.L	$01,D1
   DEF_ROMLOC(3E56) : sub_toreg_16(0x8, &A2);                // SUBQ.W	#$08,A2
@@ -263,7 +263,7 @@ ROMFUNC(rom_3E34) {
   DEF_ROMLOC(3EAC) : cmp_toreg_16(read_16(A2), &D0);  // CMP.W	(A2),D0
   DEF_ROMLOC(3EAE) : if (CCR_CC) goto rom_3EC0;       // BCC.B	$3EC0
   DEF_ROMLOC(3EB0) : move_toreg_32(0x2, &D0);         // MOVEQ.L	$02,D0
-  DEF_ROMLOC(3EB2) : cmp_tomem_8(0x1, 0xFFFFFE11);    // CMPI.B	#$01,$FE11
+  DEF_ROMLOC(3EB2) : cmp_tomem_8(0x1, v_act);    // CMPI.B	#$01,$FE11
   DEF_ROMLOC(3EB8) : if (!CCR_EQ) goto rom_3EBC;      // BNE.B	$3EBC
   DEF_ROMLOC(3EBA) : neg_reg_16(&D0);                 // NEG.W	D0
   DEF_ROMLOC(3EBC) : add_tomem_16(D0, A1 + 0xC);      // ADD.W	D0,12(A1)

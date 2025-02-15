@@ -8,7 +8,7 @@ void update_sound_driver(void) {}
 void resume_music(void) {
   if (read_16(0xFFFFFE14) <= 12) {
     move_toreg_16(0x82, &D0);
-    if (read_16(0xFFFFFE10) == 0x103) {
+    if (read_16(v_zone) == 0x103) {
       move_toreg_16(0x86, &D0);
     }
     if (read_8(0xFFFFFE2D) != 0) {

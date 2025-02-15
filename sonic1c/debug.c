@@ -49,7 +49,7 @@ ROMFUNC(rom_1D6F8) {
   goto rom_1D750;                                       // BRA.B	$1D750
   DEF_ROMLOC(1D74A) : move_toreg_32(0x0, &D0);          // MOVEQ.L	$00,D0
   DEF_ROMLOC(1D74C)
-      : move_toreg_8(read_8(0xFFFFFE10), &D0);     // MOVE.B	$FE10,D0
+      : move_toreg_8(read_8(v_zone), &D0);     // MOVE.B	$FE10,D0
   DEF_ROMLOC(1D750) : move_toreg_32(0x1D93A, &A2); // LEA.L	$0001D93A,A2
   DEF_ROMLOC(1D756) : add_toreg_16(D0, &D0);       // ADD.W	D0,D0
   DEF_ROMLOC(1D758)
@@ -72,7 +72,7 @@ ROMFUNC(rom_1D77A) {
   DEF_ROMLOC(1D782) : if (CCR_EQ) goto rom_1D78A;    // BEQ.B	$1D78A
   DEF_ROMLOC(1D784) : move_toreg_32(0x0, &D0);       // MOVEQ.L	$00,D0
   DEF_ROMLOC(1D786)
-      : move_toreg_8(read_8(0xFFFFFE10), &D0);     // MOVE.B	$FE10,D0
+      : move_toreg_8(read_8(v_zone), &D0);     // MOVE.B	$FE10,D0
   DEF_ROMLOC(1D78A) : move_toreg_32(0x1D93A, &A2); // LEA.L	$0001D93A,A2
   DEF_ROMLOC(1D790) : add_toreg_16(D0, &D0);       // ADD.W	D0,D0
   DEF_ROMLOC(1D792)
