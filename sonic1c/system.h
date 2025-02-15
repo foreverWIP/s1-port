@@ -96,6 +96,9 @@ extern jmp_buf speedshoes__desync_jumpbuf;
 #define SETWORD(reg, value) reg = ((reg & 0xffff0000) | ((value) & 0x0000ffff))
 #define SETBYTE(reg, value) reg = ((reg & 0xffffff00) | ((value) & 0x000000ff))
 
+#define SWAPWORDS(dst)                                                       \
+  { dst = ((dst << 16) | (dst >> 16)); }
+
 #define VDP_DATA_PORT 0xC00000
 #define VDP_CONTROL_PORT 0xC00004
 

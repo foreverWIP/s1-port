@@ -46,7 +46,7 @@ ROMFUNC(rom_A1DC) {
   DEF_ROMLOC(A1F6) : cmp_toreg_16(0x7, &D1);     // CMPI.W	#$0007,D1
   DEF_ROMLOC(A1FA) : if (!CCR_EQ) goto rom_A1FE; // BNE.B	$A1FE
   DEF_ROMLOC(A1FC) : move_toreg_32(0x6, &D1);    // MOVEQ.L	$06,D1
-  DEF_ROMLOC(A1FE) : swap_reg_16(&D1);           // SWAP.W	D1
+  DEF_ROMLOC(A1FE) : SWAPWORDS(D1);              // SWAP.W	D1
   DEF_ROMLOC(A200) : move_toreg_16(0x0, &D1);    // MOVE.W	#$0000,D1
   DEF_ROMLOC(A204) : lsr_toreg_8(0x4, &D0);      // LSR.B	#$04,D0
   DEF_ROMLOC(A206) : add_toreg_16(D0, &D0);      // ADD.W	D0,D0
@@ -67,7 +67,7 @@ ROMFUNC(rom_A1DC) {
   DEF_ROMLOC(A220) : if (CCR_CS) goto rom_A280;  // BCS.B	$A280
   DEF_ROMLOC(A222) : bclr_tomem_8(0x7, A2);      // BCLR.B	#$07,(A2)
   goto rom_A238;                                 // BRA.B	$A238
-  DEF_ROMLOC(A228) : swap_reg_16(&D1);           // SWAP.W	D1
+  DEF_ROMLOC(A228) : SWAPWORDS(D1);              // SWAP.W	D1
   DEF_ROMLOC(A22A) : lsr_toreg_8(0x1, &D4);      // LSR.B	#$01,D4
   DEF_ROMLOC(A22C) : if (CCR_CS) goto rom_A280;  // BCS.B	$A280
   DEF_ROMLOC(A22E) : bclr_tomem_8(0x7, A2);      // BCLR.B	#$07,(A2)
@@ -93,7 +93,7 @@ ROMFUNC(rom_A1DC) {
   DEF_ROMLOC(A280) : add_toreg_16(0x1, &D1);        // ADDQ.W	#$01,D1
   DEF_ROMLOC(A282) : add_toreg_16(D5, &D2);         // ADD.W	D5,D2
   DEF_ROMLOC(A284) : add_toreg_16(D6, &D3);         // ADD.W	D6,D3
-  DEF_ROMLOC(A286) : swap_reg_16(&D1);              // SWAP.W	D1
+  DEF_ROMLOC(A286) : SWAPWORDS(D1);                 // SWAP.W	D1
   DEF_ROMLOC(A288) : dec_reg_16(&D1);
   if ((D1 & 0xffff) != 0xffff)
     goto rom_A228;                          // DBF.W	D1,$A228
@@ -152,7 +152,7 @@ ROMFUNC(rom_A2F0) {
 ROMFUNC(rom_A2F4) {
   DEF_ROMLOC(A2F4) : add_tomem_16(0x1, 0xFFFFFE20);  // ADDQ.W	#$01,$FE20
   DEF_ROMLOC(A2F8) : or_tomem_8(0x1, 0xFFFFFE1D);    // ORI.B	#$01,$FE1D
-  DEF_ROMLOC(A2FE) : move_toreg_16(SFX_RING, &D0);       // MOVE.W	#$00B5,D0
+  DEF_ROMLOC(A2FE) : move_toreg_16(SFX_RING, &D0);   // MOVE.W	#$00B5,D0
   DEF_ROMLOC(A302) : cmp_tomem_16(0x64, 0xFFFFFE20); // CMPI.W	#$0064,$FE20
   DEF_ROMLOC(A308) : if (CCR_CS) goto rom_A32E;      // BCS.B	$A32E
   DEF_ROMLOC(A30A) : bset_tomem_8(0x1, 0xFFFFFE1B);  // BSET.B	#$01,$FE1B
@@ -163,6 +163,8 @@ ROMFUNC(rom_A2F4) {
   DEF_ROMLOC(A320) : if (!CCR_EQ) goto rom_A32E;     // BNE.B	$A32E
   DEF_ROMLOC(A322) : add_tomem_8(0x1, v_lives);      // ADDQ.B	#$01,$FE12
   DEF_ROMLOC(A326) : add_tomem_8(0x1, 0xFFFFFE1C);   // ADDQ.B	#$01,$FE1C
-  DEF_ROMLOC(A32A) : move_toreg_16(BGM_EXTRALIFE, &D0);       // MOVE.W	#$0088,D0
-  DEF_ROMLOC(A32E) : play_sound_special();           // JMP	$00001394
+  DEF_ROMLOC(A32A)
+      : move_toreg_16(BGM_EXTRALIFE, &D0); // MOVE.W
+                                           // #$0088,D0
+  DEF_ROMLOC(A32E) : play_sound_special(); // JMP	$00001394
 }

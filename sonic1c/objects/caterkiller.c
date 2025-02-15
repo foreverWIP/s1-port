@@ -224,7 +224,7 @@ ROMFUNC(rom_1726C) {
   DEF_ROMLOC(1728E) : asl_toreg_32(0x8, &D0);       // ASL.L	#$08,D0
   DEF_ROMLOC(17290) : add_toreg_32(D0, &D2);        // ADD.L	D0,D2
   DEF_ROMLOC(17292) : move_tomem_32(D2, A0 + 0x8);  // MOVE.L	D2,8(A0)
-  DEF_ROMLOC(17296) : swap_reg_16(&D3);             // SWAP.W	D3
+  DEF_ROMLOC(17296) : SWAPWORDS(D3);                // SWAP.W	D3
   DEF_ROMLOC(17298) : cmp_toreg_16(read_16(A0 + 0x8), &D3); // CMP.W	8(A0),D3
   DEF_ROMLOC(1729C) : if (CCR_EQ) goto rom_172C8;           // BEQ.B	$172C8
   DEF_ROMLOC(1729E) : rom_15580();                          // JSR	$00015580
@@ -327,7 +327,7 @@ ROMFUNC(rom_17354) {
   DEF_ROMLOC(17398) : asl_toreg_32(0x8, &D0);       // ASL.L	#$08,D0
   DEF_ROMLOC(1739A) : add_toreg_32(D0, &D2);        // ADD.L	D0,D2
   DEF_ROMLOC(1739C) : move_tomem_32(D2, A0 + 0x8);  // MOVE.L	D2,8(A0)
-  DEF_ROMLOC(173A0) : swap_reg_16(&D3);             // SWAP.W	D3
+  DEF_ROMLOC(173A0) : SWAPWORDS(D3);                // SWAP.W	D3
   DEF_ROMLOC(173A2) : cmp_toreg_16(read_16(A0 + 0x8), &D3); // CMP.W	8(A0),D3
   DEF_ROMLOC(173A6) : if (CCR_EQ) goto rom_17410;           // BEQ.B	$17410
   DEF_ROMLOC(173A8) : move_toreg_32(0x0, &D0);              // MOVEQ.L	$00,D0

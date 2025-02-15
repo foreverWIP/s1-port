@@ -28,15 +28,15 @@ ROMFUNC(rom_1AC04) {
   }
 }
 ROMFUNC(rom_1AC28) {
-  DEF_ROMLOC(1AC28) : move_toreg_32(0x1AC18, &A1); // LEA.L	-18(PC),A1
-  DEF_ROMLOC(1AC2C) : move_toreg_32(0x0, &D0);     // MOVEQ.L	$00,D0
-  DEF_ROMLOC(1AC2E)
-      : move_toreg_8(read_8(A0 + 0x28), &D0);         // MOVE.B	40(A0),D0
-  DEF_ROMLOC(1AC32) : add_toreg_16(D0, &D0);          // ADD.W	D0,D0
-  DEF_ROMLOC(1AC34) : add_toreg_16(D0, &A1);          // ADDA.W	D0,A1
-  DEF_ROMLOC(1AC36) : move_tomem_8(0x4, A0 + 0x1);    // MOVE.B	#$04,1(A0)
-  DEF_ROMLOC(1AC3C) : bset_tomem_8(0x7, A0 + 0x1);    // BSET.B	#$07,1(A0)
-  DEF_ROMLOC(1AC42) : bset_tomem_8(0x4, A0 + 0x1);    // BSET.B	#$04,1(A0)
+  DEF_ROMLOC(1AC28) : move_toreg_32(0x1AC18, &A1);          // LEA.L	-18(PC),A1
+  DEF_ROMLOC(1AC2C) : move_toreg_32(0x0, &D0);              // MOVEQ.L	$00,D0
+  DEF_ROMLOC(1AC2E) : move_toreg_8(read_8(A0 + 0x28), &D0); // MOVE.B
+                                                            // 40(A0),D0
+  DEF_ROMLOC(1AC32) : add_toreg_16(D0, &D0);                // ADD.W	D0,D0
+  DEF_ROMLOC(1AC34) : add_toreg_16(D0, &A1);                // ADDA.W	D0,A1
+  DEF_ROMLOC(1AC36) : move_tomem_8(0x4, A0 + 0x1);          // MOVE.B	#$04,1(A0)
+  DEF_ROMLOC(1AC3C) : bset_tomem_8(0x7, A0 + 0x1);          // BSET.B	#$07,1(A0)
+  DEF_ROMLOC(1AC42) : bset_tomem_8(0x4, A0 + 0x1);          // BSET.B	#$04,1(A0)
   DEF_ROMLOC(1AC48) : move_tomem_16(0x300, A0 + 0x2); // MOVE.W	#$0300,2(A0)
   DEF_ROMLOC(1AC4E)
       : move_tomem_32(0x1AE2C, A0 + 0x4); // MOVE.L	#$0001AE2C,4(A0)
@@ -75,7 +75,7 @@ ROMFUNC(rom_1ACA0) {
   DEF_ROMLOC(1ACA4)
       : move_toreg_32(read_32(A0 + 0x38), &D1);       // MOVE.L	56(A0),D1
   DEF_ROMLOC(1ACA8) : add_toreg_32(D0, &D1);          // ADD.L	D0,D1
-  DEF_ROMLOC(1ACAA) : swap_reg_16(&D1);               // SWAP.W	D1
+  DEF_ROMLOC(1ACAA) : SWAPWORDS(D1);                  // SWAP.W	D1
   DEF_ROMLOC(1ACAC) : move_tomem_16(D1, A0 + 0xC);    // MOVE.W	D1,12(A0)
   DEF_ROMLOC(1ACB0) : cmp_tomem_8(0x4, A0 + 0x24);    // CMPI.B	#$04,36(A0)
   DEF_ROMLOC(1ACB6) : if (!CCR_EQ) goto rom_1ACDA;    // BNE.B	$1ACDA

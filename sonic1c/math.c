@@ -1,21 +1,22 @@
 #include "opcodes.h"
 #include "system.h"
 
-
 ROMFUNC(rom_29AC) {
   D1 = read_32(v_random);
-  if (D1 == 0) {D1 = 0x2A6D365A;}     // BNE.B	$29B8
-  D0 = D1;         // MOVE.L	D1,D0
-  D1 <<= 2;         // ASL.L	#$02,D1
-  D1 += D0;          // ADD.L	D0,D1
-  D1 <<= 3;         // ASL.L	#$03,D1
-  D1 += D0;          // ADD.L	D0,D1
-  SETWORD(D0, D1);         // MOVE.W	D1,D0
-  DEF_ROMLOC(29C4) : swap_reg_16(&D1);               // SWAP.W	D1
-  D0 += D1;          // ADD.W	D1,D0
-  SETWORD(D1, D0);         // MOVE.W	D0,D1
-  DEF_ROMLOC(29CA) : swap_reg_16(&D1);               // SWAP.W	D1
-  write_32(v_random, D1);  // MOVE.L	D1,$F636
+  if (D1 == 0) {
+    D1 = 0x2A6D365A;
+  }                                 // BNE.B	$29B8
+  D0 = D1;                          // MOVE.L	D1,D0
+  D1 <<= 2;                         // ASL.L	#$02,D1
+  D1 += D0;                         // ADD.L	D0,D1
+  D1 <<= 3;                         // ASL.L	#$03,D1
+  D1 += D0;                         // ADD.L	D0,D1
+  SETWORD(D0, D1);                  // MOVE.W	D1,D0
+  DEF_ROMLOC(29C4) : SWAPWORDS(D1); // SWAP.W	D1
+  D0 += D1;                         // ADD.W	D1,D0
+  SETWORD(D1, D0);                  // MOVE.W	D0,D1
+  DEF_ROMLOC(29CA) : SWAPWORDS(D1); // SWAP.W	D1
+  write_32(v_random, D1);           // MOVE.L	D1,$F636
 }
 static const s16 Sine_Data[] = {
     0x00,  0x06,  0x0c,   0x12,  0x19,  0x1f,  0x25,  0x2b,  0x31,  0x38,
@@ -49,8 +50,7 @@ static const s16 Sine_Data[] = {
     0x8e,  0x93,  0x98,   0x9d,  0xa2,  0xa7,  0xab,  0xb0,  0xb5,  0xb9,
     0xbd,  0xc1,  0xc5,   0xc9,  0xcd,  0xd1,  0xd4,  0xd8,  0xdb,  0xde,
     0xe1,  0xe4,  0xe7,   0xea,  0xec,  0xee,  0xf1,  0xf3,  0xf4,  0xf6,
-    0xf8,  0xf9,  0xfb,   0xfc,  0xfd,  0xfe,  0xfe,  0xff,  0xff,  0xff
-};
+    0xf8,  0xf9,  0xfb,   0xfc,  0xfd,  0xfe,  0xfe,  0xff,  0xff,  0xff};
 ROMFUNC(rom_29D2) {
   D0 &= 0xFF;
   SETWORD(D1, Sine_Data[D0 + 0x40]);
@@ -83,35 +83,35 @@ ROMFUNC(rom_2C6A) {
   u32 d3backup = 0;
   u32 d4backup = 0;
   d3backup = D3;
-  d4backup = D4;                                // TODO; // MOVEM.L	D3-D4,-(A7)
-  D3 = GETWORD(D1);    // MOVE.W	D1,D3
-  D4 = GETWORD(D2);    // MOVE.W	D2,D4
+  d4backup = D4;        // TODO; // MOVEM.L	D3-D4,-(A7)
+  D3 = GETWORD(D1);     // MOVE.W	D1,D3
+  D4 = GETWORD(D2);     // MOVE.W	D2,D4
   if ((D3 | D4) == 0) { // BEQ.B	$2CC6
-	D0 = 0x40; // MOVE.W	#$0040,D0
-  	D3 = d3backup;
-  	D4 = d4backup;             // TODO; // MOVEM.L	(A7)+,D3-D4
-  	return; // RTS
+    D0 = 0x40;          // MOVE.W	#$0040,D0
+    D3 = d3backup;
+    D4 = d4backup; // TODO; // MOVEM.L	(A7)+,D3-D4
+    return;        // RTS
   }
   D3 = abs((s16)D3);
   D4 = abs((s16)D4);
   if (GETWORD(D4) < GETWORD(D3)) { // BCC.W	$2C9E
-	D4 <<= 8;
-	D4 /= D3;
-	D0 = Angle_Data[D4];
+    D4 <<= 8;
+    D4 /= D3;
+    D0 = Angle_Data[D4];
   } else {
-	D3 <<= 8;
-	D3 /= D4;
-	D0 = 0x40;
-	D0 -= Angle_Data[D3];
+    D3 <<= 8;
+    D3 /= D4;
+    D0 = 0x40;
+    D0 -= Angle_Data[D3];
   }
   if (((s16)D1) < 0) {
-	SETWORD(D0, -D0 + 0x80);
+    SETWORD(D0, -D0 + 0x80);
   }
   if (((s16)D2) < 0) {
-	SETWORD(D0, -D0 + 0x100);
+    SETWORD(D0, -D0 + 0x100);
   }
   D3 = d3backup;
-  D4 = d4backup;                               // TODO; // MOVEM.L	(A7)+,D3-D4
+  D4 = d4backup; // TODO; // MOVEM.L	(A7)+,D3-D4
 }
 ROMFUNC(rom_411A) {
   DEF_ROMLOC(411A) : move_toreg_32(0xFFFFFE5E, &A1); // LEA.L	$FE5E,A1
@@ -122,11 +122,11 @@ ROMFUNC(rom_411A) {
                       (A1 += 2, A1 - 2)); // MOVE.W	(A2)+,(A1)+
   DEF_ROMLOC(4128) : dec_reg_16(&D1);
   if ((D1 & 0xffff) != 0xffff)
-    goto rom_4126;           // DBF.W	D1,$4126
+    goto rom_4126; // DBF.W	D1,$4126
 }
 ROMFUNC(rom_4170) {
   DEF_ROMLOC(4170) : cmp_tomem_8(0x6, 0xFFFFD024);   // CMPI.B	#$06,$D024
-  DEF_ROMLOC(4176) : if (CCR_CC) return;      // BCC.B	$41C6
+  DEF_ROMLOC(4176) : if (CCR_CC) return;             // BCC.B	$41C6
   DEF_ROMLOC(4178) : move_toreg_32(0xFFFFFE5E, &A1); // LEA.L	$FE5E,A1
   DEF_ROMLOC(417C) : move_toreg_32(0x41C8, &A2);     // LEA.L	$000041C8,A2
   DEF_ROMLOC(4182)

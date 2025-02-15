@@ -115,7 +115,7 @@ ROMFUNC(rom_1D7A2) {
   DEF_ROMLOC(1D7EA)
       : move_toreg_8(read_8(0xFFFFFE0B), &D1); // MOVE.B	$FE0B,D1
   DEF_ROMLOC(1D7EE) : add_toreg_16(0x1, &D1);  // ADDQ.W	#$01,D1
-  DEF_ROMLOC(1D7F0) : swap_reg_16(&D1);        // SWAP.W	D1
+  DEF_ROMLOC(1D7F0) : SWAPWORDS(D1);        // SWAP.W	D1
   DEF_ROMLOC(1D7F2) : asr_toreg_32(0x4, &D1);  // ASR.L	#$04,D1
   DEF_ROMLOC(1D7F4)
       : move_toreg_32(read_32(A0 + 0xC), &D2);               // MOVE.L	12(A0),D2

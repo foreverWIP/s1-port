@@ -110,7 +110,7 @@ extern void sub_tomem_8(u32 src, u32 dst);
 extern void sub_toreg_16(u32 src, u32 *dst);
 extern void sub_toreg_32(u32 src, u32 *dst);
 extern void sub_toreg_8(u32 src, u32 *dst);
-extern void swap_reg_16(u32 *dst);
+// extern void swap_reg_16(u32 *dst);
 extern void tst_mem_16(u32 dst);
 extern void tst_mem_32(u32 dst);
 extern void tst_mem_8(u32 dst);

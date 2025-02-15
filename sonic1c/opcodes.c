@@ -872,13 +872,13 @@ void sub_tomem_8(u32 src, u32 dst) { BINOP_TOMEM_8(sub); }
 void sub_toreg_16(u32 src, u32 *dst) { BINOP_TOREG_16(sub); }
 void sub_toreg_32(u32 src, u32 *dst) { BINOP_TOREG_32(sub); }
 void sub_toreg_8(u32 src, u32 *dst) { BINOP_TOREG_8(sub); }
-void swap_reg_16(u32 *reg) {
+/*void swap_reg_16(u32 *reg) {
   *reg = ((*reg << 16) | (*reg >> 16));
   SET_FLAG_N(*reg >= 0x80000000);
   SET_FLAG_Z(*reg == 0);
   SET_FLAG_V(0);
   SET_FLAG_C(0);
-}
+}*/
 void tst_mem_16(u32 dst) { tst(0, read_16(dst), 16, true); }
 void tst_mem_32(u32 dst) { tst(0, read_32(dst), 32, true); }
 void tst_mem_8(u32 dst) { tst(0, read_8(dst), 8, true); }

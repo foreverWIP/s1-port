@@ -71,9 +71,11 @@ ROMFUNC(rom_1CE42) {
   DEF_ROMLOC(1CE6E) : if (CCR_MI) goto rom_1CE82;   // BMI.B	$1CE82
   DEF_ROMLOC(1CE70) : add_tomem_8(0x1, v_lives);    // ADDQ.B	#$01,$FE12
   DEF_ROMLOC(1CE74) : add_tomem_8(0x1, 0xFFFFFE1C); // ADDQ.B	#$01,$FE1C
-  DEF_ROMLOC(1CE78) : move_toreg_16(BGM_EXTRALIFE, &D0);     // MOVE.W	#$0088,D0
-  DEF_ROMLOC(1CE7C) : play_sound();                 // JMP	$0000138E
-  DEF_ROMLOC(1CE82) : return;                       // RTS
+  DEF_ROMLOC(1CE78)
+      : move_toreg_16(BGM_EXTRALIFE, &D0); // MOVE.W
+                                           // #$0088,D0
+  DEF_ROMLOC(1CE7C) : play_sound();        // JMP	$0000138E
+  DEF_ROMLOC(1CE82) : return;              // RTS
 }
 ROMFUNC(rom_1CE84) {
   DEF_ROMLOC(1CE84) : tst_mem_16(0xFFFFFFFA);         // TST.W	$FFFA
@@ -257,13 +259,13 @@ ROMFUNC(rom_1D046) {
       : move_tomem_32(0x5C400003, 0xC00004); // MOVE.L	#$5C400003,$00C00004
   DEF_ROMLOC(1D050)
       : move_toreg_16(read_16(0xFFFFF700), &D1); // MOVE.W	$F700,D1
-  DEF_ROMLOC(1D054) : swap_reg_16(&D1);          // SWAP.W	D1
+  DEF_ROMLOC(1D054) : SWAPWORDS(D1);             // SWAP.W	D1
   DEF_ROMLOC(1D056)
       : move_toreg_16(read_16(0xFFFFD008), &D1); // MOVE.W	$D008,D1
   DEF_ROMLOC(1D05A) : rom_1D066();               // BSR.B	$1D066
   DEF_ROMLOC(1D05C)
       : move_toreg_16(read_16(0xFFFFF704), &D1); // MOVE.W	$F704,D1
-  DEF_ROMLOC(1D060) : swap_reg_16(&D1);          // SWAP.W	D1
+  DEF_ROMLOC(1D060) : SWAPWORDS(D1);             // SWAP.W	D1
   DEF_ROMLOC(1D062)
       : move_toreg_16(read_16(0xFFFFD00C), &D1); // MOVE.W	$D00C,D1
   rom_1D066();
@@ -304,8 +306,8 @@ ROMFUNC(rom_1D066) {
                       A6); // MOVE.L	(A3)+,(A6)
   DEF_ROMLOC(1D092)
       : move_tomem_32(read_32((A3 += 4, A3 - 4)),
-                      A6);              // MOVE.L	(A3)+,(A6)
-  DEF_ROMLOC(1D094) : swap_reg_16(&D1); // SWAP.W	D1
+                      A6);           // MOVE.L	(A3)+,(A6)
+  DEF_ROMLOC(1D094) : SWAPWORDS(D1); // SWAP.W	D1
   DEF_ROMLOC(1D096) : dec_reg_16(&D6);
   if ((D6 & 0xffff) != 0xffff)
     goto rom_1D06E;           // DBF.W	D6,$1D06E
