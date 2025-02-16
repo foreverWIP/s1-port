@@ -2136,7 +2136,7 @@ ROMFUNC(rom_15446) {
   DEF_ROMLOC(15458)
       : move_toreg_16(read_16(A0 + 0x12), &D1);     // MOVE.W	18(A0),D1
   DEF_ROMLOC(1545C) : ext_reg_32(&D1);              // EXT.L	D1
-  DEF_ROMLOC(1545E) : SWAPWORDS(0x8, &D1);          // ASL.L	#$08,D1
+  DEF_ROMLOC(1545E) : asl_toreg_32(0x8, &D1);          // ASL.L	#$08,D1
   DEF_ROMLOC(15460) : add_toreg_32(D1, &D2);        // ADD.L	D1,D2
   DEF_ROMLOC(15462) : SWAPWORDS(D2);                // SWAP.W	D2
   DEF_ROMLOC(15464) : SWAPWORDS(D3);                // SWAP.W	D3
