@@ -30,9 +30,7 @@ ROMFUNC(rom_17A10) {
   DEF_ROMLOC(17A44) : move_tomem_8(D0, A0 + 0x1A);       // MOVE.B	D0,26(A0)
   DEF_ROMLOC(17A48) : move_tomem_8(0x0, A0 + 0x1);       // MOVE.B	#$00,1(A0)
   DEF_ROMLOC(17A4E) : move_tomem_8(0x0, A0 + 0x18);      // MOVE.B	#$00,24(A0)
-  DEF_ROMLOC(17A54) : cmp_tomem_8(GM_TITLE, v_gamemode); // CMPI.B
-                                                         // #$04,$F600
-  DEF_ROMLOC(17A5A) : if (!CCR_EQ) goto rom_17A88;       // BNE.B	$17A88
+  DEF_ROMLOC(17A5A) : if (v_gamemode != GM_TITLE) goto rom_17A88;       // BNE.B	$17A88
   DEF_ROMLOC(17A5C)
       : move_tomem_16(0xA6, A0 + 0x2);               // MOVE.W	#$00A6,2(A0)
   DEF_ROMLOC(17A62) : move_tomem_8(0xA, A0 + 0x1A);  // MOVE.B	#$0A,26(A0)

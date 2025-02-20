@@ -31,7 +31,7 @@ ROMFUNC(rom_1172A) {
 }
 ROMFUNC(rom_11742) {
   DEF_ROMLOC(11742)
-      : move_toreg_32(read_32(0xFFFFF700), &D1);   // MOVE.L	$F700,D1
+      : move_toreg_32(read_32(v_screenposx), &D1); // MOVE.L	$F700,D1
   DEF_ROMLOC(11746) : add_toreg_32(D1, &D1);       // ADD.L	D1,D1
   DEF_ROMLOC(11748) : SWAPWORDS(D1);               // SWAP.W	D1
   DEF_ROMLOC(1174A) : neg_reg_16(&D1);             // NEG.W	D1

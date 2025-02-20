@@ -2,7 +2,6 @@
 #include "../opcodes.h"
 #include "../system.h"
 
-
 ROMFUNC(rom_EF98) {
   u8 switchindex = 0;
   DEF_ROMLOC(EF98) : move_toreg_32(0x0, &D0); // MOVEQ.L	$00,D0
@@ -39,11 +38,10 @@ ROMFUNC(rom_EFCE) {
   DEF_ROMLOC(EFDE) : cmp_tomem_8(0x6, A0 + 0x1A);  // CMPI.B	#$06,26(A0)
   DEF_ROMLOC(EFE4) : if (CCR_CS) goto rom_EFEC;    // BCS.B	$EFEC
   DEF_ROMLOC(EFE6) : move_tomem_8(0x0, A0 + 0x1A); // MOVE.B	#$00,26(A0)
-  DEF_ROMLOC(EFEC)
-      : move_toreg_16(read_16(A0 + 0x8), &D0);      // MOVE.W	8(A0),D0
-  DEF_ROMLOC(EFF0) : and_toreg_16(0xFFFFFF80, &D0); // ANDI.W	#$FF80,D0
+  DEF_ROMLOC(EFEC) : move_toreg_16(read_16(A0 + 0x8), &D0); // MOVE.W	8(A0),D0
+  DEF_ROMLOC(EFF0) : and_toreg_16(0xFFFFFF80, &D0);         // ANDI.W	#$FF80,D0
   DEF_ROMLOC(EFF4)
-      : move_toreg_16(read_16(0xFFFFF700), &D1);    // MOVE.W	$F700,D1
+      : move_toreg_16(read_16(v_screenposx), &D1);  // MOVE.W	$F700,D1
   DEF_ROMLOC(EFF8) : sub_toreg_16(0x80, &D1);       // SUBI.W	#$0080,D1
   DEF_ROMLOC(EFFC) : and_toreg_16(0xFFFFFF80, &D1); // ANDI.W	#$FF80,D1
   DEF_ROMLOC(F000) : sub_toreg_16(D1, &D0);         // SUB.W	D1,D0
@@ -51,6 +49,6 @@ ROMFUNC(rom_EFCE) {
   DEF_ROMLOC(F006) : if (CCR_HI) {
     rom_DCCE();
     return;
-  }           // BHI.W	$DCCE
+  } // BHI.W	$DCCE
   rom_DC92(); // BRA.W	$DC92
 }

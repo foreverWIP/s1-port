@@ -104,7 +104,7 @@ ROMFUNC(rom_10550) {
       : move_toreg_16(read_16(A0 + 0x30), &D0);      // MOVE.W	48(A0),D0
   DEF_ROMLOC(10554) : and_toreg_16(0xFFFFFF80, &D0); // ANDI.W	#$FF80,D0
   DEF_ROMLOC(10558)
-      : move_toreg_16(read_16(0xFFFFF700), &D1);     // MOVE.W	$F700,D1
+      : move_toreg_16(read_16(v_screenposx), &D1);   // MOVE.W	$F700,D1
   DEF_ROMLOC(1055C) : sub_toreg_16(0x80, &D1);       // SUBI.W	#$0080,D1
   DEF_ROMLOC(10560) : and_toreg_16(0xFFFFFF80, &D1); // ANDI.W	#$FF80,D1
   DEF_ROMLOC(10564) : sub_toreg_16(D1, &D0);         // SUB.W	D1,D0
@@ -112,7 +112,7 @@ ROMFUNC(rom_10550) {
   DEF_ROMLOC(1056A) : if (CCR_HI) {
     rom_DCCE();
     return;
-  }           // BHI.W	$DCCE
+  } // BHI.W	$DCCE
   rom_DC92(); // BRA.W	$DC92
 }
 ROMFUNC(rom_10572) {
@@ -235,7 +235,7 @@ ROMFUNC(rom_1062E) {
       : move_toreg_16(read_16(A0 + 0x30), &D0);      // MOVE.W	48(A0),D0
   DEF_ROMLOC(1063E) : and_toreg_16(0xFFFFFF80, &D0); // ANDI.W	#$FF80,D0
   DEF_ROMLOC(10642)
-      : move_toreg_16(read_16(0xFFFFF700), &D1);     // MOVE.W	$F700,D1
+      : move_toreg_16(read_16(v_screenposx), &D1);   // MOVE.W	$F700,D1
   DEF_ROMLOC(10646) : sub_toreg_16(0x80, &D1);       // SUBI.W	#$0080,D1
   DEF_ROMLOC(1064A) : and_toreg_16(0xFFFFFF80, &D1); // ANDI.W	#$FF80,D1
   DEF_ROMLOC(1064E) : sub_toreg_16(D1, &D0);         // SUB.W	D1,D0
@@ -243,7 +243,7 @@ ROMFUNC(rom_1062E) {
   DEF_ROMLOC(10654) : if (CCR_HI) {
     rom_DCCE();
     return;
-  }                           // BHI.W	$DCCE
+  } // BHI.W	$DCCE
   DEF_ROMLOC(10658) : return; // RTS
 }
 ROMFUNC(rom_1065A) {

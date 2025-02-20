@@ -2,7 +2,6 @@
 #include "../opcodes.h"
 #include "../system.h"
 
-
 static bool exit_early = false;
 
 ROMFUNC(rom_E688) {
@@ -68,12 +67,11 @@ ROMFUNC(rom_E6E2) {
   if (exit_early)
     return;
   DEF_ROMLOC(E6F0) : move_toreg_32(0xE818, &A1); // LEA.L	$0000E818,A1
-  DEF_ROMLOC(E6F6) : animate_sprite();                 // BSR.W	$ADA2
-  DEF_ROMLOC(E6FA)
-      : move_toreg_16(read_16(A0 + 0x8), &D0);      // MOVE.W	8(A0),D0
-  DEF_ROMLOC(E6FE) : and_toreg_16(0xFFFFFF80, &D0); // ANDI.W	#$FF80,D0
+  DEF_ROMLOC(E6F6) : animate_sprite();           // BSR.W	$ADA2
+  DEF_ROMLOC(E6FA) : move_toreg_16(read_16(A0 + 0x8), &D0); // MOVE.W	8(A0),D0
+  DEF_ROMLOC(E6FE) : and_toreg_16(0xFFFFFF80, &D0);         // ANDI.W	#$FF80,D0
   DEF_ROMLOC(E702)
-      : move_toreg_16(read_16(0xFFFFF700), &D1);    // MOVE.W	$F700,D1
+      : move_toreg_16(read_16(v_screenposx), &D1);  // MOVE.W	$F700,D1
   DEF_ROMLOC(E706) : sub_toreg_16(0x80, &D1);       // SUBI.W	#$0080,D1
   DEF_ROMLOC(E70A) : and_toreg_16(0xFFFFFF80, &D1); // ANDI.W	#$FF80,D1
   DEF_ROMLOC(E70E) : sub_toreg_16(D1, &D0);         // SUB.W	D1,D0
@@ -93,19 +91,18 @@ ROMFUNC(rom_E6E2) {
 }
 ROMFUNC(rom_E73A) {
   DEF_ROMLOC(E73A)
-      : move_toreg_16(read_16(0xFFFFD008), &D0); // MOVE.W	$D008,D0
-  DEF_ROMLOC(E73E) : sub_toreg_16(0x100, &D0);   // SUBI.W	#$0100,D0
-  DEF_ROMLOC(E742) : if (CCR_CS) goto rom_E760;  // BCS.B	$E760
-  DEF_ROMLOC(E744)
-      : sub_toreg_16(read_16(A0 + 0x8), &D0);         // SUB.W	8(A0),D0
-  DEF_ROMLOC(E748) : if (CCR_CS) goto rom_E760;       // BCS.B	$E760
-  DEF_ROMLOC(E74A) : add_tomem_8(0x4, A0 + 0x25);     // ADDQ.B	#$04,37(A0)
-  DEF_ROMLOC(E74E) : move_tomem_8(0x2, A0 + 0x1C);    // MOVE.B	#$02,28(A0)
+      : move_toreg_16(read_16(0xFFFFD008), &D0);           // MOVE.W	$D008,D0
+  DEF_ROMLOC(E73E) : sub_toreg_16(0x100, &D0);             // SUBI.W	#$0100,D0
+  DEF_ROMLOC(E742) : if (CCR_CS) goto rom_E760;            // BCS.B	$E760
+  DEF_ROMLOC(E744) : sub_toreg_16(read_16(A0 + 0x8), &D0); // SUB.W	8(A0),D0
+  DEF_ROMLOC(E748) : if (CCR_CS) goto rom_E760;            // BCS.B	$E760
+  DEF_ROMLOC(E74A) : add_tomem_8(0x4, A0 + 0x25);          // ADDQ.B	#$04,37(A0)
+  DEF_ROMLOC(E74E) : move_tomem_8(0x2, A0 + 0x1C);         // MOVE.B	#$02,28(A0)
   DEF_ROMLOC(E754) : move_tomem_16(0x700, A0 + 0x10); // MOVE.W	#$0700,16(A0)
-  DEF_ROMLOC(E75A)
-      : move_tomem_8(0xFFFFFF8E, A0 + 0x20); // MOVE.B	#$8E,32(A0)
-  DEF_ROMLOC(E760) : exit_early = true;      // TODO; // ADDQ.L	#$04,A7
-  DEF_ROMLOC(E762) : return;                 // RTS
+  DEF_ROMLOC(E75A) : move_tomem_8(0xFFFFFF8E, A0 + 0x20); // MOVE.B
+                                                          // #$8E,32(A0)
+  DEF_ROMLOC(E760) : exit_early = true; // TODO; // ADDQ.L	#$04,A7
+  DEF_ROMLOC(E762) : return;            // RTS
 }
 ROMFUNC(rom_E764) {
   DEF_ROMLOC(E764) : cmp_tomem_8(0x2, A0 + 0x1C);     // CMPI.B	#$02,28(A0)
@@ -153,14 +150,13 @@ ROMFUNC(rom_E7E0) {
   DEF_ROMLOC(E7E0) : tst_mem_8(A0 + 0x32);      // TST.B	50(A0)
   DEF_ROMLOC(E7E4) : if (CCR_MI) goto rom_E816; // BMI.B	$E816
   DEF_ROMLOC(E7E6)
-      : move_toreg_16(read_16(0xFFFFD008), &D0); // MOVE.W	$D008,D0
-  DEF_ROMLOC(E7EA) : sub_toreg_16(0x30, &D0);    // SUBI.W	#$0030,D0
-  DEF_ROMLOC(E7EE)
-      : sub_toreg_16(read_16(A0 + 0x8), &D0);        // SUB.W	8(A0),D0
-  DEF_ROMLOC(E7F2) : if (CCR_CC) goto rom_E816;      // BCC.B	$E816
-  DEF_ROMLOC(E7F4) : move_tomem_8(0x0, A0 + 0x1C);   // MOVE.B	#$00,28(A0)
-  DEF_ROMLOC(E7FA) : move_tomem_8(0xE, A0 + 0x20);   // MOVE.B	#$0E,32(A0)
-  DEF_ROMLOC(E800) : clr_mem_16(A0 + 0x10);          // CLR.W	16(A0)
+      : move_toreg_16(read_16(0xFFFFD008), &D0);           // MOVE.W	$D008,D0
+  DEF_ROMLOC(E7EA) : sub_toreg_16(0x30, &D0);              // SUBI.W	#$0030,D0
+  DEF_ROMLOC(E7EE) : sub_toreg_16(read_16(A0 + 0x8), &D0); // SUB.W	8(A0),D0
+  DEF_ROMLOC(E7F2) : if (CCR_CC) goto rom_E816;            // BCC.B	$E816
+  DEF_ROMLOC(E7F4) : move_tomem_8(0x0, A0 + 0x1C);         // MOVE.B	#$00,28(A0)
+  DEF_ROMLOC(E7FA) : move_tomem_8(0xE, A0 + 0x20);         // MOVE.B	#$0E,32(A0)
+  DEF_ROMLOC(E800) : clr_mem_16(A0 + 0x10);                // CLR.W	16(A0)
   DEF_ROMLOC(E804) : move_tomem_16(0x78, A0 + 0x30); // MOVE.W	#$0078,48(A0)
   DEF_ROMLOC(E80A) : move_tomem_8(0x2, A0 + 0x25);   // MOVE.B	#$02,37(A0)
   DEF_ROMLOC(E810) : bset_tomem_8(0x7, A0 + 0x32);   // BSET.B	#$07,50(A0)

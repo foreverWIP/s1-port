@@ -16,7 +16,7 @@ ROMFUNC(rom_6710) {
                       0xFFFFF618);                   // MOVE.W	$F70C,$F618
   DEF_ROMLOC(6728) : move_toreg_32(0xFFFFA800, &A1); // LEA.L	$A800,A1
   DEF_ROMLOC(672C)
-      : move_toreg_16(read_16(0xFFFFF700), &D2);           // MOVE.W	$F700,D2
+      : move_toreg_16(read_16(v_screenposx), &D2);         // MOVE.W	$F700,D2
   DEF_ROMLOC(6730) : neg_reg_16(&D2);                      // NEG.W	D2
   DEF_ROMLOC(6732) : move_toreg_16(D2, &D0);               // MOVE.W	D2,D0
   DEF_ROMLOC(6734) : asr_toreg_16(0x3, &D0);               // ASR.W	#$03,D0

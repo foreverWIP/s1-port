@@ -349,13 +349,14 @@ ROMFUNC(rom_188DA) {
 }
 ROMFUNC(rom_18902) {
   DEF_ROMLOC(18902)
-      : cmp_tomem_16(0x2030, 0xFFFFF72A);            // CMPI.W
-                                                     // #$2030,$F72A
-  DEF_ROMLOC(18908) : if (CCR_CC) goto rom_18910;    // BCC.B	$18910
-  DEF_ROMLOC(1890A) : add_tomem_16(0x2, 0xFFFFF72A); // ADDQ.W	#$02,$F72A
-  goto rom_18916;                                    // BRA.B	$18916
-  DEF_ROMLOC(18910) : tst_mem_8(A0 + 0x1);           // TST.B	1(A0)
-  DEF_ROMLOC(18914) : if (CCR_PL) goto rom_1891A;    // BPL.B	$1891A
+      : cmp_tomem_16(0x2030, v_limitright2);      // CMPI.W
+                                                  // #$2030,$F72A
+  DEF_ROMLOC(18908) : if (CCR_CC) goto rom_18910; // BCC.B	$18910
+  DEF_ROMLOC(1890A)
+      : add_tomem_16(0x2, v_limitright2);         // ADDQ.W	#$02,$F72A
+  goto rom_18916;                                 // BRA.B	$18916
+  DEF_ROMLOC(18910) : tst_mem_8(A0 + 0x1);        // TST.B	1(A0)
+  DEF_ROMLOC(18914) : if (CCR_PL) goto rom_1891A; // BPL.B	$1891A
   DEF_ROMLOC(18916) : rom_186E4();
   return; // BRA.W	$186E4
   DEF_ROMLOC(1891A) : rom_DCCE();
@@ -369,7 +370,7 @@ ROMFUNC(rom_18920) {
   DEF_ROMLOC(18928) : if (!CCR_EQ) {
     rom_18968();
     return;
-  }                                            // BNE.B	$18968
+  } // BNE.B	$18968
   DEF_ROMLOC(1892A) : move_toreg_32(0x0, &D0); // MOVEQ.L	$00,D0
   DEF_ROMLOC(1892C)
       : move_toreg_8(read_8(A1 + 0x25), &D0);       // MOVE.B	37(A1),D0

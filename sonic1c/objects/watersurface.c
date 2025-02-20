@@ -35,7 +35,7 @@ ROMFUNC(rom_117AC) {
 }
 ROMFUNC(rom_117D0) {
   DEF_ROMLOC(117D0)
-      : move_toreg_16(read_16(0xFFFFF700), &D1);     // MOVE.W	$F700,D1
+      : move_toreg_16(read_16(v_screenposx), &D1);   // MOVE.W	$F700,D1
   DEF_ROMLOC(117D4) : and_toreg_16(0xFFFFFFE0, &D1); // ANDI.W	#$FFE0,D1
   DEF_ROMLOC(117D8)
       : add_toreg_16(read_16(A0 + 0x30), &D1);       // ADD.W	48(A0),D1

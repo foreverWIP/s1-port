@@ -70,6 +70,42 @@ void speedshoes__write_32(u32 loc, u32 value) {
   CHECK_EMU();
   speedshoes__write_32_cb(speedshoes__emu, loc, value);
 }
+u8 read_joy1(void) {
+  CHECK_EMU() 0;
+  speedshoes__read_8_cb(speedshoes__emu, 0xa10003);
+}
+u8 read_joy2(void) {
+  CHECK_EMU() 0;
+  speedshoes__read_8_cb(speedshoes__emu, 0xa10005);
+}
+void write_joy1(u8 value) {
+  CHECK_EMU();
+  speedshoes__write_8_cb(speedshoes__emu, 0xa10003, value);
+}
+void write_joy2(u8 value) {
+  CHECK_EMU();
+  speedshoes__write_8_cb(speedshoes__emu, 0xa10005, value);
+}
+void write_vdp_data_16(u16 value) {
+  CHECK_EMU();
+  speedshoes__write_16_cb(speedshoes__emu, VDP_DATA_PORT, value);
+}
+void write_vdp_control_16(u16 value) {
+  CHECK_EMU();
+  speedshoes__write_16_cb(speedshoes__emu, VDP_CONTROL_PORT, value);
+}
+u16 read_vdp_control_16(void) {
+  CHECK_EMU() 0;
+  speedshoes__read_16_cb(speedshoes__emu, VDP_CONTROL_PORT);
+}
+void write_vdp_data_32(u32 value) {
+  CHECK_EMU();
+  speedshoes__write_32_cb(speedshoes__emu, VDP_DATA_PORT, value);
+}
+void write_vdp_control_32(u32 value) {
+  CHECK_EMU();
+  speedshoes__write_32_cb(speedshoes__emu, VDP_CONTROL_PORT, value);
+}
 
 EXPORT void speedshoes__bind_functions(FFIInfo *ffiinfo) {
   print("Binding functions...");

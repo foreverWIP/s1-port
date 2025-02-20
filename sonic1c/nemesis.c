@@ -33,7 +33,7 @@ void decompress_nemesis(void) {
   a5backup = A5;
   // TODO; // MOVEM.L	D0-A1/A3-A5,-(A7)
   DEF_ROMLOC(143C) : move_toreg_32(0x14FA, &A3);   // LEA.L	$000014FA,A3
-  DEF_ROMLOC(1442) : move_toreg_32(0xC00000, &A4); // LEA.L	$00C00000,A4
+  DEF_ROMLOC(1442) : move_toreg_32(VDP_DATA_PORT, &A4); // LEA.L	$00C00000,A4
   DEF_ROMLOC(1454) : move_toreg_32(0xFFFFAA00, &A1); // LEA.L	$AA00,A1
   DEF_ROMLOC(1458)
       : move_toreg_16(read_16((A0 += 2, A0 - 2)), &D2); // MOVE.W	(A0)+,D2
@@ -140,14 +140,14 @@ static void NemDec_ProcessCompressedData(bool skiptonewrow) {
   DEF_ROMLOC(14F6) : move_toreg_8(read_8(A0++), &D5); // MOVE.B	(A0)+,D5
   goto rom_14B8;                                      // BRA.B	$14B8
 
-  DEF_ROMLOC(14FA) : move_tomem_32(D4, A4);      // MOVE.L	D4,(A4)
+  DEF_ROMLOC(14FA) : write_vdp_data_32(D4);
   DEF_ROMLOC(14FC) : sub_toreg_16(0x1, &A5);     // SUBQ.W	#$01,A5
   DEF_ROMLOC(14FE) : move_toreg_16(A5, &D4);     // MOVE.W	A5,D4
   DEF_ROMLOC(1500) : if (!CCR_EQ) goto rom_14C4; // BNE.B	$14C4
   DEF_ROMLOC(1502) : return;                     // RTS
 
   DEF_ROMLOC(1504) : eor_toreg_32(D4, &D2);      // EOR.L	D4,D2
-  DEF_ROMLOC(1506) : move_tomem_32(D2, A4);      // MOVE.L	D2,(A4)
+  DEF_ROMLOC(1506) : write_vdp_data_32(D2);
   DEF_ROMLOC(1508) : sub_toreg_16(0x1, &A5);     // SUBQ.W	#$01,A5
   DEF_ROMLOC(150A) : move_toreg_16(A5, &D4);     // MOVE.W	A5,D4
   DEF_ROMLOC(150C) : if (!CCR_EQ) goto rom_14C4; // BNE.B	$14C4

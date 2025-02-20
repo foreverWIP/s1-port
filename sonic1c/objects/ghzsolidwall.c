@@ -36,7 +36,7 @@ ROMFUNC(rom_E876) {
   DEF_ROMLOC(E8A6) : if (CCR_EQ) {
     rom_E8AE();
     return;
-  }                                               // BEQ.B	$E8AE
+  } // BEQ.B	$E8AE
   DEF_ROMLOC(E8A8) : add_tomem_8(0x2, A0 + 0x24); // ADDQ.B	#$02,36(A0)
   rom_E8BA();                                     // BRA.B	$E8BA
 }
@@ -51,7 +51,7 @@ ROMFUNC(rom_E8BA) {
   DEF_ROMLOC(E8BE) : move_toreg_16(read_16(A0 + 0x8), &D0); // MOVE.W	8(A0),D0
   DEF_ROMLOC(E8C2) : and_toreg_16(0xFFFFFF80, &D0);         // ANDI.W	#$FF80,D0
   DEF_ROMLOC(E8C6)
-      : move_toreg_16(read_16(0xFFFFF700), &D1);    // MOVE.W	$F700,D1
+      : move_toreg_16(read_16(v_screenposx), &D1);  // MOVE.W	$F700,D1
   DEF_ROMLOC(E8CA) : sub_toreg_16(0x80, &D1);       // SUBI.W	#$0080,D1
   DEF_ROMLOC(E8CE) : and_toreg_16(0xFFFFFF80, &D1); // ANDI.W	#$FF80,D1
   DEF_ROMLOC(E8D2) : sub_toreg_16(D1, &D0);         // SUB.W	D1,D0
@@ -59,6 +59,6 @@ ROMFUNC(rom_E8BA) {
   DEF_ROMLOC(E8D8) : if (CCR_HI) {
     rom_DCCE();
     return;
-  }                          // BHI.W	$DCCE
+  } // BHI.W	$DCCE
   DEF_ROMLOC(E8DC) : return; // RTS
 }

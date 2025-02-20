@@ -101,7 +101,7 @@ ROMFUNC(rom_8578) {
   DEF_ROMLOC(85A4) : {
     rom_8756();
     return;
-  }                          // BRA.W	$8756
+  } // BRA.W	$8756
   DEF_ROMLOC(85A8) : return; // RTS
 }
 ROMFUNC(rom_85AA) {
@@ -246,12 +246,12 @@ ROMFUNC(rom_8662) {
   DEF_ROMLOC(8666) : if (!CCR_EQ) {
     rom_8678();
     return;
-  }                                                // BNE.B	$8678
+  } // BNE.B	$8678
   DEF_ROMLOC(8668) : btst_tomem_8(0x3, A0 + 0x22); // BTST.B	#$03,34(A0)
   DEF_ROMLOC(866E) : if (CCR_EQ) {
     rom_8676();
     return;
-  }                                                  // BEQ.B	$8676
+  } // BEQ.B	$8676
   DEF_ROMLOC(8670) : move_tomem_16(0x1E, A0 + 0x3A); // MOVE.W	#$001E,58(A0)
   rom_8676(); // Detected flow into next function
 }
@@ -263,7 +263,7 @@ ROMFUNC(rom_8678) {
   DEF_ROMLOC(867C) : if (!CCR_EQ) {
     rom_8676();
     return;
-  }                                                  // BNE.B	$8676
+  } // BNE.B	$8676
   DEF_ROMLOC(867E) : move_tomem_16(0x20, A0 + 0x3A); // MOVE.W	#$0020,58(A0)
   DEF_ROMLOC(8684) : add_tomem_8(0x1, A0 + 0x28);    // ADDQ.B	#$01,40(A0)
   DEF_ROMLOC(8688) : return;                         // RTS
@@ -273,17 +273,17 @@ ROMFUNC(rom_868A) {
   DEF_ROMLOC(868E) : if (CCR_EQ) {
     rom_86C6();
     return;
-  }                                                // BEQ.B	$86C6
+  } // BEQ.B	$86C6
   DEF_ROMLOC(8690) : sub_tomem_16(0x1, A0 + 0x3A); // SUBQ.W	#$01,58(A0)
   DEF_ROMLOC(8694) : if (!CCR_EQ) {
     rom_86C6();
     return;
-  }                                                // BNE.B	$86C6
+  } // BNE.B	$86C6
   DEF_ROMLOC(8696) : btst_tomem_8(0x3, A0 + 0x22); // BTST.B	#$03,34(A0)
   DEF_ROMLOC(869C) : if (CCR_EQ) {
     rom_86C0();
     return;
-  }                                                // BEQ.B	$86C0
+  } // BEQ.B	$86C0
   DEF_ROMLOC(869E) : bset_tomem_8(0x1, A1 + 0x22); // BSET.B	#$01,34(A1)
   DEF_ROMLOC(86A4) : bclr_tomem_8(0x3, A1 + 0x22); // BCLR.B	#$03,34(A1)
   DEF_ROMLOC(86AA) : move_tomem_8(0x2, A1 + 0x24); // MOVE.B	#$02,36(A1)
@@ -316,7 +316,7 @@ ROMFUNC(rom_86C6) {
   DEF_ROMLOC(86EA) : if (CCR_CC) {
     rom_86F2();
     return;
-  }                                                // BCC.B	$86F2
+  } // BCC.B	$86F2
   DEF_ROMLOC(86EC) : move_tomem_8(0x6, A0 + 0x24); // MOVE.B	#$06,36(A0)
   rom_86F2(); // Detected flow into next function
 }
@@ -328,7 +328,7 @@ ROMFUNC(rom_86F4) {
   DEF_ROMLOC(86F8) : if (!CCR_EQ) {
     rom_8714();
     return;
-  }                                                  // BNE.B	$8714
+  } // BNE.B	$8714
   DEF_ROMLOC(86FA) : move_toreg_32(0xFFFFF7E0, &A2); // LEA.L	$F7E0,A2
   DEF_ROMLOC(86FE) : move_toreg_32(0x0, &D0);        // MOVEQ.L	$00,D0
   DEF_ROMLOC(8700)
@@ -339,7 +339,7 @@ ROMFUNC(rom_86F4) {
   DEF_ROMLOC(870A) : if (CCR_EQ) {
     rom_8712();
     return;
-  }                                                  // BEQ.B	$8712
+  } // BEQ.B	$8712
   DEF_ROMLOC(870C) : move_tomem_16(0x3C, A0 + 0x3A); // MOVE.W	#$003C,58(A0)
   rom_8712(); // Detected flow into next function
 }
@@ -351,7 +351,7 @@ ROMFUNC(rom_8714) {
   DEF_ROMLOC(8718) : if (!CCR_EQ) {
     rom_8712();
     return;
-  }                                               // BNE.B	$8712
+  } // BNE.B	$8712
   DEF_ROMLOC(871A) : add_tomem_8(0x1, A0 + 0x28); // ADDQ.B	#$01,40(A0)
   DEF_ROMLOC(871E) : return;                      // RTS
 }
@@ -366,7 +366,7 @@ ROMFUNC(rom_8720) {
   DEF_ROMLOC(8730) : if (!CCR_EQ) {
     rom_8736();
     return;
-  }                                        // BNE.B	$8736
+  } // BNE.B	$8736
   DEF_ROMLOC(8732) : clr_mem_8(A0 + 0x28); // CLR.B	40(A0)
   rom_8736();                              // Detected flow into next function
 }
@@ -395,7 +395,7 @@ ROMFUNC(rom_8756) {
       : move_toreg_16(read_16(A0 + 0x32), &D0);     // MOVE.W	50(A0),D0
   DEF_ROMLOC(875A) : and_toreg_16(0xFFFFFF80, &D0); // ANDI.W	#$FF80,D0
   DEF_ROMLOC(875E)
-      : move_toreg_16(read_16(0xFFFFF700), &D1);    // MOVE.W	$F700,D1
+      : move_toreg_16(read_16(v_screenposx), &D1);  // MOVE.W	$F700,D1
   DEF_ROMLOC(8762) : sub_toreg_16(0x80, &D1);       // SUBI.W	#$0080,D1
   DEF_ROMLOC(8766) : and_toreg_16(0xFFFFFF80, &D1); // ANDI.W	#$FF80,D1
   DEF_ROMLOC(876A) : sub_toreg_16(D1, &D0);         // SUB.W	D1,D0
@@ -403,7 +403,7 @@ ROMFUNC(rom_8756) {
   DEF_ROMLOC(8770) : if (CCR_HI) {
     rom_8774();
     return;
-  }                          // BHI.B	$8774
+  } // BHI.B	$8774
   DEF_ROMLOC(8772) : return; // RTS
 }
 ROMFUNC(rom_8774) {

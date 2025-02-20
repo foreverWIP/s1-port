@@ -47,7 +47,7 @@ ROMFUNC(rom_170BA) {
   DEF_ROMLOC(170D4) : if (CCR_PL) {
     rom_170B8();
     return;
-  }                                                // BPL.B	$170B8
+  } // BPL.B	$170B8
   DEF_ROMLOC(170D6) : add_tomem_16(D1, A0 + 0xC);  // ADD.W	D1,12(A0)
   DEF_ROMLOC(170DA) : clr_mem_16(A0 + 0x12);       // CLR.W	18(A0)
   DEF_ROMLOC(170DE) : add_tomem_8(0x2, A0 + 0x24); // ADDQ.B	#$02,36(A0)
@@ -124,7 +124,7 @@ ROMFUNC(rom_171AA) {
   DEF_ROMLOC(171AE) : if (CCR_MI) {
     rom_17442();
     return;
-  }                                            // BMI.W	$17442
+  } // BMI.W	$17442
   DEF_ROMLOC(171B2) : move_toreg_32(0x0, &D0); // MOVEQ.L	$00,D0
   DEF_ROMLOC(171B4) : move_toreg_8(read_8(A0 + 0x25), &D0);
   switchindex = D0 / 2; // MOVE.B	37(A0),D0
@@ -161,7 +161,7 @@ ROMFUNC(rom_171AA) {
   DEF_ROMLOC(171F0) : move_toreg_16(read_16(A0 + 0x8), &D0); // MOVE.W	8(A0),D0
   DEF_ROMLOC(171F4) : and_toreg_16(0xFFFFFF80, &D0);         // ANDI.W	#$FF80,D0
   DEF_ROMLOC(171F8)
-      : move_toreg_16(read_16(0xFFFFF700), &D1);     // MOVE.W	$F700,D1
+      : move_toreg_16(read_16(v_screenposx), &D1);   // MOVE.W	$F700,D1
   DEF_ROMLOC(171FC) : sub_toreg_16(0x80, &D1);       // SUBI.W	#$0080,D1
   DEF_ROMLOC(17200) : and_toreg_16(0xFFFFFF80, &D1); // ANDI.W	#$FF80,D1
   DEF_ROMLOC(17204) : sub_toreg_16(D1, &D0);         // SUB.W	D1,D0
@@ -169,7 +169,7 @@ ROMFUNC(rom_171AA) {
   DEF_ROMLOC(1720A) : if (CCR_HI) {
     rom_17214();
     return;
-  }                               // BHI.W	$17214
+  } // BHI.W	$17214
   DEF_ROMLOC(1720E) : rom_DC92(); // JMP	$0000DC92
 }
 ROMFUNC(rom_17214) {
@@ -281,7 +281,7 @@ ROMFUNC(rom_17322) {
   DEF_ROMLOC(1732C) : if (CCR_PL) {
     rom_17354();
     return;
-  }                                                // BPL.B	$17354
+  } // BPL.B	$17354
   DEF_ROMLOC(1732E) : move_toreg_32(0x1749A, &A1); // LEA.L	$0001749A,A1
   DEF_ROMLOC(17334)
       : move_toreg_8(read_8(A0 + 0x26), &D0);      // MOVE.B	38(A0),D0
@@ -417,6 +417,6 @@ ROMFUNC(rom_1746C) {
   DEF_ROMLOC(17490) : if (CCR_PL) {
     rom_17214();
     return;
-  }                               // BPL.W	$17214
+  } // BPL.W	$17214
   DEF_ROMLOC(17494) : rom_DC92(); // JMP	$0000DC92
 }

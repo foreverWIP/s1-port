@@ -87,7 +87,7 @@ ROMFUNC(rom_163A0) {
   DEF_ROMLOC(16446) : if (CCR_PL) {
     rom_16472();
     return;
-  }                                                // BPL.B	$16472
+  } // BPL.B	$16472
   DEF_ROMLOC(16448) : and_toreg_8(0xF, &D0);       // ANDI.B	#$0F,D0
   DEF_ROMLOC(1644C) : move_tomem_8(D0, A0 + 0x3E); // MOVE.B	D0,62(A0)
   DEF_ROMLOC(16450)
@@ -171,7 +171,7 @@ ROMFUNC(rom_16472) {
       : move_toreg_16(read_16(A0 + 0x34), &D0);      // MOVE.W	52(A0),D0
   DEF_ROMLOC(164AE) : and_toreg_16(0xFFFFFF80, &D0); // ANDI.W	#$FF80,D0
   DEF_ROMLOC(164B2)
-      : move_toreg_16(read_16(0xFFFFF700), &D1);     // MOVE.W	$F700,D1
+      : move_toreg_16(read_16(v_screenposx), &D1);   // MOVE.W	$F700,D1
   DEF_ROMLOC(164B6) : sub_toreg_16(0x80, &D1);       // SUBI.W	#$0080,D1
   DEF_ROMLOC(164BA) : and_toreg_16(0xFFFFFF80, &D1); // ANDI.W	#$FF80,D1
   DEF_ROMLOC(164BE) : sub_toreg_16(D1, &D0);         // SUB.W	D1,D0

@@ -67,7 +67,7 @@ ROMFUNC(rom_175F6) {
   DEF_ROMLOC(17658) : return;                       // RTS
 }
 ROMFUNC(rom_1765A) {
-  DEF_ROMLOC(1765A) : tst_mem_16(0xFFFFFE08);      // TST.W	$FE08
+  DEF_ROMLOC(1765A) : tst_mem_16(v_debuguse);      // TST.W	$FE08
   DEF_ROMLOC(1765E) : if (!CCR_EQ) goto rom_1773C; // BNE.W	$1773C
   DEF_ROMLOC(17662) : tst_mem_8(0xFFFFF7C8);       // TST.B	$F7C8
   DEF_ROMLOC(17666) : if (CCR_MI) goto rom_1773C;  // BMI.W	$1773C
@@ -188,7 +188,7 @@ ROMFUNC(rom_1777E) {
       : move_tomem_16(read_16(0xFFFFF72E),
                       0xFFFFFE3E); // MOVE.W	$F72E,$FE3E
   DEF_ROMLOC(177B4)
-      : move_tomem_16(read_16(0xFFFFF700),
+      : move_tomem_16(read_16(v_screenposx),
                       0xFFFFFE40); // MOVE.W	$F700,$FE40
   DEF_ROMLOC(177BA)
       : move_tomem_16(read_16(0xFFFFF704),

@@ -141,11 +141,10 @@ ROMFUNC(rom_CCD0) {
   DEF_ROMLOC(CD1A) : move_tomem_16(0xB4, A0 + 0x1E); // MOVE.W	#$00B4,30(A0)
   DEF_ROMLOC(CD20) : return;                         // RTS
   DEF_ROMLOC(CD22) : rom_1CE42();                    // JSR	$0001CE42
-  DEF_ROMLOC(CD28)
-      : move_toreg_8(read_8(0xFFFFFE0F), &D0);       // MOVE.B	$FE0F,D0
-  DEF_ROMLOC(CD2C) : and_toreg_8(0x3, &D0);          // ANDI.B	#$03,D0
-  DEF_ROMLOC(CD30) : if (!CCR_EQ) goto rom_CD20;     // BNE.B	$CD20
-  DEF_ROMLOC(CD32) : move_toreg_16(SFX_SPRING, &D0); // MOVE.W	#$00CD,D0
+  DEF_ROMLOC(CD28) : move_toreg_8(read_8(0xFFFFFE0F), &D0); // MOVE.B	$FE0F,D0
+  DEF_ROMLOC(CD2C) : and_toreg_8(0x3, &D0);                 // ANDI.B	#$03,D0
+  DEF_ROMLOC(CD30) : if (!CCR_EQ) goto rom_CD20;            // BNE.B	$CD20
+  DEF_ROMLOC(CD32) : move_toreg_16(SFX_SPRING, &D0);        // MOVE.W	#$00CD,D0
   DEF_ROMLOC(CD36) : {
     play_sound_special();
     return;
@@ -165,12 +164,12 @@ ROMFUNC(rom_CD3C) {
   DEF_ROMLOC(CD56) : move_tomem_16(D0, v_zone);  // MOVE.W	D0,$FE10
   DEF_ROMLOC(CD5A) : tst_reg_16(&D0);            // TST.W	D0
   DEF_ROMLOC(CD5C) : if (!CCR_EQ) goto rom_CD66; // BNE.B	$CD66
-  DEF_ROMLOC(CD5E) : move_tomem_8(GM_SEGA, v_gamemode);
+  DEF_ROMLOC(CD5E) : v_gamemode = GM_SEGA;
   goto rom_CD7E;                                // BRA.B	$CD7E
   DEF_ROMLOC(CD66) : clr_mem_8(0xFFFFFE30);     // CLR.B	$FE30
   DEF_ROMLOC(CD6A) : tst_mem_8(0xFFFFF7CD);     // TST.B	$F7CD
   DEF_ROMLOC(CD6E) : if (CCR_EQ) goto rom_CD78; // BEQ.B	$CD78
-  DEF_ROMLOC(CD70) : move_tomem_8(GM_SPECIAL, v_gamemode);
+  DEF_ROMLOC(CD70) : v_gamemode = GM_SPECIAL;
   goto rom_CD7E;                                     // BRA.B	$CD7E
   DEF_ROMLOC(CD78) : move_tomem_16(0x1, 0xFFFFFE02); // MOVE.W	#$0001,$FE02
   DEF_ROMLOC(CD7E) : rom_DC92();                     // BRA.W	$DC92
@@ -187,7 +186,7 @@ ROMFUNC(rom_CDB2) {
   DEF_ROMLOC(CDBE) : if (CCR_GE) {
     rom_CDC2();
     return;
-  }                                   // BGE.B	$CDC2
+  } // BGE.B	$CDC2
   DEF_ROMLOC(CDC0) : neg_reg_16(&D1); // NEG.W	D1
   rom_CDC2();                         // Detected flow into next function
 }
@@ -207,24 +206,26 @@ ROMFUNC(rom_CDD8) {
   DEF_ROMLOC(CDDE) : if (!CCR_EQ) {
     rom_DCCE();
     return;
-  }                                                      // BNE.W	$DCCE
-  DEF_ROMLOC(CDE2) : add_tomem_8(0x2, A0 + 0x24);        // ADDQ.B	#$02,36(A0)
-  DEF_ROMLOC(CDE6) : clr_mem_8(0xFFFFF7CC);              // CLR.B	$F7CC
-  DEF_ROMLOC(CDEA) : move_toreg_16(BGM_GOTTHROUGH, &D0); // MOVE.W
-                                                         // #$008D,D0
+  } // BNE.W	$DCCE
+  DEF_ROMLOC(CDE2) : add_tomem_8(0x2, A0 + 0x24); // ADDQ.B	#$02,36(A0)
+  DEF_ROMLOC(CDE6) : clr_mem_8(0xFFFFF7CC);       // CLR.B	$F7CC
+  DEF_ROMLOC(CDEA)
+      : move_toreg_16(BGM_GOTTHROUGH, &D0); // MOVE.W
+                                            // #$008D,D0
   DEF_ROMLOC(CDEE) : {
     play_sound();
     return;
   } // JMP	$0000138E
 }
 ROMFUNC(rom_CDF4) {
-  DEF_ROMLOC(CDF4) : add_tomem_16(0x2, 0xFFFFF72A); // ADDQ.W	#$02,$F72A
+  DEF_ROMLOC(CDF4)
+      : add_tomem_16(0x2, v_limitright2); // ADDQ.W	#$02,$F72A
   DEF_ROMLOC(CDF8)
-      : cmp_tomem_16(0x2100, 0xFFFFF72A); // CMPI.W
-                                          // #$2100,$F72A
+      : cmp_tomem_16(0x2100, v_limitright2); // CMPI.W
+                                             // #$2100,$F72A
   DEF_ROMLOC(CDFE) : if (CCR_EQ) {
     rom_DCCE();
     return;
-  }                          // BEQ.W	$DCCE
+  } // BEQ.W	$DCCE
   DEF_ROMLOC(CE02) : return; // RTS
 }

@@ -69,10 +69,10 @@ ROMFUNC(rom_CBB8) {
   return;                                        // BRA.W	$DC92
   DEF_ROMLOC(CBD8) : tst_mem_8(0xFFFFFE1A);      // TST.B	$FE1A
   DEF_ROMLOC(CBDC) : if (!CCR_EQ) goto rom_CBF2; // BNE.B	$CBF2
-  DEF_ROMLOC(CBDE) : move_tomem_8(GM_CONTINUE, v_gamemode);
+  DEF_ROMLOC(CBDE) : v_gamemode = GM_CONTINUE;
   DEF_ROMLOC(CBE4) : tst_mem_8(0xFFFFFE18);      // TST.B	$FE18
   DEF_ROMLOC(CBE8) : if (!CCR_EQ) goto rom_CBFC; // BNE.B	$CBFC
-  DEF_ROMLOC(CBEA) : move_tomem_8(GM_SEGA, v_gamemode);
+  DEF_ROMLOC(CBEA) : v_gamemode = GM_SEGA;
   goto rom_CBFC;                                     // BRA.B	$CBFC
   DEF_ROMLOC(CBF2) : clr_mem_32(0xFFFFFE38);         // CLR.L	$FE38
   DEF_ROMLOC(CBF6) : move_tomem_16(0x1, 0xFFFFFE02); // MOVE.W	#$0001,$FE02

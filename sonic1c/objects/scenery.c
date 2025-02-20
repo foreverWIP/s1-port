@@ -2,7 +2,6 @@
 #include "../opcodes.h"
 #include "../system.h"
 
-
 ROMFUNC(rom_8E48) {
   u8 switchindex = 0;
   DEF_ROMLOC(8E48) : move_toreg_32(0x0, &D0); // MOVEQ.L	$00,D0
@@ -22,11 +21,11 @@ ROMFUNC(rom_8E48) {
   }
 }
 ROMFUNC(rom_8E5A) {
-  DEF_ROMLOC(8E5A) : add_tomem_8(0x2, A0 + 0x24); // ADDQ.B	#$02,36(A0)
-  DEF_ROMLOC(8E5E) : move_toreg_32(0x0, &D0);     // MOVEQ.L	$00,D0
-  DEF_ROMLOC(8E60)
-      : move_toreg_8(read_8(A0 + 0x28), &D0); // MOVE.B	40(A0),D0
-  DEF_ROMLOC(8E64) : mulu_toreg_16(0xA, &D0); // MULU.W	#$000A,D0
+  DEF_ROMLOC(8E5A) : add_tomem_8(0x2, A0 + 0x24);          // ADDQ.B	#$02,36(A0)
+  DEF_ROMLOC(8E5E) : move_toreg_32(0x0, &D0);              // MOVEQ.L	$00,D0
+  DEF_ROMLOC(8E60) : move_toreg_8(read_8(A0 + 0x28), &D0); // MOVE.B
+                                                           // 40(A0),D0
+  DEF_ROMLOC(8E64) : mulu_toreg_16(0xA, &D0);              // MULU.W	#$000A,D0
   DEF_ROMLOC(8E68)
       : move_toreg_32(0x8EAC + (s16)(D0 & 0xffff),
                       &A1); // LEA.L	66(PC,D0),A1
@@ -48,11 +47,10 @@ ROMFUNC(rom_8E5A) {
   rom_8E8A(); // Detected flow into next function
 }
 ROMFUNC(rom_8E8A) {
-  DEF_ROMLOC(8E8A)
-      : move_toreg_16(read_16(A0 + 0x8), &D0);      // MOVE.W	8(A0),D0
-  DEF_ROMLOC(8E8E) : and_toreg_16(0xFFFFFF80, &D0); // ANDI.W	#$FF80,D0
+  DEF_ROMLOC(8E8A) : move_toreg_16(read_16(A0 + 0x8), &D0); // MOVE.W	8(A0),D0
+  DEF_ROMLOC(8E8E) : and_toreg_16(0xFFFFFF80, &D0);         // ANDI.W	#$FF80,D0
   DEF_ROMLOC(8E92)
-      : move_toreg_16(read_16(0xFFFFF700), &D1);    // MOVE.W	$F700,D1
+      : move_toreg_16(read_16(v_screenposx), &D1);  // MOVE.W	$F700,D1
   DEF_ROMLOC(8E96) : sub_toreg_16(0x80, &D1);       // SUBI.W	#$0080,D1
   DEF_ROMLOC(8E9A) : and_toreg_16(0xFFFFFF80, &D1); // ANDI.W	#$FF80,D1
   DEF_ROMLOC(8E9E) : sub_toreg_16(D1, &D0);         // SUB.W	D1,D0
@@ -60,6 +58,6 @@ ROMFUNC(rom_8E8A) {
   DEF_ROMLOC(8EA4) : if (CCR_HI) {
     rom_DCCE();
     return;
-  }           // BHI.W	$DCCE
+  } // BHI.W	$DCCE
   rom_DC92(); // BRA.W	$DC92
 }

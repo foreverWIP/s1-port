@@ -89,7 +89,7 @@ ROMFUNC(rom_622E) {
 }
 ROMFUNC(rom_623C) {
   DEF_ROMLOC(623C)
-      : move_toreg_16(read_16(0xFFFFF700), &D0);     // MOVE.W	$F700,D0
+      : move_toreg_16(read_16(v_screenposx), &D0);   // MOVE.W	$F700,D0
   DEF_ROMLOC(6240) : asr_toreg_16(0x1, &D0);         // ASR.W	#$01,D0
   DEF_ROMLOC(6242) : move_tomem_16(D0, 0xFFFFF708);  // MOVE.W	D0,$F708
   DEF_ROMLOC(6246) : move_tomem_16(D0, 0xFFFFF710);  // MOVE.W	D0,$F710
@@ -186,11 +186,8 @@ ROMFUNC(rom_62BC) {
   DEF_ROMLOC(62F6) : move_toreg_16(D0, &D4);        // MOVE.W	D0,D4
   DEF_ROMLOC(62F8) : move_tomem_16(D0, 0xFFFFF618); // MOVE.W	D0,$F618
   DEF_ROMLOC(62FC)
-      : move_toreg_16(read_16(0xFFFFF700), &D0); // MOVE.W	$F700,D0
-  DEF_ROMLOC(6300)
-      : cmp_tomem_8(GM_TITLE, v_gamemode);           // CMPI.B
-                                                     // #$04,$F600
-  DEF_ROMLOC(6306) : if (!CCR_EQ) goto rom_630A;     // BNE.B	$630A
+      : move_toreg_16(read_16(v_screenposx), &D0); // MOVE.W	$F700,D0
+  DEF_ROMLOC(6306) : if (v_gamemode != GM_TITLE) goto rom_630A;     // BNE.B	$630A
   DEF_ROMLOC(6308) : move_toreg_32(0x0, &D0);        // MOVEQ.L	$00,D0
   DEF_ROMLOC(630A) : neg_reg_16(&D0);                // NEG.W	D0
   DEF_ROMLOC(630C) : SWAPWORDS(D0);                  // SWAP.W	D0
@@ -252,7 +249,7 @@ ROMFUNC(rom_62BC) {
   DEF_ROMLOC(6384)
       : move_toreg_16(read_16(0xFFFFF710), &D0); // MOVE.W	$F710,D0
   DEF_ROMLOC(6388)
-      : move_toreg_16(read_16(0xFFFFF700), &D2);           // MOVE.W	$F700,D2
+      : move_toreg_16(read_16(v_screenposx), &D2);         // MOVE.W	$F700,D2
   DEF_ROMLOC(638C) : sub_toreg_16(D0, &D2);                // SUB.W	D0,D2
   DEF_ROMLOC(638E) : ext_reg_32(&D2);                      // EXT.L	D2
   DEF_ROMLOC(6390) : asl_toreg_32(0x8, &D2);               // ASL.L	#$08,D2
@@ -299,10 +296,10 @@ ROMFUNC(rom_63B6) {
   DEF_ROMLOC(63F8) : move_toreg_32(0xFFFFCC00, &A1);         // LEA.L	$CC00,A1
   DEF_ROMLOC(63FC) : move_toreg_16(0xDF, &D1);               // MOVE.W	#$00DF,D1
   DEF_ROMLOC(6400)
-      : move_toreg_16(read_16(0xFFFFF700), &D0); // MOVE.W	$F700,D0
-  DEF_ROMLOC(6404) : neg_reg_16(&D0);            // NEG.W	D0
-  DEF_ROMLOC(6406) : move_toreg_16(D0, &D6);     // MOVE.W	D0,D6
-  DEF_ROMLOC(6408) : SWAPWORDS(D0);              // SWAP.W	D0
+      : move_toreg_16(read_16(v_screenposx), &D0); // MOVE.W	$F700,D0
+  DEF_ROMLOC(6404) : neg_reg_16(&D0);              // NEG.W	D0
+  DEF_ROMLOC(6406) : move_toreg_16(D0, &D6);       // MOVE.W	D0,D6
+  DEF_ROMLOC(6408) : SWAPWORDS(D0);                // SWAP.W	D0
   DEF_ROMLOC(640A)
       : move_toreg_16(read_16(0xFFFFF708), &D0); // MOVE.W	$F708,D0
   DEF_ROMLOC(640E) : neg_reg_16(&D0);            // NEG.W	D0
@@ -385,7 +382,7 @@ ROMFUNC(rom_6548) {
   DEF_ROMLOC(65B2) : clr_mem_8(0xFFFFF758);               // CLR.B	$F758
   DEF_ROMLOC(65B6) : move_toreg_32(0xFFFFA800, &A1);      // LEA.L	$A800,A1
   DEF_ROMLOC(65BA)
-      : move_toreg_16(read_16(0xFFFFF700), &D2);           // MOVE.W	$F700,D2
+      : move_toreg_16(read_16(v_screenposx), &D2);         // MOVE.W	$F700,D2
   DEF_ROMLOC(65BE) : neg_reg_16(&D2);                      // NEG.W	D2
   DEF_ROMLOC(65C0) : move_toreg_16(D2, &D0);               // MOVE.W	D2,D0
   DEF_ROMLOC(65C2) : asr_toreg_16(0x2, &D0);               // ASR.W	#$02,D0
@@ -457,7 +454,7 @@ ROMFUNC(rom_6640) {
                       0xFFFFF618);                   // MOVE.W	$F70C,$F618
   DEF_ROMLOC(6652) : move_toreg_32(0xFFFFA800, &A1); // LEA.L	$A800,A1
   DEF_ROMLOC(6656)
-      : move_toreg_16(read_16(0xFFFFF700), &D2);           // MOVE.W	$F700,D2
+      : move_toreg_16(read_16(v_screenposx), &D2);         // MOVE.W	$F700,D2
   DEF_ROMLOC(665A) : neg_reg_16(&D2);                      // NEG.W	D2
   DEF_ROMLOC(665C) : move_toreg_16(D2, &D0);               // MOVE.W	D2,D0
   DEF_ROMLOC(665E) : asr_toreg_16(0x3, &D0);               // ASR.W	#$03,D0
@@ -519,9 +516,9 @@ ROMFUNC(rom_66CC) {
   DEF_ROMLOC(66CC) : move_toreg_32(0xFFFFCC00, &A1); // LEA.L	$CC00,A1
   DEF_ROMLOC(66D0) : move_toreg_16(0xE, &D1);        // MOVE.W	#$000E,D1
   DEF_ROMLOC(66D4)
-      : move_toreg_16(read_16(0xFFFFF700), &D0); // MOVE.W	$F700,D0
-  DEF_ROMLOC(66D8) : neg_reg_16(&D0);            // NEG.W	D0
-  DEF_ROMLOC(66DA) : SWAPWORDS(D0);              // SWAP.W	D0
+      : move_toreg_16(read_16(v_screenposx), &D0); // MOVE.W	$F700,D0
+  DEF_ROMLOC(66D8) : neg_reg_16(&D0);              // NEG.W	D0
+  DEF_ROMLOC(66DA) : SWAPWORDS(D0);                // SWAP.W	D0
   DEF_ROMLOC(66DC) : and_toreg_16(0xF, &D2);
   switchindex = D2;                         // ANDI.W	#$000F,D2
   DEF_ROMLOC(66E0) : add_toreg_16(D2, &D2); // ADD.W	D2,D2

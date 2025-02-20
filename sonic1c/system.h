@@ -96,16 +96,29 @@ extern jmp_buf speedshoes__desync_jumpbuf;
 #define SETWORD(reg, value) reg = ((reg & 0xffff0000) | ((value) & 0x0000ffff))
 #define SETBYTE(reg, value) reg = ((reg & 0xffffff00) | ((value) & 0x000000ff))
 
-#define SWAPWORDS(dst)                                                       \
-  { dst = ((dst << 16) | (dst >> 16)); }
+#define SWAPWORDS(dst)                                                         \
+  {                                                                            \
+    dst = ((dst << 16) | (dst >> 16));                                         \
+  }
+
+u8 read_joy1(void);
+u8 read_joy2(void);
+void write_joy1(u8 value);
+void write_joy2(u8 value);
 
 #define VDP_DATA_PORT 0xC00000
 #define VDP_CONTROL_PORT 0xC00004
 
+void write_vdp_data_16(u16 value);
+void write_vdp_control_16(u16 value);
+u16 read_vdp_control_16(void);
+void write_vdp_data_32(u32 value);
+void write_vdp_control_32(u32 value);
+
 #define VRAM_PTR_TO_VDP_COMMAND(loc)                                           \
   (0x40000000 + (((loc) & 0x3FFF) << 16) + (((loc) & 0xC000) >> 14))
 #define set_vram_ptr(loc)                                                      \
-  write_32(VDP_CONTROL_PORT, VRAM_PTR_TO_VDP_COMMAND((u32)loc))
+  write_vdp_control_32(VRAM_PTR_TO_VDP_COMMAND((u32)loc))
 
 #define PLANE_SIZE_64X32 0x1000
 
