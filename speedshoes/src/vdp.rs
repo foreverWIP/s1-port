@@ -1,63 +1,12 @@
 use std::{cell::RefCell, rc::Rc};
 
+use speedshoes_vdp_renderer::{
+    render_plane_line_a_high, render_plane_line_a_low, render_plane_line_b_high,
+    render_plane_line_b_low, render_screen_line, render_sprites_line_high, render_sprites_line_low,
+    HScrollMode, PlaneSize, Sprite, TileAttributes, VScrollMode,
+};
+
 use crate::{GAME_HEIGHT, GAME_WIDTH};
-
-#[derive(Clone, Copy)]
-pub(crate) enum HScrollMode {
-    FullScreen,
-    PerTile,
-    PerScanline,
-}
-impl From<u8> for HScrollMode {
-    fn from(value: u8) -> Self {
-        match value {
-            0 => Self::FullScreen,
-            1 => Self::PerTile,
-            2 => Self::PerScanline,
-            _ => Self::FullScreen,
-        }
-    }
-}
-
-#[derive(Clone, Copy)]
-pub(crate) enum VScrollMode {
-    FullScreen,
-    PerTile,
-    PerTwoTiles,
-}
-impl From<u8> for VScrollMode {
-    fn from(value: u8) -> Self {
-        match value {
-            0 => Self::FullScreen,
-            1 => Self::PerTile,
-            2 => Self::PerTwoTiles,
-            _ => Self::FullScreen,
-        }
-    }
-}
-
-#[derive(Clone, Copy)]
-pub(crate) enum PlaneSize {
-    Size32x32Cells,
-    Size64x32Cells,
-    Size128x32Cells,
-    Size32x64Cells,
-    Size64x64Cells,
-    Size32x128Cells,
-}
-impl From<u8> for PlaneSize {
-    fn from(value: u8) -> Self {
-        match value {
-            0 => Self::Size32x32Cells,
-            1 => Self::Size64x32Cells,
-            2 => Self::Size128x32Cells,
-            3 => Self::Size32x64Cells,
-            4 => Self::Size64x64Cells,
-            5 => Self::Size32x128Cells,
-            _ => Self::Size32x32Cells,
-        }
-    }
-}
 
 #[derive(Clone, Copy)]
 pub(crate) enum VdpRegion {
@@ -73,67 +22,6 @@ enum DmaType {
     CpuToVram,
     VramFill,
     VramToVram,
-}
-
-#[derive(Clone, Copy)]
-struct TileAttributes {
-    pub priority: bool,
-    pub vertical_flip: bool,
-    pub horizontal_flip: bool,
-    pub palette_line: u8,
-    pub tile_index: u16,
-}
-impl TileAttributes {
-    pub fn new(word: u16) -> Self {
-        Self {
-            priority: (word & 0x8000) != 0,
-            vertical_flip: (word & 0x1000) != 0,
-            horizontal_flip: (word & 0x800) != 0,
-            palette_line: ((word >> 9) & 0b11_0000) as u8,
-            tile_index: (word & 0x7ff) as u16,
-        }
-    }
-}
-
-#[derive(Clone, Copy)]
-struct Sprite {
-    pub x: i16,
-    pub y: i16,
-    pub width_pixels: u16,
-    pub height_pixels: u16,
-    pub attributes: TileAttributes,
-    pub next: u8,
-}
-impl Sprite {
-    pub fn new(vram: &Box<[u8; VRAM_SIZE_BYTES]>, address: u16) -> Self {
-        let address = address as usize;
-        let long1 = ((vram[address as usize + 0] as u32) << 24)
-            | ((vram[address as usize + 1] as u32) << 16)
-            | ((vram[address as usize + 2] as u32) << 8)
-            | (vram[address as usize + 3] as u32);
-        let long2 = ((vram[address as usize + 4] as u32) << 24)
-            | ((vram[address as usize + 5] as u32) << 16)
-            | ((vram[address as usize + 6] as u32) << 8)
-            | (vram[address as usize + 7] as u32);
-        Self {
-            x: (long2 & 0x1ff) as i16 - 128,
-            y: ((long1 >> 16) & 0x3ff) as i16 - 128,
-            width_pixels: (((long1 >> 10) & 0b11) as u16 + 1) << 3,
-            height_pixels: (((long1 >> 8) & 0b11) as u16 + 1) << 3,
-            attributes: TileAttributes::new((long2 >> 16) as u16),
-            next: (long1 & 0x7f) as u8,
-        }
-    }
-    pub fn pattern_index_at_pos(&self, x: u16, y: u16) -> u16 {
-        let x_off = (if self.attributes.horizontal_flip {
-            self.width_pixels - x - 1
-        } else {
-            x
-        } >> 3)
-            * (self.height_pixels * 4);
-        let y_off = y << 2;
-        (self.attributes.tile_index << 5) + x_off + y_off
-    }
 }
 
 #[derive(Clone, Copy, Eq, PartialEq, Hash)]
@@ -176,6 +64,7 @@ pub struct Vdp {
     /// Mask the high bit of each color channel.
     /// 3-bit color -> 2-bit color
     pub low_color_mode: bool,
+    pub hw_planes_mode: bool,
     /// When false, only displays a solid color
     /// (the current background color).
     show_planes_and_sprites: bool,
@@ -204,7 +93,7 @@ pub struct Vdp {
     ram: Rc<RefCell<Vec<u8>>>,
 }
 impl Vdp {
-    pub fn new(rom: Rc<Vec<u8>>, ram: Rc<RefCell<Vec<u8>>>) -> Vdp {
+    pub fn new(rom: Rc<Vec<u8>>, ram: Rc<RefCell<Vec<u8>>>, hw_planes_mode: bool) -> Vdp {
         let mut color_lut = vec![0u32; 0x1_0000].into_boxed_slice();
         for i in 0..color_lut.len() {
             let r = CHANNEL_LOOKUP[(i >> 1) & 0b111];
@@ -218,6 +107,7 @@ impl Vdp {
                 .try_into()
                 .unwrap(),
             low_color_mode: false,
+            hw_planes_mode,
             show_planes_and_sprites: false,
             plane_a_location: 0,
             plane_b_location: 0,
@@ -504,17 +394,6 @@ impl Vdp {
         }
     }
 
-    fn read_vram_word(&self, address: u16) -> u16 {
-        ((self.vram[address as usize] as u16) << 8) | (self.vram[address as usize + 1] as u16)
-    }
-
-    fn read_vram_long(&self, address: u16) -> u32 {
-        ((self.vram[address as usize] as u32) << 24)
-            | ((self.vram[address as usize + 1] as u32) << 16)
-            | ((self.vram[address as usize + 2] as u32) << 8)
-            | (self.vram[address as usize + 3] as u32)
-    }
-
     fn write_vram(&mut self, address: u16, value: u8) {
         self.vram[address as usize] = value;
     }
@@ -552,289 +431,104 @@ impl Vdp {
         }
     }
 
-    fn render_sprites_line(&self, y: u16, screen_buf_low: &mut [u32], screen_buf_high: &mut [u32]) {
-        let mut cur_sprite_count = 0u8;
-        let mut cur_sprite_pixel_count = 0u16;
-        let mut cur_sprite_link = 0u8;
-        while cur_sprite_count < 80 {
-            let sprite = Sprite::new(
-                &self.vram,
-                self.sprite_table_location + ((cur_sprite_link as u16) << 3),
-            );
-
-            let fb = if sprite.attributes.priority {
-                &mut *screen_buf_high
-            } else {
-                &mut *screen_buf_low
-            };
-
-            let sprite_in_y_range =
-                (y as i16) >= sprite.y && (y as i16) < (sprite.y + (sprite.height_pixels as i16));
-            let sprite_viable_for_draw = sprite.x < GAME_WIDTH as i16
-                && sprite.x + sprite.width_pixels as i16 >= 0
-                && sprite_in_y_range;
-
-            if sprite_viable_for_draw {
-                let draw_y = if sprite.attributes.vertical_flip {
-                    sprite.height_pixels - ((y as i16) - sprite.y) as u16 - 1
-                } else {
-                    ((y as i16) - sprite.y) as u16
-                };
-                let mut draw_x = if sprite.x >= 0 {
-                    0u16
-                } else {
-                    sprite.x.abs() as u16
-                };
-                let draw_x_end = if (sprite.x + (sprite.width_pixels as i16)) < (GAME_WIDTH as i16)
-                {
-                    sprite.width_pixels as i16
-                } else {
-                    (sprite.width_pixels as i16)
-                        - ((sprite.x + (sprite.width_pixels as i16)) - (GAME_WIDTH as i16))
-                } as u16;
-                while draw_x < draw_x_end {
-                    let pattern_strip =
-                        self.read_vram_long(sprite.pattern_index_at_pos(draw_x, draw_y));
-
-                    let cell_x = if !sprite.attributes.horizontal_flip {
-                        8 - (draw_x & 7) - 1
-                    } else {
-                        draw_x & 7
-                    };
-                    let index = ((pattern_strip >> (cell_x << 2)) & 0xf) as u8;
-
-                    if index != 0 {
-                        let buf_index = (sprite.x + draw_x as i16) as usize;
-                        if buf_index < GAME_WIDTH as usize {
-                            if fb[buf_index] == 0 {
-                                fb[buf_index] = pal_index_to_32bit!(
-                                    self,
-                                    sprite.attributes.palette_line | index
-                                );
-                            }
-                        }
-                    }
-
-                    draw_x += 1;
-                }
-            }
-            cur_sprite_link = sprite.next;
-            if sprite_in_y_range {
-                cur_sprite_pixel_count += sprite.width_pixels;
-            }
-
-            if cur_sprite_pixel_count >= 320 || cur_sprite_link == 0 {
-                break;
-            }
-
-            cur_sprite_count = cur_sprite_count.wrapping_add(1);
-        }
-    }
-
-    fn render_plane_line_b(&self, screen_buf_low: &mut [u32], y: u16) {
-        let (plane_size_cells_mask_x, plane_size_cells_mask_y) = {
-            match self.plane_size {
-                PlaneSize::Size32x32Cells => (32 - 1, 32 - 1),
-                PlaneSize::Size64x32Cells => (64 - 1, 32 - 1),
-                PlaneSize::Size128x32Cells => (128 - 1, 32 - 1),
-                PlaneSize::Size32x64Cells => (32 - 1, 64 - 1),
-                PlaneSize::Size64x64Cells => (64 - 1, 64 - 1),
-                PlaneSize::Size32x128Cells => (32 - 1, 128 - 1),
-            }
-        };
-        let scroll_x = (-(self.read_vram_word(
-            self.hscroll_location
-                .wrapping_add(y.wrapping_mul(4).wrapping_add(2)),
-        ) as i16))
-            .wrapping_add(8) as u16;
-        let scroll_x_within_tile = (scroll_x & 0x7) as u16;
-
-        let plane_location = self.plane_b_location;
-
-        let clear_color = self.bg_color();
-
-        for cur_cell_x in 0u16..41 {
-            let scroll_y = {
-                let x = match self.vscroll_mode {
-                    VScrollMode::FullScreen => 0,
-                    VScrollMode::PerTile => cur_cell_x,
-                    VScrollMode::PerTwoTiles => cur_cell_x >> 1,
-                };
-                self.vscroll_buffer[(x.wrapping_add(2) >> 1) as usize]
-            };
-
-            let pos_x_cells = (cur_cell_x.wrapping_sub(1) << 3).wrapping_add(scroll_x) >> 3;
-            let pos_y_cells = y.wrapping_add(scroll_y) >> 3;
-            let cur_cell = TileAttributes::new(
-                self.read_vram_word(
-                    plane_location.wrapping_add(
-                        (pos_y_cells & plane_size_cells_mask_y)
-                            .wrapping_mul(plane_size_cells_mask_x + 1)
-                            .wrapping_add(pos_x_cells & plane_size_cells_mask_x)
-                            .wrapping_shl(1),
-                    ),
-                ),
-            );
-            let fb_primary = &mut *screen_buf_low;
-            let mut pixel_y = ((y.wrapping_add(scroll_y)) % 8) as u8;
-            if cur_cell.vertical_flip {
-                pixel_y = 8 - pixel_y - 1;
-            }
-            let pattern_strip = self.read_vram_long(
-                ((((cur_cell.tile_index as usize) & 0x7ff).wrapping_shl(5))
-                    .wrapping_add((pixel_y.wrapping_shl(2)) as usize)) as u16,
-            );
-
-            let buf_index = (cur_cell_x << 3) as usize;
-            if cur_cell.horizontal_flip {
-                for p_x in 0..8 {
-                    let buf_index = buf_index
-                        .wrapping_add(p_x)
-                        .wrapping_sub(scroll_x_within_tile as usize);
-                    if buf_index < (GAME_WIDTH as usize) {
-                        let index = ((pattern_strip >> (p_x << 2)) & 0xf) as u8;
-
-                        if index != 0 {
-                            fb_primary[buf_index] =
-                                pal_index_to_32bit!(self, cur_cell.palette_line | index);
-                        } else {
-                            fb_primary[buf_index] = clear_color;
-                        }
-                    }
-                }
-            } else {
-                for p_x in 0..8 {
-                    let buf_index = buf_index
-                        .wrapping_add(p_x)
-                        .wrapping_sub(scroll_x_within_tile as usize);
-                    if buf_index < (GAME_WIDTH as usize) {
-                        let p_x = 8 - p_x - 1;
-
-                        let index = ((pattern_strip >> (p_x << 2)) & 0xf) as u8;
-
-                        if index != 0 {
-                            fb_primary[buf_index] =
-                                pal_index_to_32bit!(self, cur_cell.palette_line | index);
-                        } else {
-                            fb_primary[buf_index] = clear_color;
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    fn render_plane_line_a(&self, screen_buf_low: &mut [u32], screen_buf_high: &mut [u32], y: u16) {
-        let (plane_size_cells_mask_x, plane_size_cells_mask_y) = {
-            match self.plane_size {
-                PlaneSize::Size32x32Cells => (32 - 1, 32 - 1),
-                PlaneSize::Size64x32Cells => (64 - 1, 32 - 1),
-                PlaneSize::Size128x32Cells => (128 - 1, 32 - 1),
-                PlaneSize::Size32x64Cells => (32 - 1, 64 - 1),
-                PlaneSize::Size64x64Cells => (64 - 1, 64 - 1),
-                PlaneSize::Size32x128Cells => (32 - 1, 128 - 1),
-            }
-        };
-        let scroll_x = (-(self.read_vram_word(self.hscroll_location.wrapping_add(y.wrapping_mul(4)))
-            as i16))
-            .wrapping_add(8) as u16;
-        let scroll_x_within_tile = (scroll_x & 0x7) as u16;
-
-        for cur_cell_x in 0u16..41 {
-            let scroll_y = {
-                let x = match self.vscroll_mode {
-                    VScrollMode::FullScreen => 0,
-                    VScrollMode::PerTile => cur_cell_x,
-                    VScrollMode::PerTwoTiles => cur_cell_x >> 1,
-                };
-                self.vscroll_buffer[(x >> 1) as usize]
-            };
-
-            let pos_x_cells = (cur_cell_x.wrapping_sub(1) << 3).wrapping_add(scroll_x) >> 3;
-            let pos_y_cells = y.wrapping_add(scroll_y) >> 3;
-            let cur_cell = TileAttributes::new(
-                self.read_vram_word(
-                    self.plane_a_location.wrapping_add(
-                        (pos_y_cells & plane_size_cells_mask_y)
-                            .wrapping_mul(plane_size_cells_mask_x + 1)
-                            .wrapping_add(pos_x_cells & plane_size_cells_mask_x)
-                            .wrapping_shl(1),
-                    ),
-                ),
-            );
-            let (fb_primary, fb_secondary) = if cur_cell.priority {
-                (&mut *screen_buf_high, &mut *screen_buf_low)
-            } else {
-                (&mut *screen_buf_low, &mut *screen_buf_high)
-            };
-            let mut pixel_y = ((y.wrapping_add(scroll_y)) % 8) as u8;
-            if cur_cell.vertical_flip {
-                pixel_y = 8 - pixel_y - 1;
-            }
-            let pattern_strip = self.read_vram_long(
-                ((((cur_cell.tile_index as usize) & 0x7ff).wrapping_shl(5))
-                    .wrapping_add((pixel_y.wrapping_shl(2)) as usize)) as u16,
-            );
-
-            let buf_index = (cur_cell_x << 3) as usize;
-            if cur_cell.horizontal_flip {
-                for p_x in 0..8 {
-                    let buf_index = buf_index
-                        .wrapping_add(p_x)
-                        .wrapping_sub(scroll_x_within_tile as usize);
-                    if buf_index < (GAME_WIDTH as usize) {
-                        let index = ((pattern_strip >> (p_x << 2)) & 0xf) as u8;
-
-                        if index != 0 {
-                            fb_primary[buf_index] =
-                                pal_index_to_32bit!(self, cur_cell.palette_line | index);
-                        } else {
-                            fb_primary[buf_index] = 0;
-                        }
-                        fb_secondary[buf_index] = 0;
-                    }
-                }
-            } else {
-                for p_x in 0..8 {
-                    let buf_index = buf_index
-                        .wrapping_add(p_x)
-                        .wrapping_sub(scroll_x_within_tile as usize);
-                    if buf_index < (GAME_WIDTH as usize) {
-                        let p_x = 8 - p_x - 1;
-
-                        let index = ((pattern_strip >> (p_x << 2)) & 0xf) as u8;
-
-                        if index != 0 {
-                            fb_primary[buf_index] =
-                                pal_index_to_32bit!(self, cur_cell.palette_line | index);
-                        } else {
-                            fb_primary[buf_index] = 0;
-                        }
-                        fb_secondary[buf_index] = 0;
-                    }
-                }
-            }
-        }
-    }
-
     pub(crate) fn render_screen_line(
         &mut self,
         y: u16,
-        fb_plane_b: &mut [u32],
+        fb_plane_b_low: &mut [u32],
+        fb_plane_b_high: &mut [u32],
         fb_plane_a_low: &mut [u32],
         fb_plane_s_low: &mut [u32],
         fb_plane_a_high: &mut [u32],
         fb_plane_s_high: &mut [u32],
     ) {
-        let line_state = self.per_line_state[y as usize];
-        if line_state.is_some() {
-            line_state.unwrap().swap_state(self);
-        }
-        self.render_plane_line_b(fb_plane_b, y);
-        self.render_plane_line_a(fb_plane_a_low, fb_plane_a_high, y);
-        self.render_sprites_line(y, fb_plane_s_low, fb_plane_s_high);
-        if line_state.is_some() {
-            line_state.unwrap().swap_state(self);
+        if self.hw_planes_mode {
+            let line_state = self.per_line_state[y as usize];
+            if line_state.is_some() {
+                line_state.unwrap().swap_state(self);
+            }
+            render_plane_line_b_low(
+                y,
+                GAME_WIDTH as u16,
+                &self.vram,
+                &self.palette,
+                self.plane_size,
+                self.plane_b_location,
+                self.hscroll_location,
+                &self.vscroll_buffer,
+                self.vscroll_mode,
+                fb_plane_b_low,
+            );
+            render_plane_line_a_low(
+                y,
+                GAME_WIDTH as u16,
+                &self.vram,
+                &self.palette,
+                self.plane_size,
+                self.plane_a_location,
+                self.hscroll_location,
+                &self.vscroll_buffer,
+                self.vscroll_mode,
+                fb_plane_a_low,
+            );
+            render_sprites_line_low(
+                &self.vram,
+                &self.palette,
+                self.sprite_table_location,
+                y,
+                GAME_WIDTH as u16,
+                fb_plane_s_low,
+            );
+            render_plane_line_b_high(
+                y,
+                GAME_WIDTH as u16,
+                &self.vram,
+                &self.palette,
+                self.plane_size,
+                self.plane_b_location,
+                self.hscroll_location,
+                &self.vscroll_buffer,
+                self.vscroll_mode,
+                fb_plane_b_high,
+            );
+            render_plane_line_a_high(
+                y,
+                GAME_WIDTH as u16,
+                &self.vram,
+                &self.palette,
+                self.plane_size,
+                self.plane_a_location,
+                self.hscroll_location,
+                &self.vscroll_buffer,
+                self.vscroll_mode,
+                fb_plane_a_high,
+            );
+            render_sprites_line_high(
+                &self.vram,
+                &self.palette,
+                self.sprite_table_location,
+                y,
+                GAME_WIDTH as u16,
+                fb_plane_s_high,
+            );
+            if line_state.is_some() {
+                line_state.unwrap().swap_state(self);
+            }
+        } else {
+            render_screen_line(
+                &self.vram,
+                &self.palette,
+                self.bg_color_index,
+                self.plane_a_location,
+                self.plane_b_location,
+                self.hscroll_location,
+                self.sprite_table_location,
+                &self.vscroll_buffer,
+                self.vscroll_mode,
+                y,
+                GAME_WIDTH as u16,
+                self.plane_size,
+                fb_plane_a_high,
+            );
         }
     }
 }

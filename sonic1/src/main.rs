@@ -78,6 +78,7 @@ fn run_simulation(
     game: &mut Option<Sonic1>,
     rom: &Vec<u8>,
     test_mode: bool,
+    hw_planes_mode: bool,
     repro_inputs: &Vec<Input>,
     should_reset: &mut bool,
     should_speed_up: bool,
@@ -95,7 +96,14 @@ fn run_simulation(
                     .collect(),
             );
             *game = Some(Sonic1 {
-                our_system: System::new("sonic1", (&rom, 0x29A0), kvps, true, test_mode)?,
+                our_system: System::new(
+                    "sonic1",
+                    (&rom, 0x29A0),
+                    kvps,
+                    true,
+                    test_mode,
+                    hw_planes_mode,
+                )?,
                 debug_pause: false,
                 current_playing_music: 0,
                 is_current_music_sped_up: false,
@@ -184,9 +192,12 @@ fn run_window(rom: Vec<u8>, test_mode: bool, repro_inputs: Vec<Input>) -> Result
         Renderer::new(&gl, &mut imgui, &mut texture_map, false).map_err(|e| e.to_string())?;
     let gl_handle = gl;
 
-    let mut fb_plane_b_handle = PlaneTexture::new(&gl_handle);
+    let hw_planes_mode = false;
+
+    let mut fb_plane_b_low_handle = PlaneTexture::new(&gl_handle);
     let mut fb_plane_a_low_handle = PlaneTexture::new(&gl_handle);
     let mut fb_plane_s_low_handle = PlaneTexture::new(&gl_handle);
+    let mut fb_plane_b_high_handle = PlaneTexture::new(&gl_handle);
     let mut fb_plane_a_high_handle = PlaneTexture::new(&gl_handle);
     let mut fb_plane_s_high_handle = PlaneTexture::new(&gl_handle);
 
@@ -302,6 +313,7 @@ fn run_window(rom: Vec<u8>, test_mode: bool, repro_inputs: Vec<Input>) -> Result
                 &mut game,
                 &rom,
                 test_mode,
+                hw_planes_mode,
                 &repro_inputs,
                 &mut should_reset,
                 should_speed_up,
@@ -368,27 +380,36 @@ fn run_window(rom: Vec<u8>, test_mode: bool, repro_inputs: Vec<Input>) -> Result
                     if let Some(game) = &game {
                         let time = (game.frame_counter as f64) / 60.0;
                         let window_size: [f32; 2] = ui.io().display_size;
-                        fb_plane_b_handle.render(
-                            &gl_handle,
-                            &window_size,
-                            game.our_system.fb_plane_b(),
-                            apply_filter,
-                            time as f32,
-                        );
-                        fb_plane_a_low_handle.render(
-                            &gl_handle,
-                            &window_size,
-                            game.our_system.fb_plane_a_low(),
-                            false,
-                            time as f32,
-                        );
-                        fb_plane_s_low_handle.render(
-                            &gl_handle,
-                            &window_size,
-                            game.our_system.fb_plane_s_low(),
-                            false,
-                            time as f32,
-                        );
+                        if hw_planes_mode {
+                            fb_plane_b_low_handle.render(
+                                &gl_handle,
+                                &window_size,
+                                game.our_system.fb_plane_b_low(),
+                                apply_filter,
+                                time as f32,
+                            );
+                            fb_plane_a_low_handle.render(
+                                &gl_handle,
+                                &window_size,
+                                game.our_system.fb_plane_a_low(),
+                                false,
+                                time as f32,
+                            );
+                            fb_plane_s_low_handle.render(
+                                &gl_handle,
+                                &window_size,
+                                game.our_system.fb_plane_s_low(),
+                                false,
+                                time as f32,
+                            );
+                            fb_plane_b_high_handle.render(
+                                &gl_handle,
+                                &window_size,
+                                game.our_system.fb_plane_b_high(),
+                                apply_filter,
+                                time as f32,
+                            );
+                        }
                         fb_plane_a_high_handle.render(
                             &gl_handle,
                             &window_size,
@@ -396,13 +417,15 @@ fn run_window(rom: Vec<u8>, test_mode: bool, repro_inputs: Vec<Input>) -> Result
                             false,
                             time as f32,
                         );
-                        fb_plane_s_high_handle.render(
-                            &gl_handle,
-                            &window_size,
-                            game.our_system.fb_plane_s_high(),
-                            false,
-                            time as f32,
-                        );
+                        if hw_planes_mode {
+                            fb_plane_s_high_handle.render(
+                                &gl_handle,
+                                &window_size,
+                                game.our_system.fb_plane_s_high(),
+                                false,
+                                time as f32,
+                            );
+                        }
                     }
                 }
             }
@@ -453,13 +476,18 @@ fn run_window(rom: Vec<u8>, test_mode: bool, repro_inputs: Vec<Input>) -> Result
             );
         }
 
-        for handle in [
-            &fb_plane_b_handle,
-            &fb_plane_a_low_handle,
-            &fb_plane_s_low_handle,
-            &fb_plane_a_high_handle,
-            &fb_plane_s_high_handle,
-        ] {
+        for handle in if hw_planes_mode {
+            vec![
+                &fb_plane_b_low_handle,
+                &fb_plane_a_low_handle,
+                &fb_plane_s_low_handle,
+                &fb_plane_b_high_handle,
+                &fb_plane_a_high_handle,
+                &fb_plane_s_high_handle,
+            ]
+        } else {
+            vec![&fb_plane_a_high_handle]
+        } {
             ui.get_background_draw_list()
                 .add_image(
                     TextureId::new(handle.frame_texture_handle.0.get() as usize),
@@ -551,9 +579,10 @@ fn run_window(rom: Vec<u8>, test_mode: bool, repro_inputs: Vec<Input>) -> Result
         }
     }
 
-    fb_plane_b_handle.destroy(&gl_handle);
+    fb_plane_b_low_handle.destroy(&gl_handle);
     fb_plane_a_low_handle.destroy(&gl_handle);
     fb_plane_s_low_handle.destroy(&gl_handle);
+    fb_plane_b_high_handle.destroy(&gl_handle);
     fb_plane_a_high_handle.destroy(&gl_handle);
     fb_plane_s_high_handle.destroy(&gl_handle);
     Ok(())

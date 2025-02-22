@@ -1,6 +1,4 @@
 [workspace]
-members = ["asmconverter","sonic1", "speedshoes"]
+members = ["asmconverter","sonic1", "speedshoes", "speedshoes-vdp-renderer"]
 resolver = "1"
-
-[profile.release]
 # debug = true

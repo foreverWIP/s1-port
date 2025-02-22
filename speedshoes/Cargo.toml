@@ -10,3 +10,4 @@ itertools = "0.13.0"
 libc = "0.2.164"
 r68k-emu = { git = "https://github.com/foreverWIP/r68k.git" }
 r68k-tools = { git = "https://github.com/foreverWIP/r68k.git" }
+speedshoes-vdp-renderer = { version = "0.1.0", path = "../speedshoes-vdp-renderer" }

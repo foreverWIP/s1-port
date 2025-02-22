@@ -268,8 +268,11 @@ impl System {
     pub fn fb_plane_a_low(&self) -> &Box<[u32]> {
         &self.script_engine.bus.fb_plane_a_low
     }
-    pub fn fb_plane_b(&self) -> &Box<[u32]> {
-        &self.script_engine.bus.fb_plane_b
+    pub fn fb_plane_b_low(&self) -> &Box<[u32]> {
+        &self.script_engine.bus.fb_plane_b_low
+    }
+    pub fn fb_plane_b_high(&self) -> &Box<[u32]> {
+        &self.script_engine.bus.fb_plane_b_high
     }
     pub fn fb_plane_s_low(&self) -> &Box<[u32]> {
         &self.script_engine.bus.fb_plane_s_low
@@ -459,6 +462,7 @@ impl System {
         symbol_map: Option<HashMap<u32, String>>,
         use_scripts: bool,
         test_mode: bool,
+        hw_planes_mode: bool,
     ) -> Result<System, String> {
         unsafe {
             DESYNC_SCRIPT_MESSAGE = None;
@@ -469,7 +473,11 @@ impl System {
             Err(_) => vec![0u8; SYSTEM_RAM_SIZE],
         };
         let our_ram = Rc::new(RefCell::new(ram.clone()));
-        let vdp = Rc::new(RefCell::new(Vdp::new(rom.clone(), our_ram.clone())));
+        let vdp = Rc::new(RefCell::new(Vdp::new(
+            rom.clone(),
+            our_ram.clone(),
+            hw_planes_mode,
+        )));
         let sp_addr = u32::from_be_bytes(rom[0..4].try_into().unwrap());
         let pc_addr = u32::from_be_bytes(rom[4..8].try_into().unwrap());
 
@@ -508,6 +516,7 @@ impl System {
                 name,
                 rom,
                 Rc::new(RefCell::new(ram.clone())),
+                hw_planes_mode,
             )?),
             unimplemented_subs_frame: HashSet::new(),
             unimplemented_subs_total: HashSet::new(),

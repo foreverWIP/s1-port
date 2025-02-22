@@ -55,16 +55,18 @@ impl ScriptEngine {
         libname: &str,
         rom: Rc<Vec<u8>>,
         last_state_ram: Rc<RefCell<Vec<u8>>>,
+        hw_planes_mode: bool,
     ) -> Result<Self, String> {
         let ram = Rc::new(RefCell::new(vec![0u8; 0x1_0000]));
-        let vdp = Vdp::new(rom.clone(), ram.clone());
+        let vdp = Vdp::new(rom.clone(), ram.clone(), hw_planes_mode);
         let bus = SpeedShoesBus {
             id: "script",
             rom,
             ram,
             vdp: Rc::new(RefCell::new(vdp)),
             fb_plane_a_low: vec![0u32; (GAME_WIDTH * GAME_HEIGHT) as usize].into_boxed_slice(),
-            fb_plane_b: vec![0u32; (GAME_WIDTH * GAME_HEIGHT) as usize].into_boxed_slice(),
+            fb_plane_b_low: vec![0u32; (GAME_WIDTH * GAME_HEIGHT) as usize].into_boxed_slice(),
+            fb_plane_b_high: vec![0u32; (GAME_WIDTH * GAME_HEIGHT) as usize].into_boxed_slice(),
             fb_plane_s_low: vec![0u32; (GAME_WIDTH * GAME_HEIGHT) as usize].into_boxed_slice(),
             fb_plane_a_high: vec![0u32; (GAME_WIDTH * GAME_HEIGHT) as usize].into_boxed_slice(),
             fb_plane_s_high: vec![0u32; (GAME_WIDTH * GAME_HEIGHT) as usize].into_boxed_slice(),
