@@ -1,4 +1,4 @@
-use std::{cell::RefCell, rc::Rc};
+use std::{cell::RefCell, fmt::Display, rc::Rc};
 
 use speedshoes_vdp_renderer::{
     render_plane_line_a_high, render_plane_line_a_low, render_plane_line_b_high,
@@ -8,16 +8,21 @@ use speedshoes_vdp_renderer::{
 
 use crate::{GAME_HEIGHT, GAME_WIDTH};
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(crate) enum VdpRegion {
     Vram,
     Cram,
     Vsram,
 }
 
-type VdpPtr = (bool, VdpRegion, u32);
+#[derive(Debug, PartialEq, Eq)]
+pub(crate) struct VdpPtr {
+    read: bool,
+    region: VdpRegion,
+    addr: u32,
+}
 
-#[derive(Clone, Copy, PartialEq)]
+#[derive(Clone, Copy, PartialEq, Debug)]
 enum DmaType {
     CpuToVram,
     VramFill,
@@ -86,11 +91,44 @@ pub struct Vdp {
     dma_src: u32,
     dma_type: DmaType,
     dma_vram_fill_ready: bool,
-    ctrl_cachedword: Option<u16>,
+    pub ctrl_cachedword: Option<u16>,
     vint_enabled: bool,
     disable_display: bool,
     rom: Rc<Vec<u8>>,
     ram: Rc<RefCell<Vec<u8>>>,
+}
+impl std::fmt::Debug for Vdp {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Vdp")
+            // .field("vram", &self.vram)
+            .field("low_color_mode", &self.low_color_mode)
+            .field("hw_planes_mode", &self.hw_planes_mode)
+            .field("show_planes_and_sprites", &self.show_planes_and_sprites)
+            .field("plane_a_location", &self.plane_a_location)
+            .field("plane_b_location", &self.plane_b_location)
+            .field("sprite_table_location", &self.sprite_table_location)
+            .field("bg_color_index", &self.bg_color_index)
+            .field("hscroll_mode", &self.hscroll_mode)
+            .field("vscroll_mode", &self.vscroll_mode)
+            // .field("vscroll_buffer", &self.vscroll_buffer)
+            .field("hscroll_location", &self.hscroll_location)
+            .field("increment_value", &self.increment_value)
+            .field("plane_size", &self.plane_size)
+            .field("dst_ptr", &self.dst_ptr)
+            // .field("palette", &self.palette)
+            // .field("per_line_state", &self.per_line_state)
+            // .field("color_lut", &self.color_lut)
+            .field("dma_length", &self.dma_length)
+            .field("dma_src", &self.dma_src)
+            .field("dma_type", &self.dma_type)
+            .field("dma_vram_fill_ready", &self.dma_vram_fill_ready)
+            .field("ctrl_cachedword", &self.ctrl_cachedword)
+            .field("vint_enabled", &self.vint_enabled)
+            .field("disable_display", &self.disable_display)
+            // .field("rom", &self.rom)
+            // .field("ram", &self.ram)
+            .finish()
+    }
 }
 impl Vdp {
     pub fn new(rom: Rc<Vec<u8>>, ram: Rc<RefCell<Vec<u8>>>, hw_planes_mode: bool) -> Vdp {
@@ -119,7 +157,11 @@ impl Vdp {
             hscroll_location: 0,
             increment_value: 2,
             plane_size: PlaneSize::Size64x32Cells,
-            dst_ptr: (false, VdpRegion::Vram, 0),
+            dst_ptr: VdpPtr {
+                read: false,
+                region: VdpRegion::Vram,
+                addr: 0,
+            },
             per_line_state: vec![None; GAME_HEIGHT as usize]
                 .into_boxed_slice()
                 .try_into()
@@ -175,7 +217,11 @@ impl Vdp {
     }
 
     pub fn seek_vram(&mut self, loc: u16) {
-        self.dst_ptr = (false, VdpRegion::Vram, loc as u32);
+        self.dst_ptr = VdpPtr {
+            read: false,
+            region: VdpRegion::Vram,
+            addr: loc as u32,
+        };
     }
 
     pub fn plane_size_cells(&self) -> (u8, u8) {
@@ -293,7 +339,7 @@ impl Vdp {
                     0 => {
                         for i in 0..(self.dma_length * (self.increment_value as u16)) {
                             self.write_vram(
-                                self.dst_ptr.2.wrapping_add(i as u32) as u16,
+                                self.dst_ptr.addr.wrapping_add(i as u32) as u16,
                                 self.read_memory_simple(self.dma_src + (i as u32)),
                             );
                         }
@@ -301,7 +347,7 @@ impl Vdp {
                     1 => {
                         for i in 0..(self.dma_length * (self.increment_value as u16)) {
                             self.write_cram(
-                                (self.dst_ptr.2 + (i as u32)) as u8,
+                                (self.dst_ptr.addr + (i as u32)) as u8,
                                 self.read_memory_simple(self.dma_src + (i as u32)),
                             );
                         }
@@ -309,22 +355,22 @@ impl Vdp {
                     2 => {
                         for i in 0..(self.dma_length * (self.increment_value as u16)) {
                             self.write_vsram(
-                                (self.dst_ptr.2 + (i as u32)) as u8,
+                                (self.dst_ptr.addr + (i as u32)) as u8,
                                 self.read_memory_simple(self.dma_src + (i as u32)),
                             );
                         }
                     }
                     _ => panic!("unknown dma type (cpu to vram) ?!"),
                 }
-                self.dst_ptr.2 = self
+                self.dst_ptr.addr = self
                     .dst_ptr
-                    .2
+                    .addr
                     .wrapping_add((self.dma_length * (self.increment_value as u16)) as u32);
             }
             DmaType::VramFill => {
                 for i in 0..(self.dma_length) {
                     self.write_vram(
-                        self.dst_ptr.2.wrapping_add(i as u32) as u16,
+                        self.dst_ptr.addr.wrapping_add(i as u32) as u16,
                         (prep_value >> 8) as u8,
                     );
                 }
@@ -340,13 +386,39 @@ impl Vdp {
         let a130 = ((prep_value >> 16) & 0x3fff) as u16;
         let address: u16 = a1514 | a130;
         match cd10 | cd32 {
-            0b0000 => (true, VdpRegion::Vram, address as u32),
-            0b0001 => (false, VdpRegion::Vram, address as u32),
-            0b1000 => (true, VdpRegion::Cram, (address as u8) as u32),
-            0b0011 => (false, VdpRegion::Cram, (address as u8) as u32),
-            0b0100 => (true, VdpRegion::Vsram, address as u32),
-            0b0101 => (false, VdpRegion::Vsram, address as u32),
-            _ => panic!("unknown vdp ptr?!"),
+            0b0000 => VdpPtr {
+                read: true,
+                region: VdpRegion::Vram,
+                addr: address as u32,
+            },
+            0b0001 => VdpPtr {
+                read: false,
+                region: VdpRegion::Vram,
+                addr: address as u32,
+            },
+            0b1000 => VdpPtr {
+                read: true,
+                region: VdpRegion::Cram,
+                addr: (address as u8) as u32,
+            },
+            0b0011 => VdpPtr {
+                read: false,
+                region: VdpRegion::Cram,
+                addr: (address as u8) as u32,
+            },
+            0b0100 => VdpPtr {
+                read: true,
+                region: VdpRegion::Vsram,
+                addr: address as u32,
+            },
+            0b0101 => VdpPtr {
+                read: false,
+                region: VdpRegion::Vsram,
+                addr: address as u32,
+            },
+            _ => {
+                panic!("unknown vdp ptr {:04b}", cd10 | cd32);
+            }
         }
     }
 
@@ -355,6 +427,9 @@ impl Vdp {
         let mut should_start_dma = false;
         match self.ctrl_cachedword {
             Some(cachedword) => {
+                if word == 0x4f70 && cachedword == 0x0003 {
+                    dbg!(&self);
+                }
                 prep_value |= (cachedword as u32) << 16;
                 should_start_dma = (prep_value & 0x80) != 0;
                 self.dst_ptr = Self::decode_ptr(prep_value);
@@ -399,20 +474,20 @@ impl Vdp {
     }
 
     pub fn handle_data_write_byte(&mut self, offset: u16, value: u8) {
-        match self.dst_ptr.1 {
+        match self.dst_ptr.region {
             VdpRegion::Vram => {
-                if !self.dst_ptr.0 {
-                    self.write_vram((self.dst_ptr.2 + (offset as u32)) as u16, value);
+                if !self.dst_ptr.read {
+                    self.write_vram((self.dst_ptr.addr + (offset as u32)) as u16, value);
                 }
             }
             VdpRegion::Cram => {
-                if !self.dst_ptr.0 {
-                    self.write_cram((self.dst_ptr.2 + (offset as u32)) as u8, value);
+                if !self.dst_ptr.read {
+                    self.write_cram((self.dst_ptr.addr + (offset as u32)) as u8, value);
                 }
             }
             VdpRegion::Vsram => {
-                if !self.dst_ptr.0 {
-                    self.write_vsram((self.dst_ptr.2 + (offset as u32)) as u8, value);
+                if !self.dst_ptr.read {
+                    self.write_vsram((self.dst_ptr.addr + (offset as u32)) as u8, value);
                 }
             }
         }
@@ -426,7 +501,7 @@ impl Vdp {
             self.handle_data_write_byte(0, (value >> 8) as u8);
             self.handle_data_write_byte(1, value as u8);
             if inc_ptr {
-                self.dst_ptr.2 = self.dst_ptr.2.wrapping_add(self.increment_value as u32);
+                self.dst_ptr.addr = self.dst_ptr.addr.wrapping_add(self.increment_value as u32);
             }
         }
     }

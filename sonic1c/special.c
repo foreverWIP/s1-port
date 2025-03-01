@@ -1188,7 +1188,7 @@ ROMFUNC(rom_1C36C) {
       : move_toreg_16(read_16(A0 + 0x8), &D3); // MOVE.W	8(A0),D3
   DEF_ROMLOC(1C374)
       : move_toreg_16(read_16(v_screenposx), &D0);    // MOVE.W	$F700,D0
-  DEF_ROMLOC(1C378) : sub_toreg_16(0xA0, &D3);        // SUBI.W	#$00A0,D3
+  DEF_ROMLOC(1C378) : sub_toreg_16(160, &D3);        // SUBI.W	#$00A0,D3
   DEF_ROMLOC(1C37C) : if (CCR_CS) goto rom_1C384;     // BCS.B	$1C384
   DEF_ROMLOC(1C37E) : sub_toreg_16(D3, &D0);          // SUB.W	D3,D0
   DEF_ROMLOC(1C380) : sub_tomem_16(D0, v_screenposx); // SUB.W	D0,$F700

@@ -71,7 +71,7 @@ ROMFUNC(rom_5ECC) {
   DEF_ROMLOC(60D6) : move_toreg_32(0x0, &D0);           // MOVEQ.L	$00,D0
   DEF_ROMLOC(60D8) : move_toreg_16(read_16(A1), &D0);   // MOVE.W	(A1),D0
   DEF_ROMLOC(60DA) : move_tomem_16(D0, 0xFFFFD00C);     // MOVE.W	D0,$D00C
-  DEF_ROMLOC(60DE) : sub_toreg_16(0xA0, &D1);           // SUBI.W	#$00A0,D1
+  DEF_ROMLOC(60DE) : sub_toreg_16(GAME_WIDTH / 2, &D1);           // SUBI.W	#$00A0,D1
   DEF_ROMLOC(60E2) : if (CCR_CC) goto rom_60E6;         // BCC.B	$60E6
   DEF_ROMLOC(60E4) : move_toreg_32(0x0, &D1);           // MOVEQ.L	$00,D1
   DEF_ROMLOC(60E6)
@@ -262,7 +262,7 @@ ROMFUNC(rom_177F8) {
   DEF_ROMLOC(17894) : if (CCR_PL) goto rom_178A2;     // BPL.B	$178A2
   DEF_ROMLOC(17896)
       : move_toreg_16(read_16(0xFFFFFE32), &D0);       // MOVE.W	$FE32,D0
-  DEF_ROMLOC(1789A) : sub_toreg_16(0xA0, &D0);         // SUBI.W	#$00A0,D0
+  DEF_ROMLOC(1789A) : sub_toreg_16(GAME_WIDTH / 2, &D0);         // SUBI.W	#$00A0,D0
   DEF_ROMLOC(1789E) : move_tomem_16(D0, v_limitleft2); // MOVE.W	D0,$F728
   DEF_ROMLOC(178A2) : return;                          // RTS
 }

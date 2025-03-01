@@ -178,7 +178,8 @@ ROMFUNC(rom_F624) {
   DEF_ROMLOC(F630) : sub_toreg_16(0x80, &D1);       // SUBI.W	#$0080,D1
   DEF_ROMLOC(F634) : and_toreg_16(0xFFFFFF80, &D1); // ANDI.W	#$FF80,D1
   DEF_ROMLOC(F638) : sub_toreg_16(D1, &D0);         // SUB.W	D1,D0
-  DEF_ROMLOC(F63A) : cmp_toreg_16(0x280, &D0);      // CMPI.W	#$0280,D0
+  DEF_ROMLOC(F63A)
+      : cmp_toreg_16(128 + GAME_WIDTH + 192, &D0); // CMPI.W	#$0280,D0
   DEF_ROMLOC(F63E) : if (CCR_HI) {
     rom_DCCE();
     return;

@@ -44,7 +44,8 @@ ROMFUNC(rom_1947E) {
     rom_19062();
     return;
   } // BMI.W	$19062
-  DEF_ROMLOC(194A6) : cmp_toreg_16(0x280, &D0); // CMPI.W	#$0280,D0
+  DEF_ROMLOC(194A6)
+      : cmp_toreg_16(128 + GAME_WIDTH + 192, &D0); // CMPI.W	#$0280,D0
   DEF_ROMLOC(194AA) : if (CCR_HI) {
     rom_19062();
     return;

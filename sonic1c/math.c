@@ -1,3 +1,4 @@
+// #define CHECK_STUFF 1
 #include "opcodes.h"
 #include "system.h"
 
@@ -12,10 +13,10 @@ ROMFUNC(rom_29AC) {
   D1 <<= 3;                         // ASL.L	#$03,D1
   D1 += D0;                         // ADD.L	D0,D1
   SETWORD(D0, D1);                  // MOVE.W	D1,D0
-  DEF_ROMLOC(29C4) : SWAPWORDS(D1); // SWAP.W	D1
-  D0 += D1;                         // ADD.W	D1,D0
+  SWAPWORDS(D1); // SWAP.W	D1
+  SETWORD(D0, D0 + D1);                         // ADD.W	D1,D0
   SETWORD(D1, D0);                  // MOVE.W	D0,D1
-  DEF_ROMLOC(29CA) : SWAPWORDS(D1); // SWAP.W	D1
+  SWAPWORDS(D1); // SWAP.W	D1
   write_32(v_random, D1);           // MOVE.L	D1,$F636
 }
 static const s16 Sine_Data[] = {

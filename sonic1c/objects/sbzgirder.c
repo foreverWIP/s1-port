@@ -57,14 +57,15 @@ ROMFUNC(rom_16CDE) {
   DEF_ROMLOC(16D04) : if (CCR_PL) goto rom_16D1E;       // BPL.B	$16D1E
   DEF_ROMLOC(16D06) : move_toreg_32(0x0, &D1);          // MOVEQ.L	$00,D1
   DEF_ROMLOC(16D08)
-      : move_toreg_8(read_8(A0 + 0x19), &D1);               // MOVE.B	25(A0),D1
-  DEF_ROMLOC(16D0C) : add_toreg_16(0xB, &D1);               // ADDI.W	#$000B,D1
-  DEF_ROMLOC(16D10) : move_toreg_32(0x0, &D2);              // MOVEQ.L	$00,D2
-  DEF_ROMLOC(16D12) : move_toreg_8(read_8(A0 + 0x16), &D2); // MOVE.B
-                                                            // 22(A0),D2
-  DEF_ROMLOC(16D16) : move_toreg_16(D2, &D3);               // MOVE.W	D2,D3
-  DEF_ROMLOC(16D18) : add_toreg_16(0x1, &D3);               // ADDQ.W	#$01,D3
-  DEF_ROMLOC(16D1A) : rom_10062();                          // BSR.W	$10062
+      : move_toreg_8(read_8(A0 + 0x19), &D1);  // MOVE.B	25(A0),D1
+  DEF_ROMLOC(16D0C) : add_toreg_16(0xB, &D1);  // ADDI.W	#$000B,D1
+  DEF_ROMLOC(16D10) : move_toreg_32(0x0, &D2); // MOVEQ.L	$00,D2
+  DEF_ROMLOC(16D12)
+      : move_toreg_8(read_8(A0 + 0x16), &D2); // MOVE.B
+                                              // 22(A0),D2
+  DEF_ROMLOC(16D16) : move_toreg_16(D2, &D3); // MOVE.W	D2,D3
+  DEF_ROMLOC(16D18) : add_toreg_16(0x1, &D3); // ADDQ.W	#$01,D3
+  DEF_ROMLOC(16D1A) : rom_10062();            // BSR.W	$10062
   DEF_ROMLOC(16D1E)
       : move_toreg_16(read_16(A0 + 0x32), &D0);      // MOVE.W	50(A0),D0
   DEF_ROMLOC(16D22) : and_toreg_16(0xFFFFFF80, &D0); // ANDI.W	#$FF80,D0
@@ -73,8 +74,9 @@ ROMFUNC(rom_16CDE) {
   DEF_ROMLOC(16D2A) : sub_toreg_16(0x80, &D1);       // SUBI.W	#$0080,D1
   DEF_ROMLOC(16D2E) : and_toreg_16(0xFFFFFF80, &D1); // ANDI.W	#$FF80,D1
   DEF_ROMLOC(16D32) : sub_toreg_16(D1, &D0);         // SUB.W	D1,D0
-  DEF_ROMLOC(16D34) : cmp_toreg_16(0x280, &D0);      // CMPI.W	#$0280,D0
-  DEF_ROMLOC(16D38) : if (CCR_HI) goto rom_16D40;    // BHI.B	$16D40
+  DEF_ROMLOC(16D34)
+      : cmp_toreg_16(128 + GAME_WIDTH + 192, &D0); // CMPI.W	#$0280,D0
+  DEF_ROMLOC(16D38) : if (CCR_HI) goto rom_16D40;  // BHI.B	$16D40
   DEF_ROMLOC(16D3A) : rom_DC92();
   return; // JMP	$0000DC92
   DEF_ROMLOC(16D40) : rom_DCCE();

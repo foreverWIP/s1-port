@@ -51,7 +51,7 @@ ROMFUNC(rom_6E16) {
   DEF_ROMLOC(6E82) : if (CCR_EQ) goto rom_6E8C;      // BEQ.B	$6E8C
   DEF_ROMLOC(6E84) : lsr_toreg_8(0x1, &D0);          // LSR.B	#$01,D0
   DEF_ROMLOC(6E86) : move_tomem_8(D0, A2);           // MOVE.B	D0,(A2)
-  DEF_ROMLOC(6E88) : move_toreg_16(0x140, &D5);      // MOVE.W	#$0140,D5
+  DEF_ROMLOC(6E88) : move_toreg_16(GAME_WIDTH, &D5);      // MOVE.W	#$0140,D5
   DEF_ROMLOC(6E8C) : move_toreg_32(0x6DF4, &A0);     // LEA.L	$00006DF4,A0
   DEF_ROMLOC(6E92)
       : move_toreg_16(read_16(0xFFFFF70C), &D0); // MOVE.W	$F70C,D0

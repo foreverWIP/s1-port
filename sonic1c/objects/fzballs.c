@@ -57,7 +57,7 @@ ROMFUNC(rom_1B022) {
   DEF_ROMLOC(1B03C)
       : sub_toreg_16(read_16(A0 + 0x8), &D0);     // SUB.W	8(A0),D0
   DEF_ROMLOC(1B040) : if (CCR_MI) goto rom_1B050; // BMI.B	$1B050
-  DEF_ROMLOC(1B042) : sub_toreg_16(0x140, &D0);   // SUBI.W	#$0140,D0
+  DEF_ROMLOC(1B042) : sub_toreg_16(GAME_WIDTH, &D0);   // SUBI.W	#$0140,D0
   DEF_ROMLOC(1B046) : if (CCR_MI) goto rom_1B050; // BMI.B	$1B050
   DEF_ROMLOC(1B048) : tst_mem_8(A0 + 0x1);        // TST.B	1(A0)
   DEF_ROMLOC(1B04C) : if (CCR_PL) {

@@ -44,7 +44,8 @@ ROMFUNC(rom_11D10) {
     rom_DCCE();
     return;
   } // BMI.W	$DCCE
-  DEF_ROMLOC(11D38) : cmp_toreg_16(0x280, &D0); // CMPI.W	#$0280,D0
+  DEF_ROMLOC(11D38)
+      : cmp_toreg_16(128 + GAME_WIDTH + 192, &D0); // CMPI.W	#$0280,D0
   DEF_ROMLOC(11D3C) : if (CCR_HI) {
     rom_DCCE();
     return;

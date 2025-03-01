@@ -41,8 +41,9 @@ ROMFUNC(rom_A7B2) {
   DEF_ROMLOC(A7DC) : move_tomem_8(0xF, A0 + 0x19);   // MOVE.B	#$0F,25(A0)
   DEF_ROMLOC(A7E2) : move_toreg_32(0xFFFFFC00, &A2); // LEA.L	$FC00,A2
   DEF_ROMLOC(A7E6) : move_toreg_32(0x0, &D0);        // MOVEQ.L	$00,D0
-  DEF_ROMLOC(A7E8) : move_toreg_8(read_8(A0 + 0x23), &D0); // MOVE.B
-                                                           // 35(A0),D0
+  DEF_ROMLOC(A7E8)
+      : move_toreg_8(read_8(A0 + 0x23), &D0); // MOVE.B
+                                              // 35(A0),D0
   DEF_ROMLOC(A7EC)
       : bclr_tomem_8(0x7,
                      (s32)A2 + (s8)0x2 + (s16)D0); // BCLR.B	#$07,2(A2,D0)
@@ -154,7 +155,8 @@ ROMFUNC(rom_A902) {
   DEF_ROMLOC(A912) : sub_toreg_16(0x80, &D1);       // SUBI.W	#$0080,D1
   DEF_ROMLOC(A916) : and_toreg_16(0xFFFFFF80, &D1); // ANDI.W	#$FF80,D1
   DEF_ROMLOC(A91A) : sub_toreg_16(D1, &D0);         // SUB.W	D1,D0
-  DEF_ROMLOC(A91C) : cmp_toreg_16(0x280, &D0);      // CMPI.W	#$0280,D0
+  DEF_ROMLOC(A91C)
+      : cmp_toreg_16(128 + GAME_WIDTH + 192, &D0); // CMPI.W	#$0280,D0
   DEF_ROMLOC(A920) : if (CCR_HI) {
     rom_DCCE();
     return;
@@ -187,8 +189,9 @@ ROMFUNC(rom_A926) {
       : move_tomem_16(read_16(A0 + 0xC), A1 + 0xC);  // MOVE.W	12(A0),12(A1)
   DEF_ROMLOC(A96A) : move_toreg_32(0xFFFFFC00, &A2); // LEA.L	$FC00,A2
   DEF_ROMLOC(A96E) : move_toreg_32(0x0, &D0);        // MOVEQ.L	$00,D0
-  DEF_ROMLOC(A970) : move_toreg_8(read_8(A0 + 0x23), &D0); // MOVE.B
-                                                           // 35(A0),D0
+  DEF_ROMLOC(A970)
+      : move_toreg_8(read_8(A0 + 0x23), &D0); // MOVE.B
+                                              // 35(A0),D0
   DEF_ROMLOC(A974)
       : bset_tomem_8(0x0,
                      (s32)A2 + (s8)0x2 + (s16)D0); // BSET.B	#$00,2(A2,D0)

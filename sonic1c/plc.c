@@ -1,3 +1,4 @@
+// #define CHECK_STUFF 1
 #include "opcodes.h"
 #include "system.h"
 
@@ -300,7 +301,7 @@ void plc_dplc_finish(void);
 void create_plc_common(bool clear_buffer) {
   u32 a1backup = 0;
   u32 a2backup = 0;
-  DEF_ROMLOC(15AA) : a1backup = A1;
+  a1backup = A1;
   a2backup = A2;               // TODO; // MOVEM.L	A1-A2,-(A7)
   move_toreg_32(0x1DD86, &A1); // LEA.L	$0001DD86,A1
   add_toreg_16(D0, &D0);       // ADD.W	D0,D0
@@ -346,62 +347,58 @@ void clear_plc(void) {
   A2 = v_plc_buffer_end;
 }
 void run_plc(void) {
-  DEF_ROMLOC(15E4) : tst_mem_32(v_plc_buffer);       // TST.L	$F680
-  DEF_ROMLOC(15E8) : if (CCR_EQ) goto rom_1638;      // BEQ.B	$1638
-  DEF_ROMLOC(15EA) : tst_mem_16(v_plc_patternsleft); // TST.W	$F6F8
-  DEF_ROMLOC(15EE) : if (!CCR_EQ) goto rom_1638;     // BNE.B	$1638
-  DEF_ROMLOC(15F0)
-      : move_toreg_32(read_32(v_plc_buffer), &A0);   // MOVEA.L	$F680,A0
-  DEF_ROMLOC(15F4) : move_toreg_32(0x14FA, &A3);     // LEA.L	$000014FA,A3
-  DEF_ROMLOC(15FA) : move_toreg_32(0xFFFFAA00, &A1); // LEA.L	$AA00,A1
-  DEF_ROMLOC(15FE)
-      : move_toreg_16(read_16((A0 += 2, A0 - 2)), &D2); // MOVE.W	(A0)+,D2
-  DEF_ROMLOC(1600) : if (CCR_PL) goto rom_1606;         // BPL.B	$1606
-  DEF_ROMLOC(1602) : add_toreg_16(0xA, &A3);            // ADDA.W	#$000A,A3
-  DEF_ROMLOC(1606) : and_toreg_16(0x7FFF, &D2);         // ANDI.W	#$7FFF,D2
-  DEF_ROMLOC(160A)
-      : move_tomem_16(D2, v_plc_patternsleft);        // MOVE.W	D2,$F6F8
-  DEF_ROMLOC(160E) : rom_1526();                      // BSR.W	$1526
-  DEF_ROMLOC(1612) : move_toreg_8(read_8(A0++), &D5); // MOVE.B	(A0)+,D5
-  DEF_ROMLOC(1614) : asl_toreg_16(0x8, &D5);          // ASL.W	#$08,D5
-  DEF_ROMLOC(1616) : move_toreg_8(read_8(A0++), &D5); // MOVE.B	(A0)+,D5
-  DEF_ROMLOC(1618) : move_toreg_32(0x10, &D6);        // MOVEQ.L	$10,D6
-  DEF_ROMLOC(161A) : move_toreg_32(0x0, &D0);         // MOVEQ.L	$00,D0
-  DEF_ROMLOC(161C) : move_tomem_32(A0, v_plc_buffer); // MOVE.L	A0,$F680
-  DEF_ROMLOC(1620) : move_tomem_32(A3, 0xFFFFF6E0);   // MOVE.L	A3,$F6E0
-  DEF_ROMLOC(1624) : move_tomem_32(D0, 0xFFFFF6E4);   // MOVE.L	D0,$F6E4
-  DEF_ROMLOC(1628) : move_tomem_32(D0, 0xFFFFF6E8);   // MOVE.L	D0,$F6E8
-  DEF_ROMLOC(162C) : move_tomem_32(D0, 0xFFFFF6EC);   // MOVE.L	D0,$F6EC
-  DEF_ROMLOC(1630) : move_tomem_32(D5, 0xFFFFF6F0);   // MOVE.L	D5,$F6F0
-  DEF_ROMLOC(1634) : move_tomem_32(D6, 0xFFFFF6F4);   // MOVE.L	D6,$F6F4
-  DEF_ROMLOC(1638) : return;                          // RTS
+  tst_mem_32(v_plc_buffer);       // TST.L	$F680
+  if (CCR_EQ) return;      // BEQ.B	$1638
+  tst_mem_16(v_plc_patternsleft); // TST.W	$F6F8
+  if (!CCR_EQ) return;     // BNE.B	$1638
+  move_toreg_32(read_32(v_plc_buffer), &A0);   // MOVEA.L	$F680,A0
+  move_toreg_32(0x14FA, &A3);     // LEA.L	$000014FA,A3
+  move_toreg_32(0xFFFFAA00, &A1); // LEA.L	$AA00,A1
+  move_toreg_16(read_16((A0 += 2, A0 - 2)), &D2); // MOVE.W	(A0)+,D2
+  if (CCR_PL) goto rom_1606;         // BPL.B	$1606
+  add_toreg_16(0xA, &A3);            // ADDA.W	#$000A,A3
+  rom_1606 : and_toreg_16(0x7FFF, &D2);         // ANDI.W	#$7FFF,D2
+  move_tomem_16(D2, v_plc_patternsleft);        // MOVE.W	D2,$F6F8
+  rom_1526();                      // BSR.W	$1526
+  move_toreg_8(read_8(A0++), &D5); // MOVE.B	(A0)+,D5
+  asl_toreg_16(0x8, &D5);          // ASL.W	#$08,D5
+  move_toreg_8(read_8(A0++), &D5); // MOVE.B	(A0)+,D5
+  move_toreg_32(0x10, &D6);        // MOVEQ.L	$10,D6
+  move_toreg_32(0x0, &D0);         // MOVEQ.L	$00,D0
+  move_tomem_32(A0, v_plc_buffer); // MOVE.L	A0,$F680
+  move_tomem_32(A3, 0xFFFFF6E0);   // MOVE.L	A3,$F6E0
+  move_tomem_32(D0, 0xFFFFF6E4);   // MOVE.L	D0,$F6E4
+  move_tomem_32(D0, 0xFFFFF6E8);   // MOVE.L	D0,$F6E8
+  move_tomem_32(D0, 0xFFFFF6EC);   // MOVE.L	D0,$F6EC
+  move_tomem_32(D5, 0xFFFFF6F0);   // MOVE.L	D5,$F6F0
+  move_tomem_32(D6, 0xFFFFF6F4);   // MOVE.L	D6,$F6F4
 }
 void plc_pop_front(void) {
-  DEF_ROMLOC(16D4) : move_toreg_32(v_plc_buffer, &A0); // LEA.L	$F680,A0
-  DEF_ROMLOC(16D8) : move_toreg_32(0x15, &D0);         // MOVEQ.L	$15,D0
-  DEF_ROMLOC(16DA) : move_tomem_32(read_32(A0 + 0x6), A0);
+  move_toreg_32(v_plc_buffer, &A0); // LEA.L	$F680,A0
+  move_toreg_32(0x15, &D0);         // MOVEQ.L	$15,D0
+  loop:
+  move_tomem_32(read_32(A0 + 0x6), A0);
   A0 += 4; // MOVE.L	6(A0),(A0)+
-  DEF_ROMLOC(16DE) : dec_reg_16(&D0);
+  dec_reg_16(&D0);
   if ((D0 & 0xffff) != 0xffff)
-    goto rom_16DA; // DBF.W	D0,$16DA
+    goto loop; // DBF.W	D0,$16DA
 }
 void plc_refresh_frame(void) {
-  DEF_ROMLOC(163A) : tst_mem_16(0xFFFFF6F8); // TST.W	$F6F8
-  DEF_ROMLOC(163E) : if (CCR_EQ) { return; } // BEQ.W	$16D2
-  DEF_ROMLOC(1642) : move_tomem_16(0x9, 0xFFFFF6FA); // MOVE.W	#$0009,$F6FA
-  DEF_ROMLOC(1648) : move_toreg_32(0x0, &D0);        // MOVEQ.L	$00,D0
-  DEF_ROMLOC(164A) : move_toreg_16(read_16(0xFFFFF684), &D0); // MOVE.W	$F684,D0
-  DEF_ROMLOC(164E) : add_tomem_16(0x120, 0xFFFFF684); // ADDI.W	#$0120,$F684
+  tst_mem_16(v_plc_patternsleft); // TST.W	$F6F8
+  if (CCR_EQ) { return; } // BEQ.W	$16D2
+  move_tomem_16(0x9, 0xFFFFF6FA); // MOVE.W	#$0009,$F6FA
+  move_toreg_32(0x0, &D0);        // MOVEQ.L	$00,D0
+  move_toreg_16(read_16(0xFFFFF684), &D0); // MOVE.W	$F684,D0
+  add_tomem_16(0x120, 0xFFFFF684); // ADDI.W	#$0120,$F684
   plc_dplc_finish();                                  // BRA.B	$166E
 }
 void dplc_process_2(void) {
-  DEF_ROMLOC(1656) : tst_mem_16(0xFFFFF6F8); // TST.W	$F6F8
-  DEF_ROMLOC(165A) : if (CCR_EQ) { return; } // BEQ.B	$16D2
-  DEF_ROMLOC(165C) : move_tomem_16(0x3, 0xFFFFF6FA); // MOVE.W	#$0003,$F6FA
-  DEF_ROMLOC(1662) : move_toreg_32(0x0, &D0);        // MOVEQ.L	$00,D0
-  DEF_ROMLOC(1664)
-      : move_toreg_16(read_16(0xFFFFF684), &D0);     // MOVE.W	$F684,D0
-  DEF_ROMLOC(1668) : add_tomem_16(0x60, 0xFFFFF684); // ADDI.W	#$0060,$F684
+  tst_mem_16(v_plc_patternsleft); // TST.W	$F6F8
+  if (CCR_EQ) { return; } // BEQ.B	$16D2
+  move_tomem_16(0x3, 0xFFFFF6FA); // MOVE.W	#$0003,$F6FA
+  move_toreg_32(0x0, &D0);        // MOVEQ.L	$00,D0
+  move_toreg_16(read_16(0xFFFFF684), &D0);     // MOVE.W	$F684,D0
+  add_tomem_16(0x60, 0xFFFFF684); // ADDI.W	#$0060,$F684
   plc_dplc_finish(); // Detected flow into next function
 }
 void plc_dplc_finish(void) {
@@ -416,7 +413,7 @@ void plc_dplc_finish(void) {
   D5 = read_32(v_plc_dataword);
   D6 = read_32(v_plc_shiftvalue);
   A1 = v_ngfx_buffer;
-  DEF_ROMLOC(16A2) : move_toreg_16(0x8, &A5);
+  rom_16A2: move_toreg_16(0x8, &A5);
   rom_14C4();
   sub_tomem_16(0x1, v_plc_patternsleft);
   if (CCR_EQ) {
@@ -435,19 +432,18 @@ void plc_dplc_finish(void) {
   write_32(v_plc_shiftvalue, D6);
 }
 void quick_plc(void) {
-  move_toreg_32(0x1DD86, &A1); // LEA.L	$0001DD86,A1
-  add_toreg_16(D0, &D0);       // ADD.W	D0,D0
-  move_toreg_16(read_16((s32)A1 + (s8)0x0 + (s16)D0),
+  DEF_ROMLOC(16E4): move_toreg_32(0x1DD86, &A1); // LEA.L	$0001DD86,A1
+  DEF_ROMLOC(16EA): add_toreg_16(D0, &D0);       // ADD.W	D0,D0
+  DEF_ROMLOC(16EC): move_toreg_16(read_16((s32)A1 + (s8)0x0 + (s16)D0),
                 &D0);                              // MOVE.W	0(A1,D0),D0
-  move_toreg_32((s32)A1 + (s8)0x0 + (s16)D0, &A1); // LEA.L	0(A1,D0),A1
-  move_toreg_16(read_16((A1 += 2, A1 - 2)), &D1);  // MOVE.W	(A1)+,D1
-  DEF_ROMLOC(16F6)
-      : move_toreg_32(read_32((A1 += 4, A1 - 4)), &A0); // MOVEA.L	(A1)+,A0
-  move_toreg_32(0x0, &D0);                              // MOVEQ.L	$00,D0
-  move_toreg_16(read_16((A1 += 2, A1 - 2)), &D0);       // MOVE.W	(A1)+,D0
+  DEF_ROMLOC(16F0): move_toreg_32((s32)A1 + (s8)0x0 + (s16)D0, &A1); // LEA.L	0(A1,D0),A1
+  DEF_ROMLOC(16F4): move_toreg_16(read_16((A1 += 2, A1 - 2)), &D1);  // MOVE.W	(A1)+,D1
+  DEF_ROMLOC(16F6): move_toreg_32(read_32((A1 += 4, A1 - 4)), &A0); // MOVEA.L	(A1)+,A0
+  DEF_ROMLOC(16F8): move_toreg_32(0x0, &D0);                              // MOVEQ.L	$00,D0
+  DEF_ROMLOC(16FA): move_toreg_16(read_16((A1 += 2, A1 - 2)), &D0);       // MOVE.W	(A1)+,D0
   set_vram_ptr(D0);
-  decompress_nemesis(); // BSR.W	$1438
-  dec_reg_16(&D1);
+  DEF_ROMLOC(170C): decompress_nemesis(); // BSR.W	$1438
+  DEF_ROMLOC(1710): dec_reg_16(&D1);
   if ((D1 & 0xffff) != 0xffff)
     goto rom_16F6; // DBF.W	D1,$16F6
 }

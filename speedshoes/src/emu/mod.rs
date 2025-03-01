@@ -362,25 +362,23 @@ impl SpeedShoesBus {
                     vdp.handle_data_write((value & 0xffff) as u16, true);
                 }
             };
-        } else if match_addr == 0xc0_0004 && SIZE == DataSize::Word {
+        } else if match_addr == 0xc0_0004 {
             // vdp control port
             let mut vdp = self.vdp.as_ref().borrow_mut();
-            let value_msb = value >> 8;
-            if value_msb >= 0x80 && value_msb < 0x98 {
-                vdp.handle_reg_write(value as u16);
-            } else {
-                vdp.handle_control_word(value as u16);
+            if SIZE == DataSize::Word {
+                vdp_write_word(self.id, &mut vdp, value as u16);
+            } else if SIZE == DataSize::Long {
+                vdp_write_word(self.id, &mut vdp, (value >> 16) as u16);
+                vdp_write_word(self.id, &mut vdp, value as u16);
             }
-        } else if match_addr == 0xc0_0004 && SIZE == DataSize::Long {
-            // vdp control port
-            let mut vdp = self.vdp.as_ref().borrow_mut();
-            let value_msb = value >> 24;
-            if value_msb >= 0x80 && value_msb < 0x98 {
-                vdp.handle_reg_write((value >> 16) as u16);
-                vdp.handle_reg_write((value & 0xffff) as u16);
-            } else {
-                vdp.handle_control_word((value >> 16) as u16);
-                vdp.handle_control_word((value & 0xffff) as u16);
+            fn vdp_write_word(id: &str, vdp: &mut Vdp, word: u16) {
+                let value_msb = word >> 8;
+                if value_msb >= 0x80 && value_msb < 0x98 {
+                    vdp.handle_reg_write(word);
+                } else {
+                    // println!("{}: write control word {:04X}", id, word);
+                    vdp.handle_control_word(word);
+                }
             }
         } else if match_addr == 0xa1_0003 {
             self.input_th_toggle = (value & 0x40) != 0;

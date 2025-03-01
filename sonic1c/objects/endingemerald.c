@@ -93,7 +93,7 @@ ROMFUNC(rom_55F8) {
   DEF_ROMLOC(5606) : cmp_tomem_16(0x2000, A0 + 0x3E); // CMPI.W	#$2000,62(A0)
   DEF_ROMLOC(560C) : if (CCR_EQ) goto rom_5614;       // BEQ.B	$5614
   DEF_ROMLOC(560E) : add_tomem_16(0x20, A0 + 0x3E);   // ADDI.W	#$0020,62(A0)
-  DEF_ROMLOC(5614) : cmp_tomem_16(0x140, A0 + 0x3A);  // CMPI.W	#$0140,58(A0)
+  DEF_ROMLOC(5614) : cmp_tomem_16(GAME_WIDTH, A0 + 0x3A);  // CMPI.W	#$0140,58(A0)
   DEF_ROMLOC(561A) : if (CCR_EQ) goto rom_5620;       // BEQ.B	$5620
   DEF_ROMLOC(561C) : sub_tomem_16(0x1, A0 + 0x3A);    // SUBQ.W	#$01,58(A0)
   DEF_ROMLOC(5620) : return;                          // RTS

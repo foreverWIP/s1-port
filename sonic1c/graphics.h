@@ -13,10 +13,8 @@
 
 #define copy_tilemap(src, dst_base, dst_x, dst_y, width, height)               \
   {                                                                            \
-    copy_tilemap_to_vram(                                                      \
-        src,                                                                   \
-        VRAM_PTR_TO_VDP_COMMAND(dst_base + ((dst_y * 2) * 64) + (dst_x * 2)),  \
-        width - 1, height - 1);                                                \
+    D0 = VRAM_PTR_TO_VDP_COMMAND(dst_base + ((dst_y * 2) * 64) + (dst_x * 2)); \
+    copy_tilemap_to_vram(src, D0, width - 1, height - 1);                      \
   }
 
 void copy_tilemap_to_vram(u32 src_addr, u32 dst_command, u8 width, u8 height);
@@ -36,8 +34,14 @@ void scroll_update_tiles(void);
 void draw_bg_layer_1(void);
 void draw_blocks_scroll_vert_full(void);
 void draw_blocks_scroll_vert_alt(void);
+void draw_blocks_scroll_vert(void);
+void draw_block(void);
+void get_block_data_relative(void);
 void calc_vram_pos_relative(void);
 void calc_vram_pos(void);
 void draw_bg_layer_3_alt(void);
 void update_tiles_on_start(void);
 void draw_chunks(void);
+void draw_bg_ghz(void);
+void draw_bg_mz(void);
+void draw_bg_sbz(void);

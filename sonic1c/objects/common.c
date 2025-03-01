@@ -332,10 +332,10 @@ ROMFUNC(rom_DF0C) {
   DEF_ROMLOC(DF0C)
       : move_toreg_16(read_16(A0 + 0x8), &D0); // MOVE.W	8(A0),D0
   DEF_ROMLOC(DF10)
-      : sub_toreg_16(read_16(v_screenposx), &D0); // SUB.W	$F700,D0
-  DEF_ROMLOC(DF14) : if (CCR_MI) goto rom_DF30;   // BMI.B	$DF30
-  DEF_ROMLOC(DF16) : cmp_toreg_16(0x140, &D0);    // CMPI.W	#$0140,D0
-  DEF_ROMLOC(DF1A) : if (CCR_GE) goto rom_DF30;   // BGE.B	$DF30
+      : sub_toreg_16(read_16(v_screenposx), &D0);   // SUB.W	$F700,D0
+  DEF_ROMLOC(DF14) : if (CCR_MI) goto rom_DF30;     // BMI.B	$DF30
+  DEF_ROMLOC(DF16) : cmp_toreg_16(GAME_WIDTH, &D0); // CMPI.W	#$0140,D0
+  DEF_ROMLOC(DF1A) : if (CCR_GE) goto rom_DF30;     // BGE.B	$DF30
   DEF_ROMLOC(DF1C)
       : move_toreg_16(read_16(A0 + 0xC), &D1); // MOVE.W	12(A0),D1
   DEF_ROMLOC(DF20)
@@ -356,13 +356,13 @@ ROMFUNC(rom_DF34) {
   DEF_ROMLOC(DF3A)
       : move_toreg_16(read_16(A0 + 0x8), &D0); // MOVE.W	8(A0),D0
   DEF_ROMLOC(DF3E)
-      : sub_toreg_16(read_16(v_screenposx), &D0); // SUB.W	$F700,D0
-  DEF_ROMLOC(DF42) : add_toreg_16(D1, &D0);       // ADD.W	D1,D0
-  DEF_ROMLOC(DF44) : if (CCR_MI) goto rom_DF64;   // BMI.B	$DF64
-  DEF_ROMLOC(DF46) : add_toreg_16(D1, &D1);       // ADD.W	D1,D1
-  DEF_ROMLOC(DF48) : sub_toreg_16(D1, &D0);       // SUB.W	D1,D0
-  DEF_ROMLOC(DF4A) : cmp_toreg_16(0x140, &D0);    // CMPI.W	#$0140,D0
-  DEF_ROMLOC(DF4E) : if (CCR_GE) goto rom_DF64;   // BGE.B	$DF64
+      : sub_toreg_16(read_16(v_screenposx), &D0);   // SUB.W	$F700,D0
+  DEF_ROMLOC(DF42) : add_toreg_16(D1, &D0);         // ADD.W	D1,D0
+  DEF_ROMLOC(DF44) : if (CCR_MI) goto rom_DF64;     // BMI.B	$DF64
+  DEF_ROMLOC(DF46) : add_toreg_16(D1, &D1);         // ADD.W	D1,D1
+  DEF_ROMLOC(DF48) : sub_toreg_16(D1, &D0);         // SUB.W	D1,D0
+  DEF_ROMLOC(DF4A) : cmp_toreg_16(GAME_WIDTH, &D0); // CMPI.W	#$0140,D0
+  DEF_ROMLOC(DF4E) : if (CCR_GE) goto rom_DF64;     // BGE.B	$DF64
   DEF_ROMLOC(DF50)
       : move_toreg_16(read_16(A0 + 0xC), &D1); // MOVE.W	12(A0),D1
   DEF_ROMLOC(DF54)
@@ -601,8 +601,9 @@ ROMFUNC(rom_FD38) {
   DEF_ROMLOC(FD44) : sub_toreg_16(0x80, &D1);       // SUBI.W	#$0080,D1
   DEF_ROMLOC(FD48) : and_toreg_16(0xFFFFFF80, &D1); // ANDI.W	#$FF80,D1
   DEF_ROMLOC(FD4C) : sub_toreg_16(D1, &D0);         // SUB.W	D1,D0
-  DEF_ROMLOC(FD4E) : cmp_toreg_16(0x280, &D0);      // CMPI.W	#$0280,D0
-  DEF_ROMLOC(FD52) : if (CCR_HI) goto rom_FD5A;     // BHI.W	$FD5A
+  DEF_ROMLOC(FD4E)
+      : cmp_toreg_16(128 + GAME_WIDTH + 192, &D0); // CMPI.W	#$0280,D0
+  DEF_ROMLOC(FD52) : if (CCR_HI) goto rom_FD5A;    // BHI.W	$FD5A
   DEF_ROMLOC(FD56) : {
     rom_DC92();
     return;

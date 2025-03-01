@@ -117,7 +117,8 @@ ROMFUNC(rom_A294) {
   DEF_ROMLOC(A2AA) : sub_toreg_16(0x80, &D1);       // SUBI.W	#$0080,D1
   DEF_ROMLOC(A2AE) : and_toreg_16(0xFFFFFF80, &D1); // ANDI.W	#$FF80,D1
   DEF_ROMLOC(A2B2) : sub_toreg_16(D1, &D0);         // SUB.W	D1,D0
-  DEF_ROMLOC(A2B4) : cmp_toreg_16(0x280, &D0);      // CMPI.W	#$0280,D0
+  DEF_ROMLOC(A2B4)
+      : cmp_toreg_16(128 + GAME_WIDTH + 192, &D0); // CMPI.W	#$0280,D0
   DEF_ROMLOC(A2B8) : if (CCR_HI) {
     rom_A2F0();
     return;

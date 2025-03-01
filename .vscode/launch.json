@@ -51,9 +51,6 @@
 					"kind": "bin"
 				}
 			},
-			"args": [
-				// "--test",
-			],
 			"cwd": "${workspaceFolder}/asmconverter",
 			"env": {
 				"RUST_BACKTRACE": "1",

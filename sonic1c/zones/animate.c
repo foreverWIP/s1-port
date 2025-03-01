@@ -356,7 +356,7 @@ ROMFUNC(rom_1CAAA) {
   DEF_ROMLOC(1CB12)
       : write_vdp_control_32(0x70000001);
   DEF_ROMLOC(1CB1C)
-      : move_toreg_32(v_256x256 + 0xA400 - 0xC000, &A1); // LEA.L	$9800,A1
+      : move_toreg_32((v_256x256 + 0xA400) - 0x1000 + 0x400, &A1); // LEA.L	$9800,A1
   DEF_ROMLOC(1CB20)
       : move_toreg_32((s32)A1 + (s8)0x0 + (s16)D0,
                       &A1);                    // LEA.L	0(A1,D0),A1

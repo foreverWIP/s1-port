@@ -30,7 +30,7 @@ ROMFUNC(rom_4F68) {
 }
 ROMFUNC(rom_4F84) {
   DEF_ROMLOC(4F84) : add_tomem_8(0x2, A0 + 0x24);   // ADDQ.B	#$02,36(A0)
-  DEF_ROMLOC(4F88) : move_tomem_16(0xA0, A0 + 0x8); // MOVE.W	#$00A0,8(A0)
+  DEF_ROMLOC(4F88) : move_tomem_16(GAME_WIDTH / 2, A0 + 0x8); // MOVE.W	#$00A0,8(A0)
   DEF_ROMLOC(4F8E) : move_tomem_16(0xC0, A0 + 0xC); // MOVE.W	#$00C0,12(A0)
   DEF_ROMLOC(4F94)
       : move_tomem_32(0x21CF4, A0 + 0x4);             // MOVE.L	#$00021CF4,4(A0)

@@ -128,8 +128,9 @@ ROMFUNC(rom_124D4) {
   DEF_ROMLOC(124E0) : sub_toreg_16(0x80, &D1);       // SUBI.W	#$0080,D1
   DEF_ROMLOC(124E4) : and_toreg_16(0xFFFFFF80, &D1); // ANDI.W	#$FF80,D1
   DEF_ROMLOC(124E8) : sub_toreg_16(D1, &D0);         // SUB.W	D1,D0
-  DEF_ROMLOC(124EA) : cmp_toreg_16(0x280, &D0);      // CMPI.W	#$0280,D0
-  DEF_ROMLOC(124EE) : if (CCR_HI) goto rom_124F6;    // BHI.W	$124F6
+  DEF_ROMLOC(124EA)
+      : cmp_toreg_16(128 + GAME_WIDTH + 192, &D0); // CMPI.W	#$0280,D0
+  DEF_ROMLOC(124EE) : if (CCR_HI) goto rom_124F6;  // BHI.W	$124F6
   DEF_ROMLOC(124F2) : rom_DC92();
   return;                                             // BRA.W	$DC92
   DEF_ROMLOC(124F6) : move_toreg_32(0xFFFFFC00, &A2); // LEA.L	$FC00,A2

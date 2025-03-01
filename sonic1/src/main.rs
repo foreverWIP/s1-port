@@ -15,7 +15,7 @@ use std::{
 };
 
 use glow::{HasContext, NativeProgram, NativeTexture, PixelUnpackData};
-use imgui::{Context, Image, TextureId, Ui};
+use imgui::{Context, Image, TextureId, Ui, WindowFlags};
 use imgui_glow_renderer::{AutoRenderer, Renderer};
 use imgui_sdl2_support::SdlPlatform;
 use itertools::Itertools;
@@ -262,6 +262,21 @@ fn run_window(rom: Vec<u8>, test_mode: bool, repro_inputs: Vec<Input>) -> Result
                             Scancode::F11 => should_step = true,
                             Scancode::Backspace => should_speed_up = true,
                             Scancode::Num1 => apply_filter = !apply_filter,
+                            Scancode::Equals => {
+                                if fs::exists(REPRO_INPUTS_PATH).map_err(|e| e.to_string())? {
+                                    fs::remove_file(REPRO_INPUTS_PATH)
+                                        .map_err(|e| e.to_string())?;
+                                }
+                                fs::write(
+                                    REPRO_INPUTS_PATH,
+                                    game.as_ref()
+                                        .unwrap()
+                                        .input_history
+                                        .iter()
+                                        .map(|i| (*i).into())
+                                        .collect_vec(),
+                                );
+                            }
                             _ => {}
                         }
                     }
@@ -366,7 +381,7 @@ fn run_window(rom: Vec<u8>, test_mode: bool, repro_inputs: Vec<Input>) -> Result
                 if let Some(_token) = ui
                     .modal_popup_config(ui_popup_id)
                     .resizable(false)
-                    .always_auto_resize(true)
+                    .always_auto_resize(false)
                     .collapsible(false)
                     .movable(false)
                     .begin_popup()

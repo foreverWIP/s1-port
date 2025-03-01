@@ -83,11 +83,12 @@ ROMFUNC(rom_C400) {
   DEF_ROMLOC(C492) : sub_toreg_16(0x80, &D1);       // SUBI.W	#$0080,D1
   DEF_ROMLOC(C496) : and_toreg_16(0xFFFFFF80, &D1); // ANDI.W	#$FF80,D1
   DEF_ROMLOC(C49A) : sub_toreg_16(D1, &D0);         // SUB.W	D1,D0
-  DEF_ROMLOC(C49C) : cmp_toreg_16(0x280, &D0);      // CMPI.W	#$0280,D0
-  DEF_ROMLOC(C4A0) : if (CCR_HI) goto rom_C4A6;     // BHI.W	$C4A6
-  DEF_ROMLOC(C4A4) : return;                        // RTS
-  DEF_ROMLOC(C4A6) : rom_DCCE();                    // BSR.W	$DCCE
-  DEF_ROMLOC(C4AA) : return;                        // RTS
+  DEF_ROMLOC(C49C)
+      : cmp_toreg_16(128 + GAME_WIDTH + 192, &D0); // CMPI.W	#$0280,D0
+  DEF_ROMLOC(C4A0) : if (CCR_HI) goto rom_C4A6;    // BHI.W	$C4A6
+  DEF_ROMLOC(C4A4) : return;                       // RTS
+  DEF_ROMLOC(C4A6) : rom_DCCE();                   // BSR.W	$DCCE
+  DEF_ROMLOC(C4AA) : return;                       // RTS
 }
 ROMFUNC(rom_C4AC) {
   DEF_ROMLOC(C4AC) : move_tomem_16(D3, A7 -= 2);            // MOVE.W	D3,-(A7)

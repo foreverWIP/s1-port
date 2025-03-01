@@ -175,8 +175,9 @@ ROMFUNC(rom_16472) {
   DEF_ROMLOC(164B6) : sub_toreg_16(0x80, &D1);       // SUBI.W	#$0080,D1
   DEF_ROMLOC(164BA) : and_toreg_16(0xFFFFFF80, &D1); // ANDI.W	#$FF80,D1
   DEF_ROMLOC(164BE) : sub_toreg_16(D1, &D0);         // SUB.W	D1,D0
-  DEF_ROMLOC(164C0) : cmp_toreg_16(0x280, &D0);      // CMPI.W	#$0280,D0
-  DEF_ROMLOC(164C4) : if (CCR_HI) goto rom_164CC;    // BHI.B	$164CC
+  DEF_ROMLOC(164C0)
+      : cmp_toreg_16(128 + GAME_WIDTH + 192, &D0); // CMPI.W	#$0280,D0
+  DEF_ROMLOC(164C4) : if (CCR_HI) goto rom_164CC;  // BHI.B	$164CC
   DEF_ROMLOC(164C6) : rom_DC92();
   return;                                             // JMP	$0000DC92
   DEF_ROMLOC(164CC) : cmp_tomem_8(ZONE_LZ, v_zone);   // CMPI.B	#$01,$FE10

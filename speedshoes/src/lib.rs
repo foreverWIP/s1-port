@@ -12,6 +12,7 @@ pub mod system;
 pub mod vdp;
 
 pub const GAME_WIDTH: u32 = 320;
+// pub const GAME_WIDTH: u32 = 432;
 pub const GAME_HEIGHT: u32 = 224;
 
 pub(crate) type Registers = [u32; 16];

@@ -2,7 +2,6 @@
 #include "../opcodes.h"
 #include "../system.h"
 
-
 ROMFUNC(rom_B542) {
   u8 switchindex = 0;
   DEF_ROMLOC(B542) : move_toreg_32(0x0, &D0); // MOVEQ.L	$00,D0
@@ -35,7 +34,8 @@ ROMFUNC(rom_B560) {
       : move_tomem_16(read_16(A0 + 0x8), A0 + 0x2A); // MOVE.W	8(A0),42(A0)
   DEF_ROMLOC(B58A) : move_toreg_32(0x0, &D0);        // MOVEQ.L	$00,D0
   DEF_ROMLOC(B58C)
-      : move_toreg_8(read_8(A0 + 0x28), &D0); // MOVE.B	40(A0),D0
+      : move_toreg_8(read_8(A0 + 0x28), &D0); // MOVE.B
+                                              // 40(A0),D0
   DEF_ROMLOC(B590) : lsr_toreg_16(0x2, &D0);  // LSR.W	#$02,D0
   DEF_ROMLOC(B592) : and_toreg_16(0x1C, &D0); // ANDI.W	#$001C,D0
   DEF_ROMLOC(B596)
@@ -71,7 +71,8 @@ ROMFUNC(rom_B5BE) {
   goto rom_B620;                                   // BRA.B	$B620
   DEF_ROMLOC(B5E6) : move_toreg_32(0x0, &D1);      // MOVEQ.L	$00,D1
   DEF_ROMLOC(B5E8)
-      : move_toreg_8(read_8(A0 + 0x19), &D1); // MOVE.B	25(A0),D1
+      : move_toreg_8(read_8(A0 + 0x19), &D1); // MOVE.B
+                                              // 25(A0),D1
   DEF_ROMLOC(B5EC) : add_toreg_16(0xB, &D1);  // ADDI.W	#$000B,D1
   DEF_ROMLOC(B5F0)
       : move_toreg_32(read_32(A0 + 0x30), &A2); // MOVEA.L	48(A0),A2
@@ -97,7 +98,8 @@ ROMFUNC(rom_B628) {
   u8 switchindex = 0;
   DEF_ROMLOC(B628) : move_toreg_32(0x0, &D0); // MOVEQ.L	$00,D0
   DEF_ROMLOC(B62A)
-      : move_toreg_8(read_8(A0 + 0x28), &D0); // MOVE.B	40(A0),D0
+      : move_toreg_8(read_8(A0 + 0x28), &D0); // MOVE.B
+                                              // 40(A0),D0
   DEF_ROMLOC(B62E) : and_toreg_16(0x7, &D0);
   switchindex = D0;                         // ANDI.W	#$0007,D0
   DEF_ROMLOC(B632) : add_toreg_16(D0, &D0); // ADD.W	D0,D0
@@ -250,11 +252,12 @@ ROMFUNC(rom_B744) {
   DEF_ROMLOC(B75C) : sub_toreg_16(0x80, &D1);       // SUBI.W	#$0080,D1
   DEF_ROMLOC(B760) : and_toreg_16(0xFFFFFF80, &D1); // ANDI.W	#$FF80,D1
   DEF_ROMLOC(B764) : sub_toreg_16(D1, &D0);         // SUB.W	D1,D0
-  DEF_ROMLOC(B766) : cmp_toreg_16(0x280, &D0);      // CMPI.W	#$0280,D0
+  DEF_ROMLOC(B766)
+      : cmp_toreg_16(128 + GAME_WIDTH + 192, &D0); // CMPI.W	#$0280,D0
   DEF_ROMLOC(B76A) : if (CCR_HI) {
     rom_DCCE();
     return;
-  }                                           // BHI.W	$DCCE
+  } // BHI.W	$DCCE
   DEF_ROMLOC(B76E) : return;                  // RTS
   DEF_ROMLOC(B770) : move_toreg_32(0x0, &D2); // MOVEQ.L	$00,D2
   rom_B772(); // Detected flow into next function

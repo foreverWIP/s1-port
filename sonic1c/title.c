@@ -1,3 +1,4 @@
+// #define CHECK_STUFF 1
 #include "opcodes.h"
 #include "system.h"
 
@@ -274,7 +275,7 @@ ROMFUNC(rom_3224) {
   DEF_ROMLOC(325A)
       : write_vdp_control_32(0x60000003);
   DEF_ROMLOC(3264) : move_toreg_16(0x3FF, &D1); // MOVE.W	#$03FF,D1
-  DEF_ROMLOC(3268) : write_vdp_data_16(D0);
+  DEF_ROMLOC(3268) : write_vdp_data_32(D0);
   DEF_ROMLOC(326A) : dec_reg_16(&D1);
   if ((D1 & 0xffff) != 0xffff)
     goto rom_3268;               // DBF.W	D1,$3268
@@ -330,7 +331,7 @@ ROMFUNC(rom_327C) {
       : move_tomem_16(ZONE16_END, v_zone); // MOVE.W
                                            // #$0600,$FE10
   DEF_ROMLOC(32D4) : return;               // RTS
-  DEF_ROMLOC(32D6) : v_gamemode = GM_ENDING;
+  DEF_ROMLOC(32D6) : v_gamemode = GM_CREDITS;
   DEF_ROMLOC(32DC) : move_toreg_8(BGM_CREDITS, &D0); // MOVE.B	#$91,D0
   DEF_ROMLOC(32E0) : play_sound_special();           // BSR.W	$1394
   DEF_ROMLOC(32E4) : move_tomem_16(0x0, 0xFFFFFFF4); // MOVE.W	#$0000,$FFF4

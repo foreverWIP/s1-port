@@ -103,7 +103,8 @@ ROMFUNC(rom_D51E) {
   DEF_ROMLOC(D5C0) : sub_toreg_16(0x80, &D1);       // SUBI.W	#$0080,D1
   DEF_ROMLOC(D5C4) : and_toreg_16(0xFFFFFF80, &D1); // ANDI.W	#$FF80,D1
   DEF_ROMLOC(D5C8) : sub_toreg_16(D1, &D0);         // SUB.W	D1,D0
-  DEF_ROMLOC(D5CA) : cmp_toreg_16(0x280, &D0);      // CMPI.W	#$0280,D0
+  DEF_ROMLOC(D5CA)
+      : cmp_toreg_16(128 + GAME_WIDTH + 192, &D0); // CMPI.W	#$0280,D0
   DEF_ROMLOC(D5CE) : if (CCR_HI) {
     rom_DCCE();
     return;
@@ -150,22 +151,23 @@ ROMFUNC(rom_D5E4) {
       : move_toreg_8(read_8(A0 + 0x34), &D0); // MOVE.B
                                               // 52(A0),D0
   DEF_ROMLOC(D60A)
-      : add_toreg_16(read_16(A0 + 0x30), &D0);           // ADD.W
-                                                         // 48(A0),D0
-  DEF_ROMLOC(D60E) : move_tomem_16(D0, A0 + 0x8);        // MOVE.W	D0,8(A0)
-  DEF_ROMLOC(D612) : return;                             // RTS
-  DEF_ROMLOC(D614) : tst_mem_16(A0 + 0x38);              // TST.W	56(A0)
-  DEF_ROMLOC(D618) : if (CCR_EQ) goto rom_D632;          // BEQ.B	$D632
-  DEF_ROMLOC(D61A) : sub_tomem_16(0x1, A0 + 0x38);       // SUBQ.W	#$01,56(A0)
-  DEF_ROMLOC(D61E) : if (!CCR_EQ) goto rom_D674;         // BNE.B	$D674
-  DEF_ROMLOC(D620) : tst_mem_8(A0 + 0x1);                // TST.B	1(A0)
-  DEF_ROMLOC(D624) : if (CCR_PL) goto rom_D674;          // BPL.B	$D674
-  DEF_ROMLOC(D626) : move_toreg_16(SFX_SPIKESMOVE, &D0); // MOVE.W
-                                                         // #$00B6,D0
-  DEF_ROMLOC(D62A) : play_sound_special();               // JSR	$00001394
-  DEF_ROMLOC(D630) : goto rom_D674;                      // BRA.B	$D674
-  DEF_ROMLOC(D632) : tst_mem_16(A0 + 0x36);              // TST.W	54(A0)
-  DEF_ROMLOC(D636) : if (CCR_EQ) goto rom_D654;          // BEQ.B	$D654
+      : add_toreg_16(read_16(A0 + 0x30), &D0);     // ADD.W
+                                                   // 48(A0),D0
+  DEF_ROMLOC(D60E) : move_tomem_16(D0, A0 + 0x8);  // MOVE.W	D0,8(A0)
+  DEF_ROMLOC(D612) : return;                       // RTS
+  DEF_ROMLOC(D614) : tst_mem_16(A0 + 0x38);        // TST.W	56(A0)
+  DEF_ROMLOC(D618) : if (CCR_EQ) goto rom_D632;    // BEQ.B	$D632
+  DEF_ROMLOC(D61A) : sub_tomem_16(0x1, A0 + 0x38); // SUBQ.W	#$01,56(A0)
+  DEF_ROMLOC(D61E) : if (!CCR_EQ) goto rom_D674;   // BNE.B	$D674
+  DEF_ROMLOC(D620) : tst_mem_8(A0 + 0x1);          // TST.B	1(A0)
+  DEF_ROMLOC(D624) : if (CCR_PL) goto rom_D674;    // BPL.B	$D674
+  DEF_ROMLOC(D626)
+      : move_toreg_16(SFX_SPIKESMOVE, &D0);     // MOVE.W
+                                                // #$00B6,D0
+  DEF_ROMLOC(D62A) : play_sound_special();      // JSR	$00001394
+  DEF_ROMLOC(D630) : goto rom_D674;             // BRA.B	$D674
+  DEF_ROMLOC(D632) : tst_mem_16(A0 + 0x36);     // TST.W	54(A0)
+  DEF_ROMLOC(D636) : if (CCR_EQ) goto rom_D654; // BEQ.B	$D654
   DEF_ROMLOC(D638)
       : sub_tomem_16(0x800, A0 + 0x34);         // SUBI.W	#$0800,52(A0)
   DEF_ROMLOC(D63E) : if (CCR_CC) goto rom_D674; // BCC.B	$D674
@@ -216,18 +218,19 @@ ROMFUNC(rom_D600) {
   DEF_ROMLOC(D612) : return;                      // RTS
 }
 ROMFUNC(rom_D614) {
-  DEF_ROMLOC(D614) : tst_mem_16(A0 + 0x38);              // TST.W	56(A0)
-  DEF_ROMLOC(D618) : if (CCR_EQ) goto rom_D632;          // BEQ.B	$D632
-  DEF_ROMLOC(D61A) : sub_tomem_16(0x1, A0 + 0x38);       // SUBQ.W	#$01,56(A0)
-  DEF_ROMLOC(D61E) : if (!CCR_EQ) goto rom_D674;         // BNE.B	$D674
-  DEF_ROMLOC(D620) : tst_mem_8(A0 + 0x1);                // TST.B	1(A0)
-  DEF_ROMLOC(D624) : if (CCR_PL) goto rom_D674;          // BPL.B	$D674
-  DEF_ROMLOC(D626) : move_toreg_16(SFX_SPIKESMOVE, &D0); // MOVE.W
-                                                         // #$00B6,D0
-  DEF_ROMLOC(D62A) : play_sound_special();               // JSR	$00001394
-  goto rom_D674;                                         // BRA.B	$D674
-  DEF_ROMLOC(D632) : tst_mem_16(A0 + 0x36);              // TST.W	54(A0)
-  DEF_ROMLOC(D636) : if (CCR_EQ) goto rom_D654;          // BEQ.B	$D654
+  DEF_ROMLOC(D614) : tst_mem_16(A0 + 0x38);        // TST.W	56(A0)
+  DEF_ROMLOC(D618) : if (CCR_EQ) goto rom_D632;    // BEQ.B	$D632
+  DEF_ROMLOC(D61A) : sub_tomem_16(0x1, A0 + 0x38); // SUBQ.W	#$01,56(A0)
+  DEF_ROMLOC(D61E) : if (!CCR_EQ) goto rom_D674;   // BNE.B	$D674
+  DEF_ROMLOC(D620) : tst_mem_8(A0 + 0x1);          // TST.B	1(A0)
+  DEF_ROMLOC(D624) : if (CCR_PL) goto rom_D674;    // BPL.B	$D674
+  DEF_ROMLOC(D626)
+      : move_toreg_16(SFX_SPIKESMOVE, &D0);     // MOVE.W
+                                                // #$00B6,D0
+  DEF_ROMLOC(D62A) : play_sound_special();      // JSR	$00001394
+  goto rom_D674;                                // BRA.B	$D674
+  DEF_ROMLOC(D632) : tst_mem_16(A0 + 0x36);     // TST.W	54(A0)
+  DEF_ROMLOC(D636) : if (CCR_EQ) goto rom_D654; // BEQ.B	$D654
   DEF_ROMLOC(D638)
       : sub_tomem_16(0x800, A0 + 0x34);         // SUBI.W	#$0800,52(A0)
   DEF_ROMLOC(D63E) : if (CCR_CC) goto rom_D674; // BCC.B	$D674

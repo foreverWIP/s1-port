@@ -21,7 +21,7 @@ enum PlaneRenderMode {
     Both = 0b11,
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub enum HScrollMode {
     FullScreen,
     PerTile,
@@ -38,7 +38,7 @@ impl From<u8> for HScrollMode {
     }
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub enum VScrollMode {
     FullScreen,
     PerTile,
@@ -55,7 +55,7 @@ impl From<u8> for VScrollMode {
     }
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub enum PlaneSize {
     Size32x32Cells,
     Size64x32Cells,
@@ -108,7 +108,8 @@ pub struct Sprite {
     pub next: u8,
 }
 impl Sprite {
-    pub fn new(vram: &[u8; VRAM_SIZE_BYTES], address: u16) -> Self {
+    pub fn new(vram: &[u8; VRAM_SIZE_BYTES], address: u16, screen_width: u16) -> Self {
+        let max_sprite_x = (screen_width + 128 + 64).next_power_of_two() as u32;
         let address = address as usize;
         let long1 = ((vram[address as usize + 0] as u32) << 24)
             | ((vram[address as usize + 1] as u32) << 16)
@@ -119,7 +120,7 @@ impl Sprite {
             | ((vram[address as usize + 6] as u32) << 8)
             | (vram[address as usize + 7] as u32);
         Self {
-            x: (long2 & 0x1ff) as i16 - 128,
+            x: (long2 & (max_sprite_x - 1)) as i16 - 128,
             y: ((long1 >> 16) & 0x3ff) as i16 - 128,
             width_pixels: (((long1 >> 10) & 0b11) as u16 + 1) << 3,
             height_pixels: (((long1 >> 8) & 0b11) as u16 + 1) << 3,
@@ -202,6 +203,7 @@ fn render_sprites_line_common<const MODE: PlaneRenderMode>(
         let sprite = Sprite::new(
             vram,
             sprite_table_location + ((cur_sprite_link as u16) << 3),
+            line_width,
         );
 
         let sprite_in_y_range =

@@ -30,11 +30,10 @@ ROMFUNC(rom_D6F0) {
   rom_D714(); // Detected flow into next function
 }
 ROMFUNC(rom_D714) {
-  DEF_ROMLOC(D714) : move_toreg_16(0x1B, &D1); // MOVE.W	#$001B,D1
-  DEF_ROMLOC(D718) : move_toreg_16(0x10, &D2); // MOVE.W	#$0010,D2
-  DEF_ROMLOC(D71C) : move_toreg_16(0x10, &D3); // MOVE.W	#$0010,D3
-  DEF_ROMLOC(D720)
-      : move_toreg_16(read_16(A0 + 0x8), &D4);              // MOVE.W	8(A0),D4
+  DEF_ROMLOC(D714) : move_toreg_16(0x1B, &D1);              // MOVE.W	#$001B,D1
+  DEF_ROMLOC(D718) : move_toreg_16(0x10, &D2);              // MOVE.W	#$0010,D2
+  DEF_ROMLOC(D71C) : move_toreg_16(0x10, &D3);              // MOVE.W	#$0010,D3
+  DEF_ROMLOC(D720) : move_toreg_16(read_16(A0 + 0x8), &D4); // MOVE.W	8(A0),D4
   DEF_ROMLOC(D724) : rom_10062();                           // BSR.W	$10062
   DEF_ROMLOC(D728) : rom_DC92();                            // BSR.W	$DC92
   DEF_ROMLOC(D72C) : move_toreg_16(read_16(A0 + 0x8), &D0); // MOVE.W	8(A0),D0
@@ -44,7 +43,8 @@ ROMFUNC(rom_D714) {
   DEF_ROMLOC(D738) : sub_toreg_16(0x80, &D1);       // SUBI.W	#$0080,D1
   DEF_ROMLOC(D73C) : and_toreg_16(0xFFFFFF80, &D1); // ANDI.W	#$FF80,D1
   DEF_ROMLOC(D740) : sub_toreg_16(D1, &D0);         // SUB.W	D1,D0
-  DEF_ROMLOC(D742) : cmp_toreg_16(0x280, &D0);      // CMPI.W	#$0280,D0
+  DEF_ROMLOC(D742)
+      : cmp_toreg_16(128 + GAME_WIDTH + 192, &D0); // CMPI.W	#$0280,D0
   DEF_ROMLOC(D746) : if (CCR_HI) {
     rom_DCCE();
     return;

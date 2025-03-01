@@ -32,9 +32,10 @@ ROMFUNC(rom_A568) {
   DEF_ROMLOC(A57A) : or_tomem_8(0x4, A0 + 0x1);       // ORI.B	#$04,1(A0)
   DEF_ROMLOC(A580) : move_tomem_8(0x0, A0 + 0x18);    // MOVE.B	#$00,24(A0)
   DEF_ROMLOC(A586) : move_tomem_8(0x20, A0 + 0x19);   // MOVE.B	#$20,25(A0)
-  DEF_ROMLOC(A58C) : move_tomem_8(0xFFFFFFFF, A0 + 0x1A); // MOVE.B
-                                                          // #$FF,26(A0)
-  rom_A592(); // Detected flow into next function
+  DEF_ROMLOC(A58C)
+      : move_tomem_8(0xFFFFFFFF, A0 + 0x1A); // MOVE.B
+                                             // #$FF,26(A0)
+  rom_A592();                                // Detected flow into next function
 }
 ROMFUNC(rom_A592) {
   DEF_ROMLOC(A592) : rom_A5B6(); // BSR.B	$A5B6
@@ -48,7 +49,8 @@ ROMFUNC(rom_A592) {
   DEF_ROMLOC(A5A0) : sub_toreg_16(0x80, &D1);       // SUBI.W	#$0080,D1
   DEF_ROMLOC(A5A4) : and_toreg_16(0xFFFFFF80, &D1); // ANDI.W	#$FF80,D1
   DEF_ROMLOC(A5A8) : sub_toreg_16(D1, &D0);         // SUB.W	D1,D0
-  DEF_ROMLOC(A5AA) : cmp_toreg_16(0x280, &D0);      // CMPI.W	#$0280,D0
+  DEF_ROMLOC(A5AA)
+      : cmp_toreg_16(128 + GAME_WIDTH + 192, &D0); // CMPI.W	#$0280,D0
   DEF_ROMLOC(A5AE) : if (CCR_HI) {
     rom_DCCE();
     return;

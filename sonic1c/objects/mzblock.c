@@ -36,11 +36,12 @@ ROMFUNC(rom_EE70) {
 }
 ROMFUNC(rom_EEAC) {
   u8 switchindex = 0;
-  DEF_ROMLOC(EEAC) : tst_mem_8(A0 + 0x1);                  // TST.B	1(A0)
-  DEF_ROMLOC(EEB0) : if (CCR_PL) goto rom_EEDA;            // BPL.B	$EEDA
-  DEF_ROMLOC(EEB2) : move_toreg_32(0x0, &D0);              // MOVEQ.L	$00,D0
-  DEF_ROMLOC(EEB4) : move_toreg_8(read_8(A0 + 0x28), &D0); // MOVE.B
-                                                           // 40(A0),D0
+  DEF_ROMLOC(EEAC) : tst_mem_8(A0 + 0x1);       // TST.B	1(A0)
+  DEF_ROMLOC(EEB0) : if (CCR_PL) goto rom_EEDA; // BPL.B	$EEDA
+  DEF_ROMLOC(EEB2) : move_toreg_32(0x0, &D0);   // MOVEQ.L	$00,D0
+  DEF_ROMLOC(EEB4)
+      : move_toreg_8(read_8(A0 + 0x28), &D0); // MOVE.B
+                                              // 40(A0),D0
   DEF_ROMLOC(EEB8) : and_toreg_16(0x7, &D0);
   switchindex = D0;                         // ANDI.W	#$0007,D0
   DEF_ROMLOC(EEBC) : add_toreg_16(D0, &D0); // ADD.W	D0,D0
@@ -65,11 +66,10 @@ ROMFUNC(rom_EEAC) {
     rom_EF7C();
     break;
   }
-  DEF_ROMLOC(EEC6) : move_toreg_16(0x1B, &D1); // MOVE.W	#$001B,D1
-  DEF_ROMLOC(EECA) : move_toreg_16(0x10, &D2); // MOVE.W	#$0010,D2
-  DEF_ROMLOC(EECE) : move_toreg_16(0x11, &D3); // MOVE.W	#$0011,D3
-  DEF_ROMLOC(EED2)
-      : move_toreg_16(read_16(A0 + 0x8), &D4);              // MOVE.W	8(A0),D4
+  DEF_ROMLOC(EEC6) : move_toreg_16(0x1B, &D1);              // MOVE.W	#$001B,D1
+  DEF_ROMLOC(EECA) : move_toreg_16(0x10, &D2);              // MOVE.W	#$0010,D2
+  DEF_ROMLOC(EECE) : move_toreg_16(0x11, &D3);              // MOVE.W	#$0011,D3
+  DEF_ROMLOC(EED2) : move_toreg_16(read_16(A0 + 0x8), &D4); // MOVE.W	8(A0),D4
   DEF_ROMLOC(EED6) : rom_10062();                           // BSR.W	$10062
   DEF_ROMLOC(EEDA) : move_toreg_16(read_16(A0 + 0x8), &D0); // MOVE.W	8(A0),D0
   DEF_ROMLOC(EEDE) : and_toreg_16(0xFFFFFF80, &D0);         // ANDI.W	#$FF80,D0
@@ -78,7 +78,8 @@ ROMFUNC(rom_EEAC) {
   DEF_ROMLOC(EEE6) : sub_toreg_16(0x80, &D1);       // SUBI.W	#$0080,D1
   DEF_ROMLOC(EEEA) : and_toreg_16(0xFFFFFF80, &D1); // ANDI.W	#$FF80,D1
   DEF_ROMLOC(EEEE) : sub_toreg_16(D1, &D0);         // SUB.W	D1,D0
-  DEF_ROMLOC(EEF0) : cmp_toreg_16(0x280, &D0);      // CMPI.W	#$0280,D0
+  DEF_ROMLOC(EEF0)
+      : cmp_toreg_16(128 + GAME_WIDTH + 192, &D0); // CMPI.W	#$0280,D0
   DEF_ROMLOC(EEF4) : if (CCR_HI) {
     rom_DCCE();
     return;

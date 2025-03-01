@@ -353,7 +353,7 @@ ROMFUNC(rom_3AEC) {
   DEF_ROMLOC(3B72) : v_gamemode = GM_SEGA;
   DEF_ROMLOC(3B78) : tst_mem_16(0xFFFFFFF0);    // TST.W	$FFF0
   DEF_ROMLOC(3B7C) : if (CCR_PL) goto rom_3B84; // BPL.B	$3B84
-  DEF_ROMLOC(3B7E) : v_gamemode = GM_ENDING;
+  DEF_ROMLOC(3B7E) : v_gamemode = GM_CREDITS;
   DEF_ROMLOC(3B84) : move_tomem_16(0x3C, 0xFFFFF614); // MOVE.W	#$003C,$F614
   DEF_ROMLOC(3B8A) : move_tomem_16(0x3F, 0xFFFFF626); // MOVE.W	#$003F,$F626
   DEF_ROMLOC(3B90) : clr_mem_16(0xFFFFF794);          // CLR.W	$F794

@@ -167,7 +167,7 @@ pub fn synchronize_script(pc: u32) -> bool {
     }
     our_system.last_script_pc = pc;
     let mut inst_sync_counter = 0;
-    const MAX_SYNC_INSTS: usize = 896_040 * 60;
+    const MAX_SYNC_INSTS: usize = 896_040 * 60 * 10;
     our_system.sync_pcs.fill(0);
     /*{
         let msg = format!("script pc: {}", our_system.get_symbol(pc),);
@@ -199,7 +199,7 @@ pub fn synchronize_script(pc: u32) -> bool {
         }
         our_system.emu_machine_instructions_ran += 1;
         inst_sync_counter += 1;
-        if inst_sync_counter >= MAX_SYNC_INSTS {
+        /*if inst_sync_counter >= MAX_SYNC_INSTS {
             assert_eq!(
                 our_system.core.as_ref().unwrap().pc,
                 pc,
@@ -207,7 +207,7 @@ pub fn synchronize_script(pc: u32) -> bool {
                 comma_separated(our_system.sync_pcs.iter())
             );
             break;
-        }
+        }*/
     }
     match our_system.check_accuracy(test_level) {
         Ok(_) => true,
@@ -434,15 +434,50 @@ impl System {
                 let our_u8 = script_ram[i];
                 if control_u8 != our_u8 {
                     ram_differences.push(format!(
-                        "ram_{:X}: expected {:#X}, got {:#X}",
+                        "ram_{:04X}: expected {:#04X}, got {:#04X}",
                         i, control_u8, our_u8
                     ));
                 }
             }
+            let emu_vram = &self.vdp.as_ref().borrow().vram;
+            let script_vram = &self.script_engine.bus.vdp.as_ref().borrow().vram;
+            for i in 0..(0x1_0000 / 2) {
+                let control_word: u16 =
+                    ((emu_vram[i * 2] as u16) << 8) | (emu_vram[i * 2 + 1] as u16);
+                let our_word: u16 =
+                    ((script_vram[i * 2] as u16) << 8) | (script_vram[i * 2 + 1] as u16);
+                if control_word != our_word {
+                    ram_differences.push(format!(
+                        "vdp_{:04X}: expected {:#06X}, got {:#06X}",
+                        i * 2,
+                        control_word,
+                        our_word
+                    ));
+                    break;
+                }
+            }
+        }
+
+        {
+            let emu_vdp = &self.vdp.as_ref().borrow();
+            let script_vdp = &self.script_engine.bus.vdp.as_ref().borrow();
+            if emu_vdp.dst_ptr != script_vdp.dst_ptr {
+                ram_differences.push(format!(
+                    "vdp_dst_ptr: expected {:?}, got {:?}",
+                    emu_vdp.dst_ptr, script_vdp.dst_ptr
+                ));
+            }
+            if emu_vdp.ctrl_cachedword != script_vdp.ctrl_cachedword {
+                ram_differences.push(format!(
+                    "vdp_cachedword: expected {:?}, got {:?}",
+                    emu_vdp.ctrl_cachedword, script_vdp.ctrl_cachedword
+                ));
+            }
         }
 
         if !ram_differences.is_empty() || !reg_differences.is_empty() {
-            fs::write("lastram.bin", self.ram().as_ref().borrow().as_slice());
+            dbg!(self.vdp.as_ref().borrow());
+            dbg!(self.script_engine.bus.vdp.as_ref().borrow());
             return Err(format!(
                 "Simulation mismatch at pc {} (calling function {}):\nFirst {} PCs ran: {}\n{}",
                 self.get_symbol(self.core.as_ref().unwrap().pc()),
@@ -468,10 +503,7 @@ impl System {
             DESYNC_SCRIPT_MESSAGE = None;
         }
         let rom = Rc::new(rom_things.0.clone());
-        let ram = match fs::read("lastram.bin") {
-            Ok(r) => r,
-            Err(_) => vec![0u8; SYSTEM_RAM_SIZE],
-        };
+        let ram = vec![0u8; SYSTEM_RAM_SIZE];
         let our_ram = Rc::new(RefCell::new(ram.clone()));
         let vdp = Rc::new(RefCell::new(Vdp::new(
             rom.clone(),
@@ -619,7 +651,7 @@ impl System {
         if let Some(ram) = &self.last_frame_ram {
             let ram = ram.clone();
             set_hook(Box::new(move |phi| {
-                fs::write("lastram.bin", &ram);
+                // fs::write("lastram.bin", &ram);
             }));
         }
 

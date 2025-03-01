@@ -118,7 +118,10 @@ void write_vdp_control_32(u32 value);
 #define VRAM_PTR_TO_VDP_COMMAND(loc)                                           \
   (0x40000000 + (((loc) & 0x3FFF) << 16) + (((loc) & 0xC000) >> 14))
 #define set_vram_ptr(loc)                                                      \
-  write_vdp_control_32(VRAM_PTR_TO_VDP_COMMAND((u32)loc))
+  {                                                                            \
+    loc = VRAM_PTR_TO_VDP_COMMAND(loc);                                        \
+    write_vdp_control_32(loc);                                                 \
+  }
 
 #define PLANE_SIZE_64X32 0x1000
 
@@ -137,3 +140,5 @@ extern void print(const char *msg, ...);
   rom_##loc##_colon
 
 #include "game.h"
+
+u32 next_power_of_2(u32 value);

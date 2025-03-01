@@ -72,10 +72,11 @@ ROMFUNC(rom_1791C) {
   DEF_ROMLOC(179A6) : sub_toreg_16(0x80, &D1);       // SUBI.W	#$0080,D1
   DEF_ROMLOC(179AA) : and_toreg_16(0xFFFFFF80, &D1); // ANDI.W	#$FF80,D1
   DEF_ROMLOC(179AE) : sub_toreg_16(D1, &D0);         // SUB.W	D1,D0
-  DEF_ROMLOC(179B0) : cmp_toreg_16(0x280, &D0);      // CMPI.W	#$0280,D0
-  DEF_ROMLOC(179B4) : if (CCR_HI) goto rom_179B8;    // BHI.B	$179B8
-  DEF_ROMLOC(179B6) : return;                        // RTS
-  DEF_ROMLOC(179B8) : rom_DCCE();                    // JMP	$0000DCCE
+  DEF_ROMLOC(179B0)
+      : cmp_toreg_16(128 + GAME_WIDTH + 192, &D0); // CMPI.W	#$0280,D0
+  DEF_ROMLOC(179B4) : if (CCR_HI) goto rom_179B8;  // BHI.B	$179B8
+  DEF_ROMLOC(179B6) : return;                      // RTS
+  DEF_ROMLOC(179B8) : rom_DCCE();                  // JMP	$0000DCCE
 }
 ROMFUNC(rom_179C6) {
   DEF_ROMLOC(179C6) : sub_tomem_16(0x1, A0 + 0x30); // SUBQ.W	#$01,48(A0)
@@ -87,8 +88,9 @@ ROMFUNC(rom_179C6) {
   DEF_ROMLOC(179D8) : sub_toreg_16(0x80, &D1);       // SUBI.W	#$0080,D1
   DEF_ROMLOC(179DC) : and_toreg_16(0xFFFFFF80, &D1); // ANDI.W	#$FF80,D1
   DEF_ROMLOC(179E0) : sub_toreg_16(D1, &D0);         // SUB.W	D1,D0
-  DEF_ROMLOC(179E2) : cmp_toreg_16(0x280, &D0);      // CMPI.W	#$0280,D0
-  DEF_ROMLOC(179E6) : if (CCR_HI) goto rom_179EE;    // BHI.B	$179EE
+  DEF_ROMLOC(179E2)
+      : cmp_toreg_16(128 + GAME_WIDTH + 192, &D0); // CMPI.W	#$0280,D0
+  DEF_ROMLOC(179E6) : if (CCR_HI) goto rom_179EE;  // BHI.B	$179EE
   DEF_ROMLOC(179E8) : rom_DC92();
   return;                         // JMP	$0000DC92
   DEF_ROMLOC(179EE) : rom_DCCE(); // JMP	$0000DCCE
