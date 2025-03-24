@@ -65,7 +65,7 @@ ROMFUNC(rom_C400) {
   goto rom_C468;                                     // BRA.B	$C468
   DEF_ROMLOC(C452) : tst_mem_8(A3);                  // TST.B	(A3)
   DEF_ROMLOC(C454) : if (!CCR_EQ) goto rom_C460;     // BNE.B	$C460
-  DEF_ROMLOC(C456) : move_toreg_16(SFX_SPRING, &D0); // MOVE.W	#$00CD,D0
+  DEF_ROMLOC(C456) : move_toreg_16(SFX_SWITCH, &D0); // MOVE.W	#$00CD,D0
   DEF_ROMLOC(C45A) : play_sound_special();           // JSR	$00001394
   DEF_ROMLOC(C460) : bset_tomem_8(D3, A3);           // BSET.B	D3,(A3)
   DEF_ROMLOC(C462) : bset_tomem_8(0x0, A0 + 0x1A);   // BSET.B	#$00,26(A0)
@@ -109,7 +109,7 @@ ROMFUNC(rom_C4CC) {
   DEF_ROMLOC(C4D0) : if (CCR_PL) goto rom_C4D8; // BPL.B	$C4D8
   DEF_ROMLOC(C4D2)
       : cmp_tomem_8(OBJ_PUSHBLOCK,
-                    offsetof(object, id));          // CMPI.B	#$33,(A1)
+                    A1 + offsetof(object, id));          // CMPI.B	#$33,(A1)
   DEF_ROMLOC(C4D6) : if (CCR_EQ) goto rom_C4E8;     // BEQ.B	$C4E8
   DEF_ROMLOC(C4D8) : move_toreg_32(A1 + 0x40, &A1); // LEA.L	64(A1),A1
   DEF_ROMLOC(C4DC) : dec_reg_16(&D6);

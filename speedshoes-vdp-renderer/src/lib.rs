@@ -158,6 +158,7 @@ pub fn render_sprites_line_low(
     y: u16,
     line_width: u16,
     screen_buf: &mut [u32],
+    hw_mode: bool,
 ) {
     render_sprites_line_common::<{ PlaneRenderMode::Low }>(
         vram,
@@ -166,6 +167,7 @@ pub fn render_sprites_line_low(
         y,
         line_width,
         screen_buf,
+        hw_mode,
     )
 }
 
@@ -176,6 +178,7 @@ pub fn render_sprites_line_high(
     y: u16,
     line_width: u16,
     screen_buf: &mut [u32],
+    hw_mode: bool,
 ) {
     render_sprites_line_common::<{ PlaneRenderMode::High }>(
         vram,
@@ -184,6 +187,7 @@ pub fn render_sprites_line_high(
         y,
         line_width,
         screen_buf,
+        hw_mode,
     )
 }
 
@@ -194,6 +198,7 @@ fn render_sprites_line_common<const MODE: PlaneRenderMode>(
     y: u16,
     line_width: u16,
     screen_buf: &mut [u32],
+    hw_mode: bool,
 ) {
     let mut cur_sprite_count = 0u8;
     let mut cur_sprite_pixel_count = 0u16;
@@ -243,15 +248,19 @@ fn render_sprites_line_common<const MODE: PlaneRenderMode>(
                         draw_x & 7
                     };
                     let index = ((pattern_strip >> (cell_x << 2)) & 0xf) as u8;
-
                     if index != 0 {
                         let buf_index = (sprite.x + draw_x as i16) as usize;
                         if screen_buf[buf_index] == 0 {
                             if buf_index < line_width as usize {
-                                screen_buf[buf_index] = pal_index_to_32bit!(
-                                    palette,
-                                    sprite.attributes.palette_line | index
-                                );
+                                if hw_mode {
+                                    screen_buf[buf_index] =
+                                        (sprite.attributes.palette_line | index) as u32;
+                                } else {
+                                    screen_buf[buf_index] = pal_index_to_32bit!(
+                                        palette,
+                                        sprite.attributes.palette_line | index
+                                    );
+                                }
                             }
                         }
                     }
@@ -284,6 +293,7 @@ pub fn render_plane_line_a_high(
     vscroll_buffer: &[u16; 80 / 2],
     vscroll_mode: VScrollMode,
     screen_buf: &mut [u32],
+    hw_mode: bool,
 ) {
     render_plane_line_common::<true, { PlaneRenderMode::High }>(
         y,
@@ -296,6 +306,7 @@ pub fn render_plane_line_a_high(
         vscroll_buffer,
         vscroll_mode,
         screen_buf,
+        hw_mode,
     )
 }
 
@@ -310,6 +321,7 @@ pub fn render_plane_line_a_low(
     vscroll_buffer: &[u16; 80 / 2],
     vscroll_mode: VScrollMode,
     screen_buf: &mut [u32],
+    hw_mode: bool,
 ) {
     render_plane_line_common::<true, { PlaneRenderMode::Low }>(
         y,
@@ -322,6 +334,7 @@ pub fn render_plane_line_a_low(
         vscroll_buffer,
         vscroll_mode,
         screen_buf,
+        hw_mode,
     )
 }
 
@@ -336,6 +349,7 @@ pub fn render_plane_line_b_high(
     vscroll_buffer: &[u16; 80 / 2],
     vscroll_mode: VScrollMode,
     screen_buf: &mut [u32],
+    hw_mode: bool,
 ) {
     render_plane_line_common::<false, { PlaneRenderMode::High }>(
         y,
@@ -348,6 +362,7 @@ pub fn render_plane_line_b_high(
         vscroll_buffer,
         vscroll_mode,
         screen_buf,
+        hw_mode,
     )
 }
 
@@ -362,6 +377,7 @@ pub fn render_plane_line_b_low(
     vscroll_buffer: &[u16; 80 / 2],
     vscroll_mode: VScrollMode,
     screen_buf: &mut [u32],
+    hw_mode: bool,
 ) {
     render_plane_line_common::<false, { PlaneRenderMode::Low }>(
         y,
@@ -374,6 +390,7 @@ pub fn render_plane_line_b_low(
         vscroll_buffer,
         vscroll_mode,
         screen_buf,
+        hw_mode,
     )
 }
 
@@ -388,6 +405,7 @@ fn render_plane_line_common<const PLANEA: bool, const MODE: PlaneRenderMode>(
     vscroll_buffer: &[u16; 80 / 2],
     vscroll_mode: VScrollMode,
     screen_buf: &mut [u32],
+    hw_mode: bool,
 ) {
     let (plane_size_cells_mask_x, plane_size_cells_mask_y) = {
         match plane_size {
@@ -458,11 +476,16 @@ fn render_plane_line_common<const PLANEA: bool, const MODE: PlaneRenderMode>(
                     .wrapping_add(p_x)
                     .wrapping_sub(scroll_x_within_tile as usize);
                 if buf_index < (line_width as usize) {
-                    if screen_buf[buf_index] == 0 {
+                    if hw_mode {
                         let index = ((pattern_strip >> (p_x << 2)) & 0xf) as u8;
-                        if index != 0 {
-                            screen_buf[buf_index] =
-                                pal_index_to_32bit!(palette, cur_cell.palette_line | index);
+                        screen_buf[buf_index] = (cur_cell.palette_line | index) as u32;
+                    } else {
+                        if screen_buf[buf_index] == 0 {
+                            let index = ((pattern_strip >> (p_x << 2)) & 0xf) as u8;
+                            if index != 0 {
+                                screen_buf[buf_index] =
+                                    pal_index_to_32bit!(palette, cur_cell.palette_line | index);
+                            }
                         }
                     }
                 }
@@ -473,14 +496,22 @@ fn render_plane_line_common<const PLANEA: bool, const MODE: PlaneRenderMode>(
                     .wrapping_add(p_x)
                     .wrapping_sub(scroll_x_within_tile as usize);
                 if buf_index < (line_width as usize) {
-                    if screen_buf[buf_index] == 0 {
+                    if hw_mode {
                         let p_x = 8 - p_x - 1;
 
                         let index = ((pattern_strip >> (p_x << 2)) & 0xf) as u8;
 
-                        if index != 0 {
-                            screen_buf[buf_index] =
-                                pal_index_to_32bit!(palette, cur_cell.palette_line | index);
+                        screen_buf[buf_index] = (cur_cell.palette_line | index) as u32;
+                    } else {
+                        if screen_buf[buf_index] == 0 {
+                            let p_x = 8 - p_x - 1;
+
+                            let index = ((pattern_strip >> (p_x << 2)) & 0xf) as u8;
+
+                            if index != 0 {
+                                screen_buf[buf_index] =
+                                    pal_index_to_32bit!(palette, cur_cell.palette_line | index);
+                            }
                         }
                     }
                 }
@@ -505,7 +536,15 @@ pub fn render_screen_line(
     fb: &mut [u32],
 ) {
     fb.fill(0);
-    render_sprites_line_high(&vram, &palette, sprite_table_location, y, line_width, fb);
+    render_sprites_line_high(
+        &vram,
+        &palette,
+        sprite_table_location,
+        y,
+        line_width,
+        fb,
+        false,
+    );
     render_plane_line_a_high(
         y,
         line_width,
@@ -517,6 +556,7 @@ pub fn render_screen_line(
         &vscroll_buffer,
         vscroll_mode,
         fb,
+        false,
     );
     render_plane_line_b_high(
         y,
@@ -529,8 +569,17 @@ pub fn render_screen_line(
         &vscroll_buffer,
         vscroll_mode,
         fb,
+        false,
     );
-    render_sprites_line_low(&vram, &palette, sprite_table_location, y, line_width, fb);
+    render_sprites_line_low(
+        &vram,
+        &palette,
+        sprite_table_location,
+        y,
+        line_width,
+        fb,
+        false,
+    );
     render_plane_line_a_low(
         y,
         line_width,
@@ -542,6 +591,7 @@ pub fn render_screen_line(
         &vscroll_buffer,
         vscroll_mode,
         fb,
+        false,
     );
     render_plane_line_b_low(
         y,
@@ -554,6 +604,7 @@ pub fn render_screen_line(
         &vscroll_buffer,
         vscroll_mode,
         fb,
+        false,
     );
     for p in fb {
         if *p == 0 {

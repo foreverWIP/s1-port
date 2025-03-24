@@ -1,0 +1,23 @@
+fn main() {
+    cc::Build::new()
+        .include("libvgm")
+        .file("libvgm/emu/SoundEmu.c")
+        .file("libvgm/emu/Resampler.c")
+        .file("libvgm/emu/logging.c")
+        .file("libvgm/emu/panning.c")
+        .file("libvgm/emu/dac_control.c")
+        .file("libvgm/emu/cores/fmopn.c")
+        .file("libvgm/emu/cores/2612intf.c")
+        .file("libvgm/emu/cores/sn76489.c")
+        .file("libvgm/emu/cores/sn764intf.c")
+        .file("src/driver.c")
+        .file("src/opcodes.c")
+        .file("src/system.c")
+        .flag("-DSNDDEV_SELECT")
+        .flag("-DSNDDEV_SN76496")
+        .flag("-DSNDDEV_YM2612")
+        .flag("-DEC_YM2612_GPGX")
+        .flag("-DEC_SN76496_MAXIM")
+        .compile("smps");
+    println!("cargo::rerun-if-changed=src/**/*");
+}

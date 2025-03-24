@@ -1,4 +1,6 @@
-mod plane_texture;
+#![feature(const_vec_string_slice)]
+mod periodic_timer;
+mod renderer;
 
 use std::{
     borrow::Borrow,
@@ -6,26 +8,34 @@ use std::{
     env::args,
     ffi::c_float,
     fs::{self, File},
-    io::Write,
+    io::{Cursor, Write},
     num::NonZeroU32,
     ops::Range,
     panic::set_hook,
     path::{Path, PathBuf},
     rc::Rc,
+    sync::{
+        mpsc::{Sender, SyncSender},
+        Arc, RwLock,
+    },
 };
 
-use glow::{HasContext, NativeProgram, NativeTexture, PixelUnpackData};
+use glow::{
+    HasContext, NativeFramebuffer, NativeProgram, NativeTexture, PixelPackData, PixelUnpackData,
+};
+use image::ExtendedColorType;
 use imgui::{Context, Image, TextureId, Ui, WindowFlags};
 use imgui_glow_renderer::{AutoRenderer, Renderer};
 use imgui_sdl2_support::SdlPlatform;
 use itertools::Itertools;
-use plane_texture::PlaneTexture;
+use periodic_timer::PeriodicTimer;
 use sdl2::{
     audio::AudioSpecDesired,
     event::Event,
     keyboard::Scancode,
     video::{GLProfile, Window},
 };
+use smps::driver::SoundDriver;
 use sonic1::{get_data_defs, patch_rom, read_as_symbols};
 use speedshoes::{
     system::{self, Input, System},
@@ -78,13 +88,13 @@ fn run_simulation(
     game: &mut Option<Sonic1>,
     rom: &Vec<u8>,
     test_mode: bool,
-    hw_planes_mode: bool,
     repro_inputs: &Vec<Input>,
     should_reset: &mut bool,
     should_speed_up: bool,
     should_step: bool,
     system_input: Input,
     should_draw: bool,
+    sound_driver_sender: Arc<Sender<i16>>,
 ) -> Result<bool, String> {
     if *should_reset {
         if game.is_none() {
@@ -102,7 +112,8 @@ fn run_simulation(
                     kvps,
                     true,
                     test_mode,
-                    hw_planes_mode,
+                    true,
+                    sound_driver_sender,
                 )?,
                 debug_pause: false,
                 current_playing_music: 0,
@@ -130,21 +141,68 @@ fn run_simulation(
     }
 }
 
+fn take_screenshot(
+    gl_handle: &glow::Context,
+    plane_renderer: &renderer::Renderer,
+) -> (Vec<u8>, i32, i32) {
+    unsafe {
+        let width = renderer::PlaneTexture::SIZE.0 as i32;
+        let height = renderer::PlaneTexture::SIZE.1 as i32;
+        gl_handle.bind_framebuffer(glow::FRAMEBUFFER, Some(plane_renderer.fb()));
+        let mut out_buf = vec![0u8; width as usize * height as usize * 4];
+        gl_handle.read_pixels(
+            0,
+            0,
+            width,
+            height,
+            glow::RGBA,
+            glow::UNSIGNED_BYTE,
+            PixelPackData::Slice(&mut out_buf),
+        );
+        gl_handle.bind_framebuffer(glow::FRAMEBUFFER, None);
+        (out_buf, width, height)
+    }
+}
+
+fn save_screenshot(name: &str, frame: &Vec<u8>, width: i32, height: i32) {
+    image::save_buffer(
+        name,
+        frame,
+        width as u32,
+        height as u32,
+        ExtendedColorType::Rgba8,
+    )
+    .unwrap();
+}
+
 fn run_window(rom: Vec<u8>, test_mode: bool, repro_inputs: Vec<Input>) -> Result<(), String> {
+    let mut capture_video = false;
+    let mut capture_video_prev = false;
+    let mut capture_video_audio = None;
+    let (mut capture_video_sender, mut capture_video_reciever) = (None, None);
+    let mut capture_video_thread = None;
+
     /* initialize SDL and its video subsystem */
     let sdl = sdl2::init()?;
     let audio_subsystem = sdl.audio()?;
     let desired_spec = AudioSpecDesired {
         freq: Some(44_100),
         channels: Some(2),
-        // mono  -
-        samples: None, // default sample size
+        samples: None,
     };
     let audio_device = audio_subsystem.open_queue::<i16, _>(None, &desired_spec)?;
 
+    let (sound_driver_id_sender, sound_driver_id_receiver) = std::sync::mpsc::channel::<i16>();
+    let sound_driver_id_sender = Arc::new(sound_driver_id_sender);
+    let thread_rom = Arc::new(rom.clone());
+    let audio_spec = audio_device.spec().clone();
+    let mut sound_driver = Box::new(SoundDriver::new(thread_rom, audio_spec.freq as u16));
+    sound_driver.update();
+
+    audio_device.resume();
+
     let video_subsystem = sdl.video().unwrap();
 
-    /* hint SDL to initialize an OpenGL 3.3 core profile context */
     let gl_attr = video_subsystem.gl_attr();
 
     gl_attr.set_context_version(4, 1);
@@ -190,16 +248,9 @@ fn run_window(rom: Vec<u8>, test_mode: bool, repro_inputs: Vec<Input>) -> Result
     let mut texture_map = imgui_glow_renderer::SimpleTextureMap::default();
     let mut renderer =
         Renderer::new(&gl, &mut imgui, &mut texture_map, false).map_err(|e| e.to_string())?;
-    let gl_handle = gl;
+    let gl_handle = Arc::new(gl);
 
-    let hw_planes_mode = false;
-
-    let mut fb_plane_b_low_handle = PlaneTexture::new(&gl_handle);
-    let mut fb_plane_a_low_handle = PlaneTexture::new(&gl_handle);
-    let mut fb_plane_s_low_handle = PlaneTexture::new(&gl_handle);
-    let mut fb_plane_b_high_handle = PlaneTexture::new(&gl_handle);
-    let mut fb_plane_a_high_handle = PlaneTexture::new(&gl_handle);
-    let mut fb_plane_s_high_handle = PlaneTexture::new(&gl_handle);
+    let mut plane_renderer = renderer::Renderer::new(gl_handle.clone());
 
     let mut game: Option<Sonic1> = None;
 
@@ -211,17 +262,22 @@ fn run_window(rom: Vec<u8>, test_mode: bool, repro_inputs: Vec<Input>) -> Result
 
     let target_frame_time = sdl.timer().unwrap().performance_frequency() / 60;
     let mut start_frame_time: u64;
+    let mut current_frame_time = 0u64;
 
     let ui_popup_id = "Simulation Errors";
-
-    let mut apply_filter = false;
 
     let mut native_percent_store = VecDeque::new();
 
     let mut should_draw = true;
 
+    let mut frame_count = 0usize;
+
     let initial_repro_input_size = repro_inputs.len();
     let mut wrote_repro_inputs = false;
+
+    let mut main_frame_timer = PeriodicTimer::new(60);
+    let mut sim_frame_timer = PeriodicTimer::new(60);
+    let mut render_frame_timer = PeriodicTimer::new(60);
 
     /* start main loop */
     let mut event_pump = sdl.event_pump().unwrap();
@@ -231,6 +287,8 @@ fn run_window(rom: Vec<u8>, test_mode: bool, repro_inputs: Vec<Input>) -> Result
 
         let mut should_step = false;
         let mut should_speed_up = false;
+
+        capture_video_prev = capture_video;
 
         for event in event_pump.poll_iter() {
             /* pass all events to imgui platfrom */
@@ -261,7 +319,27 @@ fn run_window(rom: Vec<u8>, test_mode: bool, repro_inputs: Vec<Input>) -> Result
                             }
                             Scancode::F11 => should_step = true,
                             Scancode::Backspace => should_speed_up = true,
-                            Scancode::Num1 => apply_filter = !apply_filter,
+                            Scancode::Num0 => {
+                                plane_renderer.shader_selection_plane.fill(0);
+                                plane_renderer.shader_selection_screen = 0;
+                            }
+                            Scancode::Num1 => {
+                                plane_renderer.shader_selection_plane[0] = 0;
+                            }
+                            Scancode::Num2 => {
+                                plane_renderer.shader_selection_plane[0] = 1;
+                            }
+                            Scancode::Num5 => {
+                                plane_renderer.shader_selection_screen = 0;
+                            }
+                            Scancode::Num6 => {
+                                plane_renderer.shader_selection_screen = 1;
+                            }
+                            Scancode::F9 => {
+                                let res = take_screenshot(&gl_handle, &plane_renderer);
+                                save_screenshot("screenshot.png", &res.0, res.1, res.2);
+                            }
+                            Scancode::Minus => capture_video = !capture_video,
                             Scancode::Equals => {
                                 if fs::exists(REPRO_INPUTS_PATH).map_err(|e| e.to_string())? {
                                     fs::remove_file(REPRO_INPUTS_PATH)
@@ -318,24 +396,78 @@ fn run_window(rom: Vec<u8>, test_mode: bool, repro_inputs: Vec<Input>) -> Result
                 _ => {}
             }
         }
+
+        if capture_video != capture_video_prev {
+            if capture_video {
+                _ = fs::remove_dir_all("movie");
+                _ = fs::create_dir("movie");
+
+                capture_video_audio = Some(
+                    hound::WavWriter::create(
+                        "movie/movie.wav",
+                        hound::WavSpec {
+                            channels: 2,
+                            sample_rate: 44100,
+                            bits_per_sample: 16,
+                            sample_format: hound::SampleFormat::Int,
+                        },
+                    )
+                    .unwrap(),
+                );
+                (capture_video_sender, capture_video_reciever) = {
+                    let ret = std::sync::mpsc::channel::<Option<(Vec<u8>, i32, i32)>>();
+                    (Some(ret.0), Some(ret.1))
+                };
+
+                capture_video_thread = Some(std::thread::spawn(move || {
+                    let mut frame_count = 0;
+                    loop {
+                        if let Ok(frame) = capture_video_reciever.as_ref().unwrap().try_recv() {
+                            if let Some((frame, width, height)) = frame {
+                                save_screenshot(
+                                    &format!("movie/movie{}.qoi", frame_count),
+                                    &frame,
+                                    width,
+                                    height,
+                                );
+                                frame_count += 1;
+                            } else {
+                                break;
+                            }
+                        }
+                    }
+                }));
+            } else {
+                capture_video_audio = None;
+                capture_video_sender.as_ref().unwrap().send(None).unwrap();
+                capture_video_thread.unwrap().join().unwrap();
+                capture_video_thread = None;
+                (capture_video_sender, capture_video_reciever) = (None, None);
+            }
+        }
+
         if let Some(game) = game.as_ref() {
             should_speed_up |= game.frame_counter < initial_repro_input_size;
         }
 
         let sim_result = match error_string {
             Some(ref err) => Err(err.clone()),
-            None => run_simulation(
-                &mut game,
-                &rom,
-                test_mode,
-                hw_planes_mode,
-                &repro_inputs,
-                &mut should_reset,
-                should_speed_up,
-                should_step,
-                system_input,
-                should_draw,
-            ),
+            None => {
+                let ret = run_simulation(
+                    &mut game,
+                    &rom,
+                    test_mode,
+                    &repro_inputs,
+                    &mut should_reset,
+                    should_speed_up,
+                    should_step,
+                    system_input,
+                    should_draw,
+                    sound_driver_id_sender.clone(),
+                );
+                sim_frame_timer.poll();
+                ret
+            }
         };
 
         /* call prepare_frame before calling imgui.new_frame() */
@@ -344,18 +476,15 @@ fn run_window(rom: Vec<u8>, test_mode: bool, repro_inputs: Vec<Input>) -> Result
         let ui = imgui.new_frame();
         /* create imgui UI here */
 
-        /*match error_string.clone().and_then(|_| {
-            run_simulation(
-                &mut game,
-                &rom,
-                test_mode,
-                &mut should_reset,
-                should_speed_up,
-                should_step,
-                system_input,
-                should_draw,
-            )
-        })*/
+        let bg_color_f32 = match &game {
+            Some(game) => game
+                .our_system
+                .bg_color()
+                .to_ne_bytes()
+                .map(|b| b as f32 / 255.0),
+            None => [0.0; 4],
+        };
+
         match sim_result {
             Err(ref m) => {
                 /*if let Some(game) = &mut game {
@@ -393,67 +522,30 @@ fn run_window(rom: Vec<u8>, test_mode: bool, repro_inputs: Vec<Input>) -> Result
                 ui.close_current_popup();
                 if should_redraw {
                     if let Some(game) = &game {
-                        let time = (game.frame_counter as f64) / 60.0;
-                        let window_size: [f32; 2] = ui.io().display_size;
-                        if hw_planes_mode {
-                            fb_plane_b_low_handle.render(
-                                &gl_handle,
-                                &window_size,
-                                game.our_system.fb_plane_b_low(),
-                                apply_filter,
-                                time as f32,
-                            );
-                            fb_plane_a_low_handle.render(
-                                &gl_handle,
-                                &window_size,
-                                game.our_system.fb_plane_a_low(),
-                                false,
-                                time as f32,
-                            );
-                            fb_plane_s_low_handle.render(
-                                &gl_handle,
-                                &window_size,
-                                game.our_system.fb_plane_s_low(),
-                                false,
-                                time as f32,
-                            );
-                            fb_plane_b_high_handle.render(
-                                &gl_handle,
-                                &window_size,
-                                game.our_system.fb_plane_b_high(),
-                                apply_filter,
-                                time as f32,
-                            );
-                        }
-                        fb_plane_a_high_handle.render(
+                        let time = (game.frame_counter as f32) / 60.0;
+                        plane_renderer.render(
                             &gl_handle,
-                            &window_size,
+                            game.our_system.fb_plane_b_low(),
+                            game.our_system.fb_plane_a_low(),
+                            game.our_system.fb_plane_s_low(),
+                            game.our_system.fb_plane_b_high(),
                             game.our_system.fb_plane_a_high(),
-                            false,
-                            time as f32,
+                            game.our_system.fb_plane_s_high(),
+                            time,
+                            bg_color_f32,
+                            &game
+                                .our_system
+                                .vdp()
+                                .as_ref()
+                                .borrow()
+                                .palette_f32()
+                                .try_into()
+                                .unwrap(),
                         );
-                        if hw_planes_mode {
-                            fb_plane_s_high_handle.render(
-                                &gl_handle,
-                                &window_size,
-                                game.our_system.fb_plane_s_high(),
-                                false,
-                                time as f32,
-                            );
-                        }
                     }
                 }
             }
         }
-
-        let bg_color_f32 = match &game {
-            Some(game) => game
-                .our_system
-                .bg_color()
-                .to_ne_bytes()
-                .map(|b| b as f32 / 255.0),
-            None => [0.0; 4],
-        };
 
         unsafe {
             gl_handle.clear_color(
@@ -491,29 +583,16 @@ fn run_window(rom: Vec<u8>, test_mode: bool, repro_inputs: Vec<Input>) -> Result
             );
         }
 
-        for handle in if hw_planes_mode {
-            vec![
-                &fb_plane_b_low_handle,
-                &fb_plane_a_low_handle,
-                &fb_plane_s_low_handle,
-                &fb_plane_b_high_handle,
-                &fb_plane_a_high_handle,
-                &fb_plane_s_high_handle,
-            ]
-        } else {
-            vec![&fb_plane_a_high_handle]
-        } {
-            ui.get_background_draw_list()
-                .add_image(
-                    TextureId::new(handle.frame_texture_handle.0.get() as usize),
-                    [game_view_rect.0, game_view_rect.1],
-                    [
-                        game_view_rect.0 + game_view_rect.2,
-                        game_view_rect.1 + game_view_rect.3,
-                    ],
-                )
-                .build();
-        }
+        ui.get_background_draw_list()
+            .add_image(
+                TextureId::new(plane_renderer.fb_tex().0.get() as usize),
+                [game_view_rect.0, game_view_rect.1],
+                [
+                    game_view_rect.0 + game_view_rect.2,
+                    game_view_rect.1 + game_view_rect.3,
+                ],
+            )
+            .build();
 
         if let Some(game) = &game {
             let script_inst_count = game.our_system.script_machine_instructions_ran();
@@ -534,7 +613,7 @@ fn run_window(rom: Vec<u8>, test_mode: bool, repro_inputs: Vec<Input>) -> Result
                     .no_inputs()
                     .build(|| {
                         ui.text(format!("Frame {}", game.frame_counter()));
-                        ui.text(format!(
+                        /*ui.text(format!(
                             "Instructions emulated w/ scripts: {}",
                             script_inst_count,
                         ));
@@ -545,9 +624,9 @@ fn run_window(rom: Vec<u8>, test_mode: bool, repro_inputs: Vec<Input>) -> Result
                         ui.text(format!(
                             "{}% native code",
                             native_percent_store.iter().sum::<f64>() / (MAX_AVERAGE_COUNT as f64)
-                        ));
+                        ));*/
                     });
-                ui.window("Input display")
+                /*ui.window("Input display")
                     .no_decoration()
                     .position([0.0, 80.0], imgui::Condition::Always)
                     .always_auto_resize(true)
@@ -569,6 +648,17 @@ fn run_window(rom: Vec<u8>, test_mode: bool, repro_inputs: Vec<Input>) -> Result
                         for sub in &game.our_system.unimplemented_subs_frame {
                             ui.text(format!("{:X}", sub));
                         }
+                    });*/
+            }
+
+            if !capture_video {
+                ui.window("Stats")
+                    .no_decoration()
+                    .position([0.0, 0.0], imgui::Condition::Always)
+                    .always_auto_resize(true)
+                    .no_inputs()
+                    .build(|| {
+                        ui.text(format!("FPS: {}", main_frame_timer.get_average(),));
                     });
             }
         }
@@ -586,27 +676,65 @@ fn run_window(rom: Vec<u8>, test_mode: bool, repro_inputs: Vec<Input>) -> Result
 
         window.gl_swap_window();
 
+        render_frame_timer.poll();
+
+        if capture_video {
+            capture_video_sender
+                .as_ref()
+                .unwrap()
+                .send(Some(take_screenshot(&gl_handle, &plane_renderer)))
+                .unwrap();
+        }
+
+        const SOUND_DRIVER_PLAY_SOUND: i16 = 0x02;
+        const SOUND_DRIVER_PLAY_SOUND_SPECIAL: i16 = 0x03;
         loop {
-            let current_frame_time = sdl.timer().unwrap().performance_counter();
+            if let Ok(id) = sound_driver_id_receiver.try_recv() {
+                if (id >> 8) == SOUND_DRIVER_PLAY_SOUND {
+                    sound_driver.play_sound((id & 0xff) as u8);
+                } else if (id >> 8) == SOUND_DRIVER_PLAY_SOUND_SPECIAL {
+                    sound_driver.play_sound_special((id & 0xff) as u8);
+                }
+            } else {
+                break;
+            }
+        }
+
+        sound_driver.update();
+        if audio_device.size() < audio_device.spec().size {
+            audio_device
+                .queue_audio(&sound_driver.safe_audio_buffer)
+                .unwrap();
+        }
+
+        if let Some(capture_video_audio) = &mut capture_video_audio {
+            for sample in &sound_driver.safe_audio_buffer {
+                capture_video_audio.write_sample(*sample);
+            }
+        }
+
+        main_frame_timer.poll();
+        loop {
+            current_frame_time = sdl.timer().unwrap().performance_counter();
             if (current_frame_time - start_frame_time) > target_frame_time {
+                frame_count += 1;
                 break;
             }
         }
     }
 
-    fb_plane_b_low_handle.destroy(&gl_handle);
-    fb_plane_a_low_handle.destroy(&gl_handle);
-    fb_plane_s_low_handle.destroy(&gl_handle);
-    fb_plane_b_high_handle.destroy(&gl_handle);
-    fb_plane_a_high_handle.destroy(&gl_handle);
-    fb_plane_s_high_handle.destroy(&gl_handle);
+    if capture_video {
+        capture_video_sender.unwrap().send(None).unwrap();
+        capture_video_thread.unwrap().join().unwrap();
+    }
+
     Ok(())
 }
 
 struct Sonic1 {
     our_system: System,
     debug_pause: bool,
-    current_playing_music: u8,
+    pub current_playing_music: u8,
     is_current_music_sped_up: bool,
     frame_counter: usize,
     input_history: Vec<Input>,
@@ -629,6 +757,7 @@ impl Sonic1 {
         num_frames: u8,
         render: bool,
     ) -> Result<bool, String> {
+        self.current_playing_music = 0;
         let mut should_redraw = false;
         if !self.debug_pause {
             for _ in 0..num_frames {

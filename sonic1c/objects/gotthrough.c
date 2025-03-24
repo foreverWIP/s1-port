@@ -144,7 +144,7 @@ ROMFUNC(rom_CCD0) {
   DEF_ROMLOC(CD28) : move_toreg_8(read_8(0xFFFFFE0F), &D0); // MOVE.B	$FE0F,D0
   DEF_ROMLOC(CD2C) : and_toreg_8(0x3, &D0);                 // ANDI.B	#$03,D0
   DEF_ROMLOC(CD30) : if (!CCR_EQ) goto rom_CD20;            // BNE.B	$CD20
-  DEF_ROMLOC(CD32) : move_toreg_16(SFX_SPRING, &D0);        // MOVE.W	#$00CD,D0
+  DEF_ROMLOC(CD32) : move_toreg_16(SFX_SWITCH, &D0);        // MOVE.W	#$00CD,D0
   DEF_ROMLOC(CD36) : {
     play_sound_special();
     return;

@@ -155,7 +155,9 @@ pub fn get_data_defs() -> Vec<DataDef> {
         0x1B30E..0x1B32E,
         0x1B5E4..0x1B62A,
         0x1D2A6..0x1D6E6,
-        0x1D93A..u32::MAX,
+        // 0x1D93A..u32::MAX,
+        0x1D93A..0x71B4C,
+        0x72E7C..u32::MAX,
     ];
     let as_symbols = read_as_symbols(&fs::read_to_string("../sonic.map").unwrap());
     let filtered_symbols: Vec<_> = as_symbols

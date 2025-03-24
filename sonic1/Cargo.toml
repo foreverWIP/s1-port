@@ -8,6 +8,8 @@ edition = "2021"
 [dependencies]
 const_format = "0.2.33"
 glow = "0.14.0"
+hound = "3.5.1"
+image = "0.25.5"
 imgui = "0.12.0"
 imgui-glow-renderer = "0.13.0"
 imgui-sdl2-support = "0.13.0"
@@ -15,4 +17,5 @@ itertools = "0.13.0"
 md5 = "0.7.0"
 sdl2 = { version = "0.37.0", features = ["default"] }
 sdl2-sys = { version = "0.37.0", features = ["default"] }
+smps = { version = "0.1.0", path = "../smps" }
 speedshoes = { path = "../speedshoes" }

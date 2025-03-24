@@ -1,4 +1,5 @@
 use bitflags::bitflags;
+// use smps::emulation::SoundEmulator;
 use std::borrow::Borrow;
 use std::cell::RefCell;
 use std::cmp::Ordering;
@@ -6,6 +7,8 @@ use std::collections::HashMap;
 use std::env::consts::{DLL_PREFIX, DLL_SUFFIX};
 use std::fs;
 use std::rc::Rc;
+use std::sync::mpsc::Sender;
+use std::sync::Arc;
 
 use dlopen2::symbor::Symbol;
 
@@ -38,6 +41,8 @@ struct FFIInfo {
     write_16_cb: fn(emu: &mut ScriptEngine, loc: u32, value: u16) -> (),
     write_32_cb: fn(emu: &mut ScriptEngine, loc: u32, value: u32) -> (),
     sync_cb: fn(pc: u32) -> bool,
+    play_sound_cb: fn(emu: &ScriptEngine, sound: u8) -> (),
+    play_sound_special: fn(emu: &ScriptEngine, sound: u8) -> (),
 }
 
 pub(crate) struct ScriptEngine {
@@ -48,6 +53,7 @@ pub(crate) struct ScriptEngine {
     regs: Vec<*mut u32>,
     pub(crate) bus: Box<SpeedShoesBus>,
     last_state_ram: Rc<RefCell<Vec<u8>>>,
+    sound_driver_sender: Arc<Sender<i16>>,
 }
 
 impl ScriptEngine {
@@ -56,6 +62,7 @@ impl ScriptEngine {
         rom: Rc<Vec<u8>>,
         last_state_ram: Rc<RefCell<Vec<u8>>>,
         hw_planes_mode: bool,
+        sound_driver_sender: Arc<Sender<i16>>,
     ) -> Result<Self, String> {
         let ram = Rc::new(RefCell::new(vec![0u8; 0x1_0000]));
         let vdp = Vdp::new(rom.clone(), ram.clone(), hw_planes_mode);
@@ -72,6 +79,7 @@ impl ScriptEngine {
             fb_plane_s_high: vec![0u32; (GAME_WIDTH * GAME_HEIGHT) as usize].into_boxed_slice(),
             current_input: Input::default(),
             input_th_toggle: false,
+            // sound_writes: Vec::new(),
         };
         Ok(Self {
             dependent_libs: Vec::new(),
@@ -81,6 +89,7 @@ impl ScriptEngine {
             regs: Vec::new(),
             bus: Box::new(bus),
             last_state_ram,
+            sound_driver_sender: sound_driver_sender.clone(),
         })
     }
 
@@ -115,6 +124,14 @@ impl ScriptEngine {
             .write_memory::<{ DataSize::Long }>(loc, value as u32);
     }
 
+    fn sound_driver_send(&self, id: u8) {
+        self.sound_driver_sender.send(0x200 | (id as i16)).unwrap();
+    }
+
+    fn sound_driver_send_special(&self, id: u8) {
+        self.sound_driver_sender.send(0x300 | (id as i16)).unwrap();
+    }
+
     pub fn reset(&mut self) -> Result<(), String> {
         {
             if self.lib.is_some() {
@@ -132,6 +149,8 @@ impl ScriptEngine {
             write_16_cb: Self::write_16,
             write_32_cb: Self::write_32,
             sync_cb: synchronize_script,
+            play_sound_cb: Self::sound_driver_send,
+            play_sound_special: Self::sound_driver_send_special,
         };
         let libname = format!(
             "{}{}{}{}",

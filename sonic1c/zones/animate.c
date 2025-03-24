@@ -73,7 +73,7 @@ ROMFUNC(rom_1C80A) {
   rom_1CB6E();
   return;                                            // BRA.W	$1CB6E
   DEF_ROMLOC(1C876) : sub_tomem_8(0x1, 0xFFFFF7B5);  // SUBQ.B	#$01,$F7B5
-  DEF_ROMLOC(1C87A) : if (CCR_PL) goto rom_1C8C2;    // BPL.B	$1C8C2
+  DEF_ROMLOC(1C87A) : if (CCR_PL) return;    // BPL.B	$1C8C2
   DEF_ROMLOC(1C87C) : move_tomem_8(0x7, 0xFFFFF7B5); // MOVE.B	#$07,$F7B5
   DEF_ROMLOC(1C882)
       : move_toreg_8(read_8(0xFFFFF7B4), &D0);      // MOVE.B	$F7B4,D0
@@ -97,9 +97,6 @@ ROMFUNC(rom_1C80A) {
                       &A1);                    // LEA.L	0(A1,D0),A1
   DEF_ROMLOC(1C8BA) : move_toreg_16(0xB, &D1); // MOVE.W	#$000B,D1
   DEF_ROMLOC(1C8BE) : rom_1CB6E();             // BSR.W	$1CB6E
-  DEF_ROMLOC(1C8C2) : return;                  // RTS
-  DEF_ROMLOC(1C8C4) : or_toreg_8(0x1, &D1);    // ORI.B	#$01,D1
-  rom_1C8C8(); // Detected flow into next function
 }
 ROMFUNC(rom_1C8C8) {
   u8 switchindex = 0;

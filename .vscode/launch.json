@@ -11,7 +11,7 @@
 			"stdio": [
 				null,
 				null, // "${workspaceFolder}/sonic1/out.txt", // null,
-				"${workspaceFolder}/sonic1/err.txt",
+				null, // "${workspaceFolder}/sonic1/err.txt",
 			],
 			"cargo": {
 				"args": [
@@ -27,7 +27,7 @@
 				}
 			},
 			"args": [
-				"--test",
+				// "--test",
 			],
 			"cwd": "${workspaceFolder}/sonic1",
 			"env": {

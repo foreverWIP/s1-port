@@ -220,7 +220,7 @@ impl Display for MemWrite {
     }
 }
 
-#[derive(Clone)]
+// #[derive(Clone)]
 pub struct SpeedShoesBus {
     pub id: &'static str,
     pub(crate) rom: Rc<Vec<u8>>,

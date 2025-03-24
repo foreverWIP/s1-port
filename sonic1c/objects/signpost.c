@@ -171,7 +171,7 @@ ROMFUNC(rom_F316) {
   DEF_ROMLOC(F368) : mulu_toreg_16(0xA, &D0);       // MULU.W	#$000A,D0
   DEF_ROMLOC(F36C) : move_tomem_16(D0, 0xFFFFF7D4); // MOVE.W	D0,$F7D4
   DEF_ROMLOC(F370)
-      : move_toreg_16(BGM_GAMEOVER, &D0);  // MOVE.W
+      : move_toreg_16(BGM_GOTTHROUGH, &D0);  // MOVE.W
                                            // #$008E,D0
   DEF_ROMLOC(F374) : play_sound_special(); // JSR	$00001394
   DEF_ROMLOC(F37A) : return;               // RTS

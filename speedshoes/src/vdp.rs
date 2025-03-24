@@ -180,6 +180,18 @@ impl Vdp {
         }
     }
 
+    pub fn palette_f32(&self) -> Vec<f32> {
+        let mut ret = Vec::with_capacity(64 * 4);
+        for col in &self.palette {
+            let col_u32 = self.color_lut[*col as usize];
+            ret.push(((col_u32 >> 0) & 0xff) as f32 / (u8::MAX as f32));
+            ret.push(((col_u32 >> 8) & 0xff) as f32 / (u8::MAX as f32));
+            ret.push(((col_u32 >> 16) & 0xff) as f32 / (u8::MAX as f32));
+            ret.push(((col_u32 >> 24) & 0xff) as f32 / (u8::MAX as f32));
+        }
+        ret
+    }
+
     pub fn show_planes_and_sprites(&self) -> bool {
         self.show_planes_and_sprites
     }
@@ -521,6 +533,12 @@ impl Vdp {
             if line_state.is_some() {
                 line_state.unwrap().swap_state(self);
             }
+            fb_plane_b_low.fill(0);
+            fb_plane_b_high.fill(0);
+            fb_plane_a_low.fill(0);
+            fb_plane_s_low.fill(0);
+            fb_plane_a_high.fill(0);
+            fb_plane_s_high.fill(0);
             render_plane_line_b_low(
                 y,
                 GAME_WIDTH as u16,
@@ -532,6 +550,7 @@ impl Vdp {
                 &self.vscroll_buffer,
                 self.vscroll_mode,
                 fb_plane_b_low,
+                true,
             );
             render_plane_line_a_low(
                 y,
@@ -544,6 +563,7 @@ impl Vdp {
                 &self.vscroll_buffer,
                 self.vscroll_mode,
                 fb_plane_a_low,
+                true,
             );
             render_sprites_line_low(
                 &self.vram,
@@ -552,6 +572,7 @@ impl Vdp {
                 y,
                 GAME_WIDTH as u16,
                 fb_plane_s_low,
+                true,
             );
             render_plane_line_b_high(
                 y,
@@ -564,6 +585,7 @@ impl Vdp {
                 &self.vscroll_buffer,
                 self.vscroll_mode,
                 fb_plane_b_high,
+                true,
             );
             render_plane_line_a_high(
                 y,
@@ -576,6 +598,7 @@ impl Vdp {
                 &self.vscroll_buffer,
                 self.vscroll_mode,
                 fb_plane_a_high,
+                true,
             );
             render_sprites_line_high(
                 &self.vram,
@@ -584,6 +607,7 @@ impl Vdp {
                 y,
                 GAME_WIDTH as u16,
                 fb_plane_s_high,
+                true,
             );
             if line_state.is_some() {
                 line_state.unwrap().swap_state(self);

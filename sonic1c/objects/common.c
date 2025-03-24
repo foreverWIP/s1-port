@@ -974,6 +974,7 @@ ROMFUNC(rom_D9D6) {
       : move_toreg_32(read_32(0xDA0C + (s16)(D0 & 0xffff)),
                       &A1); // MOVEA.L	44(PC,D0),A1
   // DEF_ROMLOC(D9E2): CALLEMU(A1); // rom_A1(); // JSR	(A1)
+  // print("executing object %02x", switchindex);
   DEF_ROMLOC(D9E2) : switch (switchindex) {
   case 0x00:
     rom_132AC();

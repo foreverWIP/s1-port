@@ -1,4 +1,3 @@
 [workspace]
-members = ["asmconverter","sonic1", "speedshoes", "speedshoes-vdp-renderer"]
+members = ["asmconverter", "smps","sonic1", "speedshoes", "speedshoes-vdp-renderer"]
 resolver = "1"
-# debug = true

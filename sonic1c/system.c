@@ -12,6 +12,8 @@ typedef struct {
   void (*write_16_cb)(void *emu, u32 loc, u16 value);
   void (*write_32_cb)(void *emu, u32 loc, u32 value);
   bool (*synchronize)(u32 pc);
+  void (*play_sound)(void *emu, u8 sound);
+  void (*play_sound_special)(void *emu, u8 sound);
 } FFIInfo;
 
 EXPORT u32 speedshoes__d0;
@@ -40,6 +42,8 @@ void (*speedshoes__write_8_cb)(void *emu, u32 loc, u8 value);
 void (*speedshoes__write_16_cb)(void *emu, u32 loc, u16 value);
 void (*speedshoes__write_32_cb)(void *emu, u32 loc, u32 value);
 bool (*speedshoes__synchronize_cb)(u32 pc);
+void (*speedshoes__play_sound_cb)(void *emu, u8 sound);
+void (*speedshoes__play_sound_special_cb)(void *emu, u8 sound);
 
 void *speedshoes__emu;
 
@@ -107,6 +111,14 @@ void write_vdp_control_32(u32 value) {
   CHECK_EMU();
   speedshoes__write_32_cb(speedshoes__emu, VDP_CONTROL_PORT, value);
 }
+void speedshoes__play_sound(void) {
+	CHECK_EMU();
+	speedshoes__play_sound_cb(speedshoes__emu, D0);
+}
+void speedshoes__play_sound_special(void) {
+	CHECK_EMU();
+	speedshoes__play_sound_special_cb(speedshoes__emu, D0);
+}
 
 EXPORT void speedshoes__bind_functions(FFIInfo *ffiinfo) {
   print("Binding functions...");
@@ -118,6 +130,8 @@ EXPORT void speedshoes__bind_functions(FFIInfo *ffiinfo) {
   speedshoes__write_16_cb = ffiinfo->write_16_cb;
   speedshoes__write_32_cb = ffiinfo->write_32_cb;
   speedshoes__synchronize_cb = ffiinfo->synchronize;
+  speedshoes__play_sound_cb = ffiinfo->play_sound;
+  speedshoes__play_sound_special_cb = ffiinfo->play_sound_special;
 }
 
 bool speedshoes__synchronize(u32 pc) {

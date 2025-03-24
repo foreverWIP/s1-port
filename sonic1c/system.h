@@ -42,6 +42,8 @@ extern u32 speedshoes__read_32(u32 loc);
 extern void speedshoes__write_8(u32 loc, u8 value);
 extern void speedshoes__write_16(u32 loc, u16 value);
 extern void speedshoes__write_32(u32 loc, u32 value);
+extern void speedshoes__play_sound();
+extern void speedshoes__play_sound_special();
 
 extern bool speedshoes__synchronize(u32 pc);
 extern void speedshoes__callemu(u32 loc);
@@ -52,6 +54,8 @@ extern void speedshoes__callemu(u32 loc);
 #define write_8(loc, value) speedshoes__write_8(loc, value)
 #define write_16(loc, value) speedshoes__write_16(loc, value)
 #define write_32(loc, value) speedshoes__write_32(loc, value)
+#define play_sound() speedshoes__play_sound()
+#define play_sound_special() speedshoes__play_sound_special()
 
 extern EXPORT u32 speedshoes__d0;
 extern EXPORT u32 speedshoes__d1;

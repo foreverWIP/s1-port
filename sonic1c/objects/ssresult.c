@@ -135,7 +135,7 @@ ROMFUNC(rom_CF20) {
       : move_toreg_8(read_8(0xFFFFFE0F), &D0);   // MOVE.B	$FE0F,D0
   DEF_ROMLOC(CF42) : and_toreg_8(0x3, &D0);      // ANDI.B	#$03,D0
   DEF_ROMLOC(CF46) : if (!CCR_EQ) goto rom_CF78; // BNE.B	$CF78
-  DEF_ROMLOC(CF48) : move_toreg_16(SFX_SPRING, &D0);   // MOVE.W	#$00CD,D0
+  DEF_ROMLOC(CF48) : move_toreg_16(SFX_SWITCH, &D0);   // MOVE.W	#$00CD,D0
   DEF_ROMLOC(CF4C) : play_sound_special();
   return;                                            // JMP	$00001394
   DEF_ROMLOC(CF52) : move_toreg_16(SFX_CASH, &D0);       // MOVE.W	#$00C5,D0

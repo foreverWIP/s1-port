@@ -32,6 +32,10 @@ sonic1/*.dll
 sonic1/*.txt
 sonic1/*.bin
 
+smps/test.wav
+
+movie/
+
 *.exe
 *.def
 *.dll

@@ -1,4 +1,5 @@
 use std::{
+    backtrace::Backtrace,
     borrow::Borrow,
     cell::{RefCell, UnsafeCell},
     collections::{HashMap, HashSet},
@@ -6,12 +7,13 @@ use std::{
     fs,
     panic::set_hook,
     rc::Rc,
-    sync::{LazyLock, OnceLock, RwLock},
+    sync::{mpsc::Sender, Arc, LazyLock, OnceLock, RwLock},
 };
 
 use itertools::Itertools;
 use r68k_emu::cpu::ProcessingState;
 use r68k_tools::{disassembler::Disassembler, memory::MemoryVec, Exception, OpcodeInstance, PC};
+// use smps::emulation::SoundEmulator;
 
 use crate::{
     comma_separated,
@@ -177,23 +179,6 @@ pub fn synchronize_script(pc: u32) -> bool {
         let pc_before = our_system.core.as_ref().unwrap().pc;
         our_system.run_emu_instruction();
         let pc_after = our_system.core.as_ref().unwrap().pc;
-        /*if !(0x1438..0x2160).contains(&pc_before)
-            && !(0x132AC..0x15DF6).contains(&pc_before)
-            && !(0x9B6E..0xE14C).contains(&pc_before)
-            && !(0x626E..0x73B6).contains(&pc_before)
-            && !(0x1B59A..0x1B7AA).contains(&pc_before)
-            && !(0xB88..0x11B6).contains(&pc_before)
-            && !(0x1C7DA..0x1D104).contains(&pc_before)
-            && !(0xADA2..0xAE4E).contains(&pc_before)
-            && !(0xFD38..0xFD70).contains(&pc_before)
-        {
-            let msg = format!(
-                "{} -> {}",
-                our_system.get_symbol(pc_before),
-                our_system.get_symbol(pc_after),
-            );
-            our_system.print_nested(&msg);
-        }*/
         if inst_sync_counter < our_system.sync_pcs.len() {
             our_system.sync_pcs[inst_sync_counter] = our_system.core.as_ref().unwrap().pc;
         }
@@ -235,7 +220,7 @@ pub struct System {
     vblank_addr: u32,
     rom_backup: MemoryVec,
     pub last_frame_ram: Option<Vec<u8>>,
-    pub vdp: Rc<RefCell<Vdp>>,
+    emu_vdp: Rc<RefCell<Vdp>>,
     pub(crate) core: Option<SpeedShoesCore>,
     script_engine: Box<ScriptEngine>,
     pub unimplemented_subs_frame: HashSet<u32>,
@@ -265,6 +250,14 @@ impl Drop for System {
 }
 
 impl System {
+    pub fn vdp(&self) -> Rc<RefCell<Vdp>> {
+        if self.test_mode {
+            self.emu_vdp.clone()
+        } else {
+            self.script_engine.bus.vdp.clone()
+        }
+    }
+
     pub fn fb_plane_a_low(&self) -> &Box<[u32]> {
         &self.script_engine.bus.fb_plane_a_low
     }
@@ -439,7 +432,7 @@ impl System {
                     ));
                 }
             }
-            let emu_vram = &self.vdp.as_ref().borrow().vram;
+            let emu_vram = &self.emu_vdp.as_ref().borrow().vram;
             let script_vram = &self.script_engine.bus.vdp.as_ref().borrow().vram;
             for i in 0..(0x1_0000 / 2) {
                 let control_word: u16 =
@@ -459,7 +452,7 @@ impl System {
         }
 
         {
-            let emu_vdp = &self.vdp.as_ref().borrow();
+            let emu_vdp = &self.emu_vdp.as_ref().borrow();
             let script_vdp = &self.script_engine.bus.vdp.as_ref().borrow();
             if emu_vdp.dst_ptr != script_vdp.dst_ptr {
                 ram_differences.push(format!(
@@ -476,10 +469,10 @@ impl System {
         }
 
         if !ram_differences.is_empty() || !reg_differences.is_empty() {
-            dbg!(self.vdp.as_ref().borrow());
+            dbg!(self.emu_vdp.as_ref().borrow());
             dbg!(self.script_engine.bus.vdp.as_ref().borrow());
             return Err(format!(
-                "Simulation mismatch at pc {} (calling function {}):\nFirst {} PCs ran: {}\n{}",
+                "Simulation mismatch at pc {} (calling function {}):\nLast {} PCs ran: {}\n{}",
                 self.get_symbol(self.core.as_ref().unwrap().pc()),
                 self.get_symbol(self.currently_executing_function),
                 self.sync_pcs.len(),
@@ -498,6 +491,7 @@ impl System {
         use_scripts: bool,
         test_mode: bool,
         hw_planes_mode: bool,
+        sound_driver_sender: Arc<Sender<i16>>,
     ) -> Result<System, String> {
         unsafe {
             DESYNC_SCRIPT_MESSAGE = None;
@@ -542,13 +536,14 @@ impl System {
             vblank_addr: rom_things.1,
             rom_backup: MemoryVec::new8(PC(0), rom_things.0.clone()),
             last_frame_ram: None,
-            vdp,
+            emu_vdp: vdp,
             core,
             script_engine: Box::new(ScriptEngine::new(
                 name,
                 rom,
                 Rc::new(RefCell::new(ram.clone())),
                 hw_planes_mode,
+                sound_driver_sender.clone(),
             )?),
             unimplemented_subs_frame: HashSet::new(),
             unimplemented_subs_total: HashSet::new(),
@@ -595,7 +590,11 @@ impl System {
             let mut inst_sync_counter = 0;
             while self.core.as_ref().unwrap().pc != next_addr {
                 if inst_sync_counter < self.sync_pcs.len() {
-                    self.sync_pcs[inst_sync_counter] = self.core.as_ref().unwrap().pc;
+                    let len = self.sync_pcs.len();
+                    self.sync_pcs[len - inst_sync_counter - 1] = self.core.as_ref().unwrap().pc;
+                } else {
+                    self.sync_pcs.remove(0);
+                    self.sync_pcs.push(self.core.as_ref().unwrap().pc);
                 }
                 self.run_emu_instruction();
                 self.emu_machine_instructions_ran += 1;
@@ -758,9 +757,5 @@ impl System {
 
     pub fn bg_color(&self) -> u32 {
         self.script_engine.bus.vdp.as_ref().borrow().bg_color()
-    }
-
-    fn vdp(&self) -> Rc<RefCell<Vdp>> {
-        self.vdp.clone()
     }
 }

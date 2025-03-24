@@ -534,7 +534,9 @@ fn main() -> Result<(), String> {
             0x1B30E..0x1B32E,
             0x1B5E4..0x1B62A,
             0x1D2A6..0x1D6E6,
-            0x1D93A..u32::MAX,
+            // 0x1D93A..u32::MAX,
+            0x1D93A..0x71B4C,
+            0x72E7C..u32::MAX,
         ])
     };
 

@@ -7,8 +7,6 @@
 #define v_ssbuffer1 RAMLOC32(0x0000)
 #define v_ngfx_buffer RAMLOC32(0xaa00)
 #define v_16x16 RAMLOC32(0xb000)
-#define v_soundqueue0 RAMLOC32(0xf00a)
-#define v_soundqueue1 RAMLOC32(0xf00b)
 extern u8 v_gamemode;
 #define v_plc_buffer RAMLOC32(0xf680)
 #define v_plc_patternsleft RAMLOC32(0xf6f8)

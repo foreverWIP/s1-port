@@ -1,0 +1,3 @@
+[submodule "smps/libvgm"]
+	path = smps/libvgm
+	url = https://github.com/ValleyBell/libvgm
