@@ -12,8 +12,6 @@ macro_rules! pal_index_to_32bit {
     };
 }
 
-const VRAM_SIZE_BYTES: usize = 0x1_0000;
-
 #[derive(Clone, Copy, ConstParamTy, PartialEq, Eq)]
 enum PlaneRenderMode {
     Low = 0b01,
@@ -108,17 +106,16 @@ pub struct Sprite {
     pub next: u8,
 }
 impl Sprite {
-    pub fn new(vram: &[u8; VRAM_SIZE_BYTES], address: u16, screen_width: u16) -> Self {
+    pub fn new(sprite_bytes: &[u8], screen_width: u16) -> Self {
         let max_sprite_x = (screen_width + 128 + 64).next_power_of_two() as u32;
-        let address = address as usize;
-        let long1 = ((vram[address as usize + 0] as u32) << 24)
-            | ((vram[address as usize + 1] as u32) << 16)
-            | ((vram[address as usize + 2] as u32) << 8)
-            | (vram[address as usize + 3] as u32);
-        let long2 = ((vram[address as usize + 4] as u32) << 24)
-            | ((vram[address as usize + 5] as u32) << 16)
-            | ((vram[address as usize + 6] as u32) << 8)
-            | (vram[address as usize + 7] as u32);
+        let long1 = ((sprite_bytes[0] as u32) << 24)
+            | ((sprite_bytes[1] as u32) << 16)
+            | ((sprite_bytes[2] as u32) << 8)
+            | (sprite_bytes[3] as u32);
+        let long2 = ((sprite_bytes[4] as u32) << 24)
+            | ((sprite_bytes[5] as u32) << 16)
+            | ((sprite_bytes[6] as u32) << 8)
+            | (sprite_bytes[7] as u32);
         Self {
             x: (long2 & (max_sprite_x - 1)) as i16 - 128,
             y: ((long1 >> 16) & 0x3ff) as i16 - 128,
@@ -140,30 +137,30 @@ impl Sprite {
     }
 }
 
-fn read_vram_word(vram: &[u8; VRAM_SIZE_BYTES], address: u16) -> u16 {
-    ((vram[address as usize] as u16) << 8) | (vram[address as usize + 1] as u16)
+fn read_word(slice: &[u8]) -> u16 {
+    ((slice[0] as u16) << 8) | (slice[1] as u16)
 }
 
-fn read_vram_long(vram: &[u8; VRAM_SIZE_BYTES], address: u16) -> u32 {
-    ((vram[address as usize] as u32) << 24)
-        | ((vram[address as usize + 1] as u32) << 16)
-        | ((vram[address as usize + 2] as u32) << 8)
-        | (vram[address as usize + 3] as u32)
+fn read_long(slice: &[u8]) -> u32 {
+    ((slice[0] as u32) << 24)
+        | ((slice[1] as u32) << 16)
+        | ((slice[2] as u32) << 8)
+        | (slice[3] as u32)
 }
 
 pub fn render_sprites_line_low(
-    vram: &[u8; VRAM_SIZE_BYTES],
+    pattern_data: &[u8],
     palette: &[u16; 64],
-    sprite_table_location: u16,
+    sprite_table: &[u8],
     y: u16,
     line_width: u16,
     screen_buf: &mut [u32],
     hw_mode: bool,
 ) {
     render_sprites_line_common::<{ PlaneRenderMode::Low }>(
-        vram,
+        sprite_table,
+        pattern_data,
         palette,
-        sprite_table_location,
         y,
         line_width,
         screen_buf,
@@ -172,18 +169,18 @@ pub fn render_sprites_line_low(
 }
 
 pub fn render_sprites_line_high(
-    vram: &[u8; VRAM_SIZE_BYTES],
+    pattern_table: &[u8],
     palette: &[u16; 64],
-    sprite_table_location: u16,
+    sprite_table: &[u8],
     y: u16,
     line_width: u16,
     screen_buf: &mut [u32],
     hw_mode: bool,
 ) {
     render_sprites_line_common::<{ PlaneRenderMode::High }>(
-        vram,
+        sprite_table,
+        pattern_table,
         palette,
-        sprite_table_location,
         y,
         line_width,
         screen_buf,
@@ -192,9 +189,9 @@ pub fn render_sprites_line_high(
 }
 
 fn render_sprites_line_common<const MODE: PlaneRenderMode>(
-    vram: &[u8; VRAM_SIZE_BYTES],
+    sprite_table: &[u8],
+    pattern_data: &[u8],
     palette: &[u16; 64],
-    sprite_table_location: u16,
     y: u16,
     line_width: u16,
     screen_buf: &mut [u32],
@@ -206,8 +203,7 @@ fn render_sprites_line_common<const MODE: PlaneRenderMode>(
 
     while cur_sprite_count < 80 {
         let sprite = Sprite::new(
-            vram,
-            sprite_table_location + ((cur_sprite_link as u16) << 3),
+            &sprite_table[(((cur_sprite_link as u16) << 3) as usize)..],
             line_width,
         );
 
@@ -239,8 +235,9 @@ fn render_sprites_line_common<const MODE: PlaneRenderMode>(
                         - ((sprite.x + (sprite.width_pixels as i16)) - (line_width as i16))
                 } as u16;
                 while draw_x < draw_x_end {
-                    let pattern_strip =
-                        read_vram_long(vram, sprite.pattern_index_at_pos(draw_x, draw_y));
+                    let pattern_strip = read_long(
+                        &pattern_data[(sprite.pattern_index_at_pos(draw_x, draw_y) as usize)..],
+                    );
 
                     let cell_x = if !sprite.attributes.horizontal_flip {
                         8 - (draw_x & 7) - 1
@@ -285,11 +282,11 @@ fn render_sprites_line_common<const MODE: PlaneRenderMode>(
 pub fn render_plane_line_a_high(
     y: u16,
     line_width: u16,
-    vram: &[u8; VRAM_SIZE_BYTES],
+    pattern_data: &[u8],
     palette: &[u16; 64],
     plane_size: PlaneSize,
-    plane_a_location: u16,
-    hscroll_location: u16,
+    plane_a_nametable: &[u8],
+    hscroll_buffer: &[u8],
     vscroll_buffer: &[u16; 80 / 2],
     vscroll_mode: VScrollMode,
     screen_buf: &mut [u32],
@@ -298,11 +295,11 @@ pub fn render_plane_line_a_high(
     render_plane_line_common::<true, { PlaneRenderMode::High }>(
         y,
         line_width,
-        vram,
+        pattern_data,
         palette,
         plane_size,
-        plane_a_location,
-        hscroll_location,
+        plane_a_nametable,
+        hscroll_buffer,
         vscroll_buffer,
         vscroll_mode,
         screen_buf,
@@ -313,11 +310,11 @@ pub fn render_plane_line_a_high(
 pub fn render_plane_line_a_low(
     y: u16,
     line_width: u16,
-    vram: &[u8; VRAM_SIZE_BYTES],
+    pattern_data: &[u8],
     palette: &[u16; 64],
     plane_size: PlaneSize,
-    plane_a_location: u16,
-    hscroll_location: u16,
+    plane_a_nametable: &[u8],
+    hscroll_buffer: &[u8],
     vscroll_buffer: &[u16; 80 / 2],
     vscroll_mode: VScrollMode,
     screen_buf: &mut [u32],
@@ -326,11 +323,11 @@ pub fn render_plane_line_a_low(
     render_plane_line_common::<true, { PlaneRenderMode::Low }>(
         y,
         line_width,
-        vram,
+        pattern_data,
         palette,
         plane_size,
-        plane_a_location,
-        hscroll_location,
+        plane_a_nametable,
+        hscroll_buffer,
         vscroll_buffer,
         vscroll_mode,
         screen_buf,
@@ -341,11 +338,11 @@ pub fn render_plane_line_a_low(
 pub fn render_plane_line_b_high(
     y: u16,
     line_width: u16,
-    vram: &[u8; VRAM_SIZE_BYTES],
+    pattern_data: &[u8],
     palette: &[u16; 64],
     plane_size: PlaneSize,
-    plane_b_location: u16,
-    hscroll_location: u16,
+    plane_b_nametable: &[u8],
+    hscroll_buffer: &[u8],
     vscroll_buffer: &[u16; 80 / 2],
     vscroll_mode: VScrollMode,
     screen_buf: &mut [u32],
@@ -354,11 +351,11 @@ pub fn render_plane_line_b_high(
     render_plane_line_common::<false, { PlaneRenderMode::High }>(
         y,
         line_width,
-        vram,
+        pattern_data,
         palette,
         plane_size,
-        plane_b_location,
-        hscroll_location,
+        plane_b_nametable,
+        hscroll_buffer,
         vscroll_buffer,
         vscroll_mode,
         screen_buf,
@@ -369,11 +366,11 @@ pub fn render_plane_line_b_high(
 pub fn render_plane_line_b_low(
     y: u16,
     line_width: u16,
-    vram: &[u8; VRAM_SIZE_BYTES],
+    pattern_data: &[u8],
     palette: &[u16; 64],
     plane_size: PlaneSize,
-    plane_b_location: u16,
-    hscroll_location: u16,
+    plane_b_nametable: &[u8],
+    hscroll_buffer: &[u8],
     vscroll_buffer: &[u16; 80 / 2],
     vscroll_mode: VScrollMode,
     screen_buf: &mut [u32],
@@ -382,11 +379,11 @@ pub fn render_plane_line_b_low(
     render_plane_line_common::<false, { PlaneRenderMode::Low }>(
         y,
         line_width,
-        vram,
+        pattern_data,
         palette,
         plane_size,
-        plane_b_location,
-        hscroll_location,
+        plane_b_nametable,
+        hscroll_buffer,
         vscroll_buffer,
         vscroll_mode,
         screen_buf,
@@ -397,11 +394,11 @@ pub fn render_plane_line_b_low(
 fn render_plane_line_common<const PLANEA: bool, const MODE: PlaneRenderMode>(
     y: u16,
     line_width: u16,
-    vram: &[u8; VRAM_SIZE_BYTES],
+    pattern_data: &[u8],
     palette: &[u16; 64],
     plane_size: PlaneSize,
-    plane_location: u16,
-    hscroll_location: u16,
+    plane_nametable: &[u8],
+    hscroll_buffer: &[u8],
     vscroll_buffer: &[u16; 80 / 2],
     vscroll_mode: VScrollMode,
     screen_buf: &mut [u32],
@@ -418,13 +415,10 @@ fn render_plane_line_common<const PLANEA: bool, const MODE: PlaneRenderMode>(
         }
     };
     let scroll_x = if PLANEA {
-        (-(read_vram_word(vram, hscroll_location.wrapping_add(y.wrapping_mul(4))) as i16))
-            .wrapping_add(8) as u16
+        (-(read_word(&hscroll_buffer[(y.wrapping_mul(4) as usize)..]) as i16)).wrapping_add(8)
+            as u16
     } else {
-        (-(read_vram_word(
-            vram,
-            hscroll_location.wrapping_add(y.wrapping_mul(4).wrapping_add(2)),
-        ) as i16))
+        (-(read_word(&hscroll_buffer[(y.wrapping_mul(4).wrapping_add(2) as usize)..]) as i16))
             .wrapping_add(8) as u16
     };
     let scroll_x_within_tile = (scroll_x & 0x7) as u16;
@@ -445,14 +439,11 @@ fn render_plane_line_common<const PLANEA: bool, const MODE: PlaneRenderMode>(
 
         let pos_x_cells = (cur_cell_x.wrapping_sub(1) << 3).wrapping_add(scroll_x) >> 3;
         let pos_y_cells = y.wrapping_add(scroll_y) >> 3;
-        let cur_cell = TileAttributes::new(read_vram_word(
-            vram,
-            plane_location.wrapping_add(
-                (pos_y_cells & plane_size_cells_mask_y)
-                    .wrapping_mul(plane_size_cells_mask_x + 1)
-                    .wrapping_add(pos_x_cells & plane_size_cells_mask_x)
-                    .wrapping_shl(1),
-            ),
+        let cur_cell = TileAttributes::new(read_word(
+            &plane_nametable[((pos_y_cells & plane_size_cells_mask_y)
+                .wrapping_mul(plane_size_cells_mask_x + 1)
+                .wrapping_add(pos_x_cells & plane_size_cells_mask_x)
+                .wrapping_shl(1) as usize)..],
         ));
         let buf_index = (cur_cell_x << 3) as usize;
         if (cur_cell.priority && MODE == PlaneRenderMode::Low)
@@ -464,10 +455,9 @@ fn render_plane_line_common<const PLANEA: bool, const MODE: PlaneRenderMode>(
         if cur_cell.vertical_flip {
             pixel_y = 8 - pixel_y - 1;
         }
-        let pattern_strip = read_vram_long(
-            vram,
-            ((((cur_cell.tile_index as usize) & 0x7ff).wrapping_shl(5))
-                .wrapping_add((pixel_y.wrapping_shl(2)) as usize)) as u16,
+        let pattern_strip = read_long(
+            &pattern_data[((((cur_cell.tile_index as usize) & 0x7ff).wrapping_shl(5))
+                .wrapping_add((pixel_y.wrapping_shl(2)) as usize))..],
         );
 
         if cur_cell.horizontal_flip {
@@ -521,13 +511,13 @@ fn render_plane_line_common<const PLANEA: bool, const MODE: PlaneRenderMode>(
 }
 
 pub fn render_screen_line(
-    vram: &[u8; VRAM_SIZE_BYTES],
+    pattern_data: &[u8],
     palette: &[u16; 64],
     bg_color_index: u8,
-    plane_a_location: u16,
-    plane_b_location: u16,
-    hscroll_location: u16,
-    sprite_table_location: u16,
+    plane_a_nametable: &[u8],
+    plane_b_nametable: &[u8],
+    hscroll_buffer: &[u8],
+    sprite_table: &[u8],
     vscroll_buffer: &[u16; 80 / 2],
     vscroll_mode: VScrollMode,
     y: u16,
@@ -537,9 +527,9 @@ pub fn render_screen_line(
 ) {
     fb.fill(0);
     render_sprites_line_high(
-        &vram,
+        &pattern_data,
         &palette,
-        sprite_table_location,
+        sprite_table,
         y,
         line_width,
         fb,
@@ -548,11 +538,11 @@ pub fn render_screen_line(
     render_plane_line_a_high(
         y,
         line_width,
-        &vram,
+        &pattern_data,
         &palette,
         plane_size,
-        plane_a_location,
-        hscroll_location,
+        plane_a_nametable,
+        hscroll_buffer,
         &vscroll_buffer,
         vscroll_mode,
         fb,
@@ -561,20 +551,20 @@ pub fn render_screen_line(
     render_plane_line_b_high(
         y,
         line_width,
-        &vram,
+        &pattern_data,
         &palette,
         plane_size,
-        plane_b_location,
-        hscroll_location,
+        plane_b_nametable,
+        hscroll_buffer,
         &vscroll_buffer,
         vscroll_mode,
         fb,
         false,
     );
     render_sprites_line_low(
-        &vram,
+        &pattern_data,
         &palette,
-        sprite_table_location,
+        sprite_table,
         y,
         line_width,
         fb,
@@ -583,11 +573,11 @@ pub fn render_screen_line(
     render_plane_line_a_low(
         y,
         line_width,
-        &vram,
+        &pattern_data,
         &palette,
         plane_size,
-        plane_a_location,
-        hscroll_location,
+        plane_a_nametable,
+        hscroll_buffer,
         &vscroll_buffer,
         vscroll_mode,
         fb,
@@ -596,11 +586,11 @@ pub fn render_screen_line(
     render_plane_line_b_low(
         y,
         line_width,
-        &vram,
+        &pattern_data,
         &palette,
         plane_size,
-        plane_b_location,
-        hscroll_location,
+        plane_b_nametable,
+        hscroll_buffer,
         &vscroll_buffer,
         vscroll_mode,
         fb,

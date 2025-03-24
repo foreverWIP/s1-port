@@ -48,9 +48,9 @@ pub struct VdpPerLineState {
     palette: [u16; 64],
 }
 impl VdpPerLineState {
-    pub fn swap_state(&mut self, vdp: &mut Vdp) {
-        let backup = vdp.palette.clone();
-        vdp.palette.copy_from_slice(&self.palette);
+    pub fn swap_state(&mut self, other_palette: &mut [u16; 64]) {
+        let backup = other_palette.clone();
+        other_palette.copy_from_slice(&self.palette);
         self.palette = backup;
     }
 }
@@ -65,6 +65,7 @@ macro_rules! pal_index_to_32bit {
 }
 
 pub struct Vdp {
+    test_mode: bool,
     pub(crate) vram: Box<[u8; VRAM_SIZE_BYTES]>,
     /// Mask the high bit of each color channel.
     /// 3-bit color -> 2-bit color
@@ -131,7 +132,12 @@ impl std::fmt::Debug for Vdp {
     }
 }
 impl Vdp {
-    pub fn new(rom: Rc<Vec<u8>>, ram: Rc<RefCell<Vec<u8>>>, hw_planes_mode: bool) -> Vdp {
+    pub fn new(
+        rom: Rc<Vec<u8>>,
+        ram: Rc<RefCell<Vec<u8>>>,
+        hw_planes_mode: bool,
+        test_mode: bool,
+    ) -> Vdp {
         let mut color_lut = vec![0u32; 0x1_0000].into_boxed_slice();
         for i in 0..color_lut.len() {
             let r = CHANNEL_LOOKUP[(i >> 1) & 0b111];
@@ -140,6 +146,7 @@ impl Vdp {
             color_lut[i] = (0xff << 24) | (b << 16) | (g << 8) | (r << 0);
         }
         Vdp {
+            test_mode,
             vram: vec![0u8; VRAM_SIZE_BYTES]
                 .into_boxed_slice()
                 .try_into()
@@ -528,10 +535,14 @@ impl Vdp {
         fb_plane_a_high: &mut [u32],
         fb_plane_s_high: &mut [u32],
     ) {
+        let hscroll_buffer = &self.vram[(self.hscroll_location as usize)..];
+        let plane_a_nametable = &self.vram[(self.plane_a_location as usize)..];
+        let plane_b_nametable = &self.vram[(self.plane_b_location as usize)..];
+        let sprite_table = &self.vram[(self.sprite_table_location as usize)..];
         if self.hw_planes_mode {
             let line_state = self.per_line_state[y as usize];
             if line_state.is_some() {
-                line_state.unwrap().swap_state(self);
+                line_state.unwrap().swap_state(&mut self.palette);
             }
             fb_plane_b_low.fill(0);
             fb_plane_b_high.fill(0);
@@ -542,11 +553,11 @@ impl Vdp {
             render_plane_line_b_low(
                 y,
                 GAME_WIDTH as u16,
-                &self.vram,
+                self.vram.as_ref(),
                 &self.palette,
                 self.plane_size,
-                self.plane_b_location,
-                self.hscroll_location,
+                plane_b_nametable,
+                hscroll_buffer,
                 &self.vscroll_buffer,
                 self.vscroll_mode,
                 fb_plane_b_low,
@@ -555,20 +566,20 @@ impl Vdp {
             render_plane_line_a_low(
                 y,
                 GAME_WIDTH as u16,
-                &self.vram,
+                self.vram.as_ref(),
                 &self.palette,
                 self.plane_size,
-                self.plane_a_location,
-                self.hscroll_location,
+                plane_a_nametable,
+                hscroll_buffer,
                 &self.vscroll_buffer,
                 self.vscroll_mode,
                 fb_plane_a_low,
                 true,
             );
             render_sprites_line_low(
-                &self.vram,
+                self.vram.as_ref(),
                 &self.palette,
-                self.sprite_table_location,
+                sprite_table,
                 y,
                 GAME_WIDTH as u16,
                 fb_plane_s_low,
@@ -577,11 +588,11 @@ impl Vdp {
             render_plane_line_b_high(
                 y,
                 GAME_WIDTH as u16,
-                &self.vram,
+                self.vram.as_ref(),
                 &self.palette,
                 self.plane_size,
-                self.plane_b_location,
-                self.hscroll_location,
+                plane_b_nametable,
+                hscroll_buffer,
                 &self.vscroll_buffer,
                 self.vscroll_mode,
                 fb_plane_b_high,
@@ -590,37 +601,37 @@ impl Vdp {
             render_plane_line_a_high(
                 y,
                 GAME_WIDTH as u16,
-                &self.vram,
+                self.vram.as_ref(),
                 &self.palette,
                 self.plane_size,
-                self.plane_a_location,
-                self.hscroll_location,
+                plane_a_nametable,
+                hscroll_buffer,
                 &self.vscroll_buffer,
                 self.vscroll_mode,
                 fb_plane_a_high,
                 true,
             );
             render_sprites_line_high(
-                &self.vram,
+                self.vram.as_ref(),
                 &self.palette,
-                self.sprite_table_location,
+                sprite_table,
                 y,
                 GAME_WIDTH as u16,
                 fb_plane_s_high,
                 true,
             );
             if line_state.is_some() {
-                line_state.unwrap().swap_state(self);
+                line_state.unwrap().swap_state(&mut self.palette);
             }
         } else {
             render_screen_line(
-                &self.vram,
+                self.vram.as_ref(),
                 &self.palette,
                 self.bg_color_index,
-                self.plane_a_location,
-                self.plane_b_location,
-                self.hscroll_location,
-                self.sprite_table_location,
+                plane_a_nametable,
+                plane_b_nametable,
+                hscroll_buffer,
+                sprite_table,
                 &self.vscroll_buffer,
                 self.vscroll_mode,
                 y,

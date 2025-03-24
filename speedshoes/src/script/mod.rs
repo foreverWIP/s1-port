@@ -65,7 +65,7 @@ impl ScriptEngine {
         sound_driver_sender: Arc<Sender<i16>>,
     ) -> Result<Self, String> {
         let ram = Rc::new(RefCell::new(vec![0u8; 0x1_0000]));
-        let vdp = Vdp::new(rom.clone(), ram.clone(), hw_planes_mode);
+        let vdp = Vdp::new(rom.clone(), ram.clone(), hw_planes_mode, false);
         let bus = SpeedShoesBus {
             id: "script",
             rom,

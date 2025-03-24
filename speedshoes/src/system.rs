@@ -503,6 +503,7 @@ impl System {
             rom.clone(),
             our_ram.clone(),
             hw_planes_mode,
+            test_mode,
         )));
         let sp_addr = u32::from_be_bytes(rom[0..4].try_into().unwrap());
         let pc_addr = u32::from_be_bytes(rom[4..8].try_into().unwrap());
