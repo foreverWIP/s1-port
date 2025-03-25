@@ -751,8 +751,9 @@ impl System {
     }
 
     pub fn render(&mut self) -> Result<(), String> {
-        // self.core.mem.render()?;
-        self.script_engine.bus.render()?;
+        /*if self.test_mode {
+            self.core.mem.render()?;
+        }*/
         Ok(())
     }
 

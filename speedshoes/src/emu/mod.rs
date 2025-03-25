@@ -387,12 +387,31 @@ impl SpeedShoesBus {
 
     pub fn render(&mut self) -> Result<(), String> {
         if self.vdp.as_ref().borrow().display_enabled() {
-            self.fb_plane_s_high.fill(0);
-            self.fb_plane_s_low.fill(0);
-            for y in 0usize..224 {
-                let fb_range =
-                    (y * GAME_WIDTH as usize)..((y * GAME_WIDTH as usize) + GAME_WIDTH as usize);
-                self.vdp.as_ref().borrow_mut().render_screen_line(
+            let mut vdp = self.vdp.as_ref().borrow_mut();
+            if vdp.hw_planes_mode {
+                let plane_len = self.fb_plane_b_low.len();
+                self.fb_plane_b_low[..(plane_len / 4)].fill(0);
+                self.fb_plane_a_low[..(plane_len / 4)].fill(0);
+                self.fb_plane_s_low[..(plane_len / 4)].fill(0);
+                self.fb_plane_b_high[..(plane_len / 4)].fill(0);
+                self.fb_plane_a_high[..(plane_len / 4)].fill(0);
+                self.fb_plane_s_high[..(plane_len / 4)].fill(0);
+            } else {
+                self.fb_plane_b_low.fill(0);
+                self.fb_plane_a_low.fill(0);
+                self.fb_plane_s_low.fill(0);
+                self.fb_plane_b_high.fill(0);
+                self.fb_plane_a_high.fill(0);
+                self.fb_plane_s_high.fill(0);
+            }
+            let stride = if vdp.hw_planes_mode {
+                GAME_WIDTH / 4
+            } else {
+                GAME_WIDTH
+            };
+            for y in 0usize..(GAME_HEIGHT as usize) {
+                let fb_range = (y * stride as usize)..((y * stride as usize) + GAME_WIDTH as usize);
+                vdp.render_screen_line(
                     y as u16,
                     &mut self.fb_plane_b_low[fb_range.clone()],
                     &mut self.fb_plane_b_high[fb_range.clone()],

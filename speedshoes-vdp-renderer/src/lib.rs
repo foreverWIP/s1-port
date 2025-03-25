@@ -106,18 +106,11 @@ pub struct Sprite {
     pub next: u8,
 }
 impl Sprite {
-    pub fn new(sprite_bytes: &[u8], screen_width: u16) -> Self {
-        let max_sprite_x = (screen_width + 128 + 64).next_power_of_two() as u32;
-        let long1 = ((sprite_bytes[0] as u32) << 24)
-            | ((sprite_bytes[1] as u32) << 16)
-            | ((sprite_bytes[2] as u32) << 8)
-            | (sprite_bytes[3] as u32);
-        let long2 = ((sprite_bytes[4] as u32) << 24)
-            | ((sprite_bytes[5] as u32) << 16)
-            | ((sprite_bytes[6] as u32) << 8)
-            | (sprite_bytes[7] as u32);
+    pub fn new(sprite_bytes: u64) -> Self {
+        let long1 = (sprite_bytes >> 32) as u32;
+        let long2 = sprite_bytes as u32;
         Self {
-            x: (long2 & (max_sprite_x - 1)) as i16 - 128,
+            x: long2 as i16 - 128,
             y: ((long1 >> 16) & 0x3ff) as i16 - 128,
             width_pixels: (((long1 >> 10) & 0b11) as u16 + 1) << 3,
             height_pixels: (((long1 >> 8) & 0b11) as u16 + 1) << 3,
@@ -137,15 +130,16 @@ impl Sprite {
     }
 }
 
-fn read_word(slice: &[u8]) -> u16 {
-    ((slice[0] as u16) << 8) | (slice[1] as u16)
+const fn read_word(slice: &[u8]) -> u16 {
+    unsafe { core::ptr::read::<u16>(slice.as_ptr() as *const u16).swap_bytes() }
 }
 
-fn read_long(slice: &[u8]) -> u32 {
-    ((slice[0] as u32) << 24)
-        | ((slice[1] as u32) << 16)
-        | ((slice[2] as u32) << 8)
-        | (slice[3] as u32)
+const fn read_long(slice: &[u8]) -> u32 {
+    unsafe { core::ptr::read::<u32>(slice.as_ptr() as *const u32).swap_bytes() }
+}
+
+const fn read_dlong(slice: &[u8]) -> u64 {
+    unsafe { core::ptr::read::<u64>(slice.as_ptr() as *const u64).swap_bytes() }
 }
 
 pub fn render_sprites_line_low(
@@ -197,15 +191,16 @@ fn render_sprites_line_common<const MODE: PlaneRenderMode>(
     screen_buf: &mut [u32],
     hw_mode: bool,
 ) {
+    let hw_screen_buf = unsafe { core::mem::transmute::<&mut [u32], &mut [u8]>(screen_buf) };
+
     let mut cur_sprite_count = 0u8;
     let mut cur_sprite_pixel_count = 0u16;
     let mut cur_sprite_link = 0u8;
 
     while cur_sprite_count < 80 {
-        let sprite = Sprite::new(
+        let sprite = Sprite::new(read_dlong(
             &sprite_table[(((cur_sprite_link as u16) << 3) as usize)..],
-            line_width,
-        );
+        ));
 
         let sprite_in_y_range =
             (y as i16) >= sprite.y && (y as i16) < (sprite.y + (sprite.height_pixels as i16));
@@ -247,12 +242,14 @@ fn render_sprites_line_common<const MODE: PlaneRenderMode>(
                     let index = ((pattern_strip >> (cell_x << 2)) & 0xf) as u8;
                     if index != 0 {
                         let buf_index = (sprite.x + draw_x as i16) as usize;
-                        if screen_buf[buf_index] == 0 {
-                            if buf_index < line_width as usize {
-                                if hw_mode {
-                                    screen_buf[buf_index] =
-                                        (sprite.attributes.palette_line | index) as u32;
-                                } else {
+                        if buf_index < line_width as usize {
+                            if hw_mode {
+                                if hw_screen_buf[buf_index] == 0 {
+                                    hw_screen_buf[buf_index] =
+                                        sprite.attributes.palette_line | index;
+                                }
+                            } else {
+                                if screen_buf[buf_index] == 0 {
                                     screen_buf[buf_index] = pal_index_to_32bit!(
                                         palette,
                                         sprite.attributes.palette_line | index
@@ -404,6 +401,7 @@ fn render_plane_line_common<const PLANEA: bool, const MODE: PlaneRenderMode>(
     screen_buf: &mut [u32],
     hw_mode: bool,
 ) {
+    let hw_screen_buf = unsafe { core::mem::transmute::<&mut [u32], &mut [u8]>(screen_buf) };
     let (plane_size_cells_mask_x, plane_size_cells_mask_y) = {
         match plane_size {
             PlaneSize::Size32x32Cells => (32 - 1, 32 - 1),
@@ -466,12 +464,11 @@ fn render_plane_line_common<const PLANEA: bool, const MODE: PlaneRenderMode>(
                     .wrapping_add(p_x)
                     .wrapping_sub(scroll_x_within_tile as usize);
                 if buf_index < (line_width as usize) {
+                    let index = ((pattern_strip >> (p_x << 2)) & 0xf) as u8;
                     if hw_mode {
-                        let index = ((pattern_strip >> (p_x << 2)) & 0xf) as u8;
-                        screen_buf[buf_index] = (cur_cell.palette_line | index) as u32;
+                        hw_screen_buf[buf_index] = cur_cell.palette_line | index;
                     } else {
                         if screen_buf[buf_index] == 0 {
-                            let index = ((pattern_strip >> (p_x << 2)) & 0xf) as u8;
                             if index != 0 {
                                 screen_buf[buf_index] =
                                     pal_index_to_32bit!(palette, cur_cell.palette_line | index);
@@ -486,18 +483,12 @@ fn render_plane_line_common<const PLANEA: bool, const MODE: PlaneRenderMode>(
                     .wrapping_add(p_x)
                     .wrapping_sub(scroll_x_within_tile as usize);
                 if buf_index < (line_width as usize) {
+                    let p_x = 8 - p_x - 1;
+                    let index = ((pattern_strip >> (p_x << 2)) & 0xf) as u8;
                     if hw_mode {
-                        let p_x = 8 - p_x - 1;
-
-                        let index = ((pattern_strip >> (p_x << 2)) & 0xf) as u8;
-
-                        screen_buf[buf_index] = (cur_cell.palette_line | index) as u32;
+                        hw_screen_buf[buf_index] = cur_cell.palette_line | index;
                     } else {
                         if screen_buf[buf_index] == 0 {
-                            let p_x = 8 - p_x - 1;
-
-                            let index = ((pattern_strip >> (p_x << 2)) & 0xf) as u8;
-
                             if index != 0 {
                                 screen_buf[buf_index] =
                                     pal_index_to_32bit!(palette, cur_cell.palette_line | index);

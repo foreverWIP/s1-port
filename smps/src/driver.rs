@@ -12,10 +12,10 @@ use crate::{
     vgm_ffi::{
         DEV_DEF, DEV_GEN_CFG, DEV_INFO, DEVFUNC_UPDATE, DEVFUNC_WRITE_A8D8, DEVID_SN76496,
         DEVID_YM2612, DEVRI_SRMODE_CUSTOM, DEVRI_SRMODE_NATIVE, DEVRW_A8D8, EERR_NOT_FOUND,
-        FCC_GPGX, FCC_MAME, FCC_MAXM, RESAMPLER_FUNC, RESMPL_STATE, RSMODE_LINEAR, RSMODE_NEAREST,
-        RWF_REGISTER, RWF_WRITE, Resmpl_Deinit, Resmpl_DevConnect, Resmpl_Execute, Resmpl_Init,
-        Resmpl_SetVals, SN76496_CFG, SndEmu_GetDevDefList, SndEmu_GetDeviceFunc, SndEmu_Start,
-        SndEmu_Stop, WAVE_32BS,
+        FCC_GENS, FCC_GPGX, FCC_MAME, FCC_MAXM, RESAMPLER_FUNC, RESMPL_STATE, RSMODE_LINEAR,
+        RSMODE_LUP_NDWN, RSMODE_NEAREST, RWF_REGISTER, RWF_WRITE, Resmpl_Deinit, Resmpl_DevConnect,
+        Resmpl_Execute, Resmpl_Init, Resmpl_SetVals, SN76496_CFG, SndEmu_GetDevDefList,
+        SndEmu_GetDeviceFunc, SndEmu_Start, SndEmu_Stop, WAVE_32BS,
     },
 };
 use bitfield::{Bit, BitMut};
@@ -60,7 +60,7 @@ impl SoundDriver {
                 srMode: DEVRI_SRMODE_NATIVE,
                 flags: 0,
                 clock: M68K_CLOCK as u32 / 60,
-                smplRate: FM_SAMPLE_RATE as u32 / 60,
+                smplRate: sample_rate as u32 / 60,
             };
             fm.devDef = *SndEmu_GetDevDefList(DEVID_YM2612);
             SndEmu_Start(DEVID_YM2612, &fm_cfg, &mut fm);
@@ -86,10 +86,10 @@ impl SoundDriver {
             let psg_cfg = SN76496_CFG {
                 _genCfg: DEV_GEN_CFG {
                     emuCore: FCC_MAXM,
-                    srMode: DEVRI_SRMODE_NATIVE,
+                    srMode: DEVRI_SRMODE_CUSTOM,
                     flags: 0,
                     clock: Z80_CLOCK as u32 / 60,
-                    smplRate: PSG_SAMPLE_RATE as u32 / 60,
+                    smplRate: sample_rate as u32 / 60,
                 },
                 noiseTaps: 9,
                 shiftRegWidth: 16,
@@ -106,7 +106,7 @@ impl SoundDriver {
             let mut psg_resampler = RESMPL_STATE::default();
             Resmpl_SetVals(
                 &mut psg_resampler,
-                RSMODE_LINEAR,
+                RSMODE_LUP_NDWN,
                 0x1,
                 sample_rate as u32 / 60,
             );

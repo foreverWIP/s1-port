@@ -544,12 +544,6 @@ impl Vdp {
             if line_state.is_some() {
                 line_state.unwrap().swap_state(&mut self.palette);
             }
-            fb_plane_b_low.fill(0);
-            fb_plane_b_high.fill(0);
-            fb_plane_a_low.fill(0);
-            fb_plane_s_low.fill(0);
-            fb_plane_a_high.fill(0);
-            fb_plane_s_high.fill(0);
             render_plane_line_b_low(
                 y,
                 GAME_WIDTH as u16,

@@ -260,7 +260,8 @@ fn run_window(rom: Vec<u8>, test_mode: bool, repro_inputs: Vec<Input>) -> Result
     let mut error_string: Option<String> = None;
     let mut system_input = Input::default();
 
-    let target_frame_time = sdl.timer().unwrap().performance_frequency() / 60;
+    let sdl_timer = &sdl.timer().unwrap();
+    let target_frame_time = sdl_timer.performance_frequency() / 60;
     let mut start_frame_time: u64;
     let mut current_frame_time = 0u64;
 
@@ -283,7 +284,9 @@ fn run_window(rom: Vec<u8>, test_mode: bool, repro_inputs: Vec<Input>) -> Result
     let mut event_pump = sdl.event_pump().unwrap();
 
     'main: loop {
-        start_frame_time = sdl.timer().unwrap().performance_counter();
+        start_frame_time = sdl_timer.performance_counter();
+
+        main_frame_timer.start();
 
         let mut should_step = false;
         let mut should_speed_up = false;
@@ -453,6 +456,7 @@ fn run_window(rom: Vec<u8>, test_mode: bool, repro_inputs: Vec<Input>) -> Result
         let sim_result = match error_string {
             Some(ref err) => Err(err.clone()),
             None => {
+                sim_frame_timer.start();
                 let ret = run_simulation(
                     &mut game,
                     &rom,
@@ -465,10 +469,12 @@ fn run_window(rom: Vec<u8>, test_mode: bool, repro_inputs: Vec<Input>) -> Result
                     should_draw,
                     sound_driver_id_sender.clone(),
                 );
-                sim_frame_timer.poll();
+                sim_frame_timer.finish();
                 ret
             }
         };
+
+        render_frame_timer.start();
 
         /* call prepare_frame before calling imgui.new_frame() */
         platform.prepare_frame(&mut imgui, &window, &event_pump);
@@ -651,14 +657,25 @@ fn run_window(rom: Vec<u8>, test_mode: bool, repro_inputs: Vec<Input>) -> Result
                     });*/
             }
 
-            if !capture_video {
+            {
                 ui.window("Stats")
                     .no_decoration()
                     .position([0.0, 0.0], imgui::Condition::Always)
                     .always_auto_resize(true)
                     .no_inputs()
                     .build(|| {
-                        ui.text(format!("FPS: {}", main_frame_timer.get_average(),));
+                        ui.text(format!(
+                            "Overall FPS: {:.2}",
+                            main_frame_timer.get_average_periodicity()
+                        ));
+                        ui.text(format!(
+                            "Sim time ms: {:.2}",
+                            sim_frame_timer.get_average_duration() * 100.0,
+                        ));
+                        ui.text(format!(
+                            "Render time ms: {:.2}",
+                            render_frame_timer.get_average_duration() * 100.0,
+                        ));
                     });
             }
         }
@@ -676,7 +693,7 @@ fn run_window(rom: Vec<u8>, test_mode: bool, repro_inputs: Vec<Input>) -> Result
 
         window.gl_swap_window();
 
-        render_frame_timer.poll();
+        render_frame_timer.finish();
 
         if capture_video {
             capture_video_sender
@@ -713,9 +730,9 @@ fn run_window(rom: Vec<u8>, test_mode: bool, repro_inputs: Vec<Input>) -> Result
             }
         }
 
-        main_frame_timer.poll();
+        main_frame_timer.finish();
         loop {
-            current_frame_time = sdl.timer().unwrap().performance_counter();
+            current_frame_time = sdl_timer.performance_counter();
             if (current_frame_time - start_frame_time) > target_frame_time {
                 frame_count += 1;
                 break;

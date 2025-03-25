@@ -103,9 +103,6 @@ impl DacDriver {
     pub fn play_sample(&mut self, sample: u8) {
         self.sample_id = sample;
         if self.sample_id > 0x80 && self.sample_id < 0x89 {
-            if self.sample_id == 0x88 {
-                println!("playing sega sound");
-            }
             self.just_got_sample = true;
         }
     }

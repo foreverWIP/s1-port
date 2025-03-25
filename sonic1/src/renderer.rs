@@ -101,12 +101,12 @@ impl PlaneTexture {
                 gl.tex_image_2d(
                     glow::TEXTURE_2D,
                     0,
-                    glow::R32UI as i32,
+                    glow::R8UI as i32,
                     GAME_WIDTH as i32,
                     GAME_HEIGHT as i32,
                     0,
                     glow::RED_INTEGER,
-                    glow::UNSIGNED_INT,
+                    glow::UNSIGNED_BYTE,
                     None,
                 );
                 gl.texture_parameter_i32(
@@ -193,7 +193,7 @@ impl PlaneTexture {
                 GAME_WIDTH as i32,
                 GAME_HEIGHT as i32,
                 glow::RED_INTEGER,
-                glow::UNSIGNED_INT,
+                glow::UNSIGNED_BYTE,
                 PixelUnpackData::Slice(std::slice::from_raw_parts(
                     contents.as_ptr() as *const u8,
                     contents.len() * 4,
