@@ -34,7 +34,7 @@ u32 smps__read_8(u32 loc) {
   if (loc < 0x80000) {
 	// print("read rom %x", loc);
 	if (loc < 0x71990) {
-		print("read before sound data at %x", loc);
+		// print("read before sound data at %x", loc);
 	}
     return smps_rom_ptr[loc];
   }

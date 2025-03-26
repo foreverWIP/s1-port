@@ -14,10 +14,11 @@
 #include "romlocs.h"
 #include "sega.h"
 #include "sound.h"
+#include "special.h"
 #include "system.h"
 #include "util.h"
 #include "vblank.h"
-#include "special.h"
+
 
 enum {
   GM_SEGA = 4 * 0,
@@ -32,7 +33,7 @@ enum {
   GM_MASK = 0b11100,
 
   GM_TITLECARD_FLAG_BIT = 7,
-  GM_TITLECARD_FLAG = 1 << GM_TITLECARD_FLAG_BIT,
+  GM_TITLECARD_FLAG = (1 << GM_TITLECARD_FLAG_BIT),
 };
 
 #define GAME_WIDTH 320

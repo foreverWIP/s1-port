@@ -55,8 +55,10 @@ ROMFUNC(rom_13CC) {
 }
 ROMFUNC(rom_1402) {
   DEF_ROMLOC(1402) : move_tomem_16(0x0, 0xFFFFF63A); // MOVE.W	#$0000,$F63A
-  game_state = game_state_pause;
-  game_state_pause = NULL;
+  if (game_state_pause != NULL) {
+  	game_state = game_state_pause;
+  	game_state_pause = NULL;
+  }
   rom_1408();
 }
 ROMFUNC(rom_1408) {

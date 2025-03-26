@@ -446,9 +446,6 @@ impl Vdp {
         let mut should_start_dma = false;
         match self.ctrl_cachedword {
             Some(cachedword) => {
-                if word == 0x4f70 && cachedword == 0x0003 {
-                    dbg!(&self);
-                }
                 prep_value |= (cachedword as u32) << 16;
                 should_start_dma = (prep_value & 0x80) != 0;
                 self.dst_ptr = Self::decode_ptr(prep_value);

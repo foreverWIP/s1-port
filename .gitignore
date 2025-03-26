@@ -36,6 +36,8 @@ smps/test.wav
 
 movie/
 
+flamegraph.svg
+
 *.exe
 *.def
 *.dll

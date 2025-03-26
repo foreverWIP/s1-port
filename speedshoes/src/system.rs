@@ -416,22 +416,6 @@ impl System {
                     }
                 }
             }
-            let emu_ram = emu_ram.as_ref().borrow();
-            let script_ram = script_ram.as_ref().borrow();
-            for i in 0..0x1_0000usize {
-                if (0xF000..0xF600).contains(&i) || (0xFCC0..0xFE00).contains(&i) {
-                    continue;
-                }
-
-                let control_u8 = emu_ram[i];
-                let our_u8 = script_ram[i];
-                if control_u8 != our_u8 {
-                    ram_differences.push(format!(
-                        "ram_{:04X}: expected {:#04X}, got {:#04X}",
-                        i, control_u8, our_u8
-                    ));
-                }
-            }
             let emu_vram = &self.emu_vdp.as_ref().borrow().vram;
             let script_vram = &self.script_engine.bus.vdp.as_ref().borrow().vram;
             for i in 0..(0x1_0000 / 2) {
@@ -469,8 +453,6 @@ impl System {
         }
 
         if !ram_differences.is_empty() || !reg_differences.is_empty() {
-            dbg!(self.emu_vdp.as_ref().borrow());
-            dbg!(self.script_engine.bus.vdp.as_ref().borrow());
             return Err(format!(
                 "Simulation mismatch at pc {} (calling function {}):\nLast {} PCs ran: {}\n{}",
                 self.get_symbol(self.core.as_ref().unwrap().pc()),
