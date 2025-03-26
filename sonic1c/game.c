@@ -94,7 +94,7 @@ EXPORT void reset_game(void) {
 EXPORT void run_game_frame(void) {
   exit_mainloop = false;
   while (true) {
-    if (game_state) {
+    if (game_state != NULL) {
       if (setjmp(speedshoes__desync_jumpbuf)) {
         break;
       } else {

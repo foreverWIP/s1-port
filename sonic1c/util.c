@@ -62,7 +62,7 @@ ROMFUNC(rom_1402) {
   rom_1408();
 }
 ROMFUNC(rom_1408) {
-  DEF_ROMLOC(1408) : if (game_state) game_state();
+  DEF_ROMLOC(1408) : if (game_state != NULL) game_state();
   return; // RTS
 }
 ROMFUNC(rom_140A) {

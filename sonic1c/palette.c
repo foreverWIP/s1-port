@@ -290,9 +290,11 @@ void palette_fade_in_loop(void) {
     palette_fade_in_runvblank();
     return;
   } // DBF.W	D4,$1DC6
-  game_state = game_state_palette;
-  game_state_palette = NULL;
-  DEF_ROMLOC(1DDA) : if (game_state) { game_state(); }
+  if (game_state_palette != NULL) {
+  	game_state = game_state_palette;
+  	game_state_palette = NULL;
+  }
+  DEF_ROMLOC(1DDA) : if (game_state != NULL) { game_state(); }
   return; // RTS
 }
 void palette_move_from_black(void) {
@@ -367,9 +369,11 @@ void palette_fade_out_loop(void) {
     palette_fade_out_runvblank();
     return;
   } // DBF.W	D4,$1E54
-  game_state = game_state_palette;
-  game_state_palette = NULL;
-  DEF_ROMLOC(1E68) : if (game_state) { game_state(); }
+  if (game_state_palette != NULL) {
+  	game_state = game_state_palette;
+  	game_state_palette = NULL;
+  }
+  DEF_ROMLOC(1E68) : if (game_state != NULL) { game_state(); }
   return; // RTS
 }
 void palette_move_toward_black(void) {
@@ -451,9 +455,11 @@ void palette_fade_from_white_loop(void) {
     palette_fade_from_white_runvblank();
     return;
   } // DBF.W	D4,$1EEC
-  game_state = game_state_palette;
-  game_state_palette = NULL;
-  DEF_ROMLOC(1F00) : if (game_state) { game_state(); }
+  if (game_state_palette != NULL) {
+  	game_state = game_state_palette;
+  	game_state_palette = NULL;
+  }
+  DEF_ROMLOC(1F00) : if (game_state != NULL) { game_state(); }
   return; // RTS
 }
 void palette_move_from_white(void) {
@@ -532,9 +538,11 @@ void palette_fade_to_white_loop(void) {
     palette_fade_to_white_runvblank();
     return;
   } // DBF.W	D4,$1F7E
-  game_state = game_state_palette;
-  game_state_palette = NULL;
-  DEF_ROMLOC(1F92) : if (game_state) { game_state(); }
+  if (game_state_palette != NULL) {
+  	game_state = game_state_palette;
+  	game_state_palette = NULL;
+  }
+  DEF_ROMLOC(1F92) : if (game_state != NULL) { game_state(); }
   return; // RTS
 }
 void palette_move_towards_white(void) {
