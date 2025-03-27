@@ -1,15 +1,16 @@
 use std::collections::HashSet;
 use std::fmt::{Debug, Display};
 use std::fs;
+use std::sync::{LazyLock, Mutex, OnceLock};
 use std::time::Instant;
 use std::{collections::HashMap, fs::File, io::Write, ops::Range};
 
 use itertools::Itertools;
 use r68k_tools::memory::Memory;
 use r68k_tools::{
-    disassembler::Disassembler, memory::MemoryVec, operand::Operand, OpcodeInstance, Size, PC,
+    OpcodeInstance, PC, Size, disassembler::Disassembler, memory::MemoryVec, operand::Operand,
 };
-use sonic1::{get_data_defs, patch_rom, read_as_symbols, DataDef};
+use sonic1::{DataDef, get_data_defs, patch_rom, read_as_symbols};
 
 const ROM: &[u8; 0x80000] = include_bytes!("../../s1built.bin");
 
@@ -426,7 +427,43 @@ fn get_statement(
     }
 }
 
-static mut SKIP_AREAS: Option<Vec<Range<u32>>> = None;
+static SKIP_AREAS: LazyLock<Vec<Range<u32>>> = LazyLock::new(|| {
+    vec![
+        0x0..0x200,
+        0x396..0xB10,
+        0x412E..0x4170,
+        0x41C8..0x4208,
+        0x4A48..0x4BF0,
+        0x6EF2..0x6F54,
+        0x7898..0x789E,
+        0x85D8..0x85F2,
+        0x8F9A..0x8FB2,
+        0xB7A2..0xB866,
+        0xC56A..0xC574,
+        0xE5A8..0xE688,
+        0xF852..0xF85A,
+        0x10492..0x104A2,
+        0x10920..0x10934,
+        0x1145E..0x11464,
+        0x114D4..0x114D8,
+        0x11556..0x11564,
+        0x118E8..0x118EE,
+        0x1200E..0x120CA,
+        0x125E6..0x125EC,
+        0x148CE..0x148D4,
+        0x153B4..0x15446,
+        0x17014..0x1709C,
+        0x17918..0x1791C,
+        0x1835E..0x18364,
+        0x197C8..0x197DA,
+        0x1B30E..0x1B32E,
+        0x1B5E4..0x1B62A,
+        0x1D2A6..0x1D6E6,
+        // 0x1D93A..u32::MAX,
+        0x1D93A..0x71B4C,
+        0x72E7C..u32::MAX,
+    ]
+});
 
 #[derive(Default, PartialEq, Eq)]
 enum FunctionFlow {
@@ -455,12 +492,7 @@ fn try_disassemble_block<'dis>(
             break;
         }
         unsafe {
-            if SKIP_AREAS
-                .as_ref()
-                .unwrap()
-                .iter()
-                .any(|a| a.contains(&cur_pc.0))
-            {
+            if SKIP_AREAS.iter().any(|a| a.contains(&cur_pc.0)) {
                 break;
             }
         }
@@ -502,44 +534,6 @@ fn try_disassemble_block<'dis>(
 }
 
 fn main() -> Result<(), String> {
-    unsafe {
-        SKIP_AREAS = Some(vec![
-            0x0..0x200,
-            0x396..0xB10,
-            0x412E..0x4170,
-            0x41C8..0x4208,
-            0x4A48..0x4BF0,
-            0x6EF2..0x6F54,
-            0x7898..0x789E,
-            0x85D8..0x85F2,
-            0x8F9A..0x8FB2,
-            0xB7A2..0xB866,
-            0xC56A..0xC574,
-            0xE5A8..0xE688,
-            0xF852..0xF85A,
-            0x10492..0x104A2,
-            0x10920..0x10934,
-            0x1145E..0x11464,
-            0x114D4..0x114D8,
-            0x11556..0x11564,
-            0x118E8..0x118EE,
-            0x1200E..0x120CA,
-            0x125E6..0x125EC,
-            0x148CE..0x148D4,
-            0x153B4..0x15446,
-            0x17014..0x1709C,
-            0x17918..0x1791C,
-            0x1835E..0x18364,
-            0x197C8..0x197DA,
-            0x1B30E..0x1B32E,
-            0x1B5E4..0x1B62A,
-            0x1D2A6..0x1D6E6,
-            // 0x1D93A..u32::MAX,
-            0x1D93A..0x71B4C,
-            0x72E7C..u32::MAX,
-        ])
-    };
-
     let data_defs = get_data_defs();
 
     let mut outfile = Vec::new();

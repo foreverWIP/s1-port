@@ -18,9 +18,6 @@ use crate::{
         SndEmu_GetDeviceFunc, SndEmu_Start, SndEmu_Stop, WAVE_32BS,
     },
 };
-use bitfield::{Bit, BitMut};
-use num::PrimInt;
-use paste::paste;
 
 pub struct SoundDriver {
     rom: Arc<Vec<u8>>,

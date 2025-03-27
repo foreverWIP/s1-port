@@ -15,8 +15,8 @@ use std::{
     path::{Path, PathBuf},
     rc::Rc,
     sync::{
-        mpsc::{Sender, SyncSender},
         Arc, RwLock,
+        mpsc::{Sender, SyncSender},
     },
 };
 
@@ -38,8 +38,8 @@ use sdl2::{
 use smps::driver::SoundDriver;
 use sonic1::{get_data_defs, patch_rom, read_as_symbols};
 use speedshoes::{
-    system::{self, Input, System},
     DataSize, GAME_HEIGHT, GAME_WIDTH,
+    system::{self, Input, System},
 };
 
 const ROM_PATH: &str = if cfg!(debug_assertions) {
@@ -688,7 +688,7 @@ fn run_window(rom: Vec<u8>, test_mode: bool, repro_inputs: Vec<Input>) -> Result
         }
         // renderer.render(&draw_data).unwrap();
         renderer
-            .render(&gl_handle, &texture_map, draw_data)
+            .render(gl_handle.as_ref(), &texture_map, draw_data)
             .unwrap();
 
         window.gl_swap_window();

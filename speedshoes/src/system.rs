@@ -7,20 +7,19 @@ use std::{
     fs,
     panic::set_hook,
     rc::Rc,
-    sync::{mpsc::Sender, Arc, LazyLock, OnceLock, RwLock},
+    sync::{Arc, LazyLock, Mutex, OnceLock, RwLock, mpsc::Sender},
 };
 
 use itertools::Itertools;
 use r68k_emu::cpu::ProcessingState;
-use r68k_tools::{disassembler::Disassembler, memory::MemoryVec, Exception, OpcodeInstance, PC};
+use r68k_tools::{Exception, OpcodeInstance, PC, disassembler::Disassembler, memory::MemoryVec};
 // use smps::emulation::SoundEmulator;
 
 use crate::{
-    comma_separated,
+    DataSize, GAME_HEIGHT, GAME_WIDTH, comma_separated,
     emu::{SpeedShoesCore, SystemEmulator, SystemEmulatorRegister},
     script::{ScriptEngine, TestFlags},
     vdp::Vdp,
-    DataSize, GAME_HEIGHT, GAME_WIDTH,
 };
 
 pub(crate) const SYSTEM_RAM_SIZE: usize = 0x1_0000;
@@ -97,8 +96,8 @@ static DISASSEMBLER: OnceLock<Disassembler> = OnceLock::new();
 fn get_disassembler() -> &'static Disassembler<'static> {
     DISASSEMBLER.get_or_init(|| Disassembler::new())
 }
-static mut INST_CACHE: Option<HashMap<u32, (PC, OpcodeInstance)>> = None;
-static mut DESYNC_SCRIPT_MESSAGE: Option<String> = None;
+static INST_CACHE: Mutex<Option<HashMap<u32, (PC, OpcodeInstance)>>> = Mutex::new(None);
+static DESYNC_SCRIPT_MESSAGE: Mutex<Option<String>> = Mutex::new(None);
 
 fn calculate_sub_address(opcode: &OpcodeInstance, core: &SpeedShoesCore) -> Option<u32> {
     if opcode.operands.len() != 1 {
@@ -155,7 +154,7 @@ fn calculate_sub_address(opcode: &OpcodeInstance, core: &SpeedShoesCore) -> Opti
 
 pub fn synchronize_script(pc: u32) -> bool {
     unsafe {
-        if DESYNC_SCRIPT_MESSAGE.is_some() {
+        if DESYNC_SCRIPT_MESSAGE.lock().unwrap().is_some() {
             return false;
         }
     }
@@ -198,7 +197,7 @@ pub fn synchronize_script(pc: u32) -> bool {
         Ok(_) => true,
         Err(msg) => {
             unsafe {
-                DESYNC_SCRIPT_MESSAGE = Some(msg);
+                *DESYNC_SCRIPT_MESSAGE.lock().unwrap() = Some(msg);
             }
             false
         }
@@ -327,19 +326,18 @@ impl System {
         sym
     }
 
-    fn get_instruction(&self, at: u32) -> Result<&(PC, OpcodeInstance), Exception> {
-        unsafe {
-            let cache = INST_CACHE.get_or_insert_default();
-            if !cache.contains_key(&at) {
-                cache.insert(
-                    at,
-                    get_disassembler()
-                        .disassemble(PC(at), &self.rom_backup)?
-                        .clone(),
-                );
-            }
-            Ok(&cache.get(&at).unwrap())
+    fn get_instruction(&self, at: u32) -> Result<Arc<(PC, OpcodeInstance)>, Exception> {
+        let mut lock = INST_CACHE.lock().unwrap();
+        let cache = lock.get_or_insert_default();
+        if !cache.contains_key(&at) {
+            cache.insert(
+                at,
+                get_disassembler()
+                    .disassemble(PC(at), &self.rom_backup)?
+                    .clone(),
+            );
         }
+        Ok(Arc::new(cache.get(&at).unwrap().clone()))
     }
 
     fn check_accuracy(&mut self, test_flags: TestFlags) -> Result<(), String> {
@@ -476,7 +474,7 @@ impl System {
         sound_driver_sender: Arc<Sender<i16>>,
     ) -> Result<System, String> {
         unsafe {
-            DESYNC_SCRIPT_MESSAGE = None;
+            *DESYNC_SCRIPT_MESSAGE.lock().unwrap() = None;
         }
         let rom = Rc::new(rom_things.0.clone());
         let ram = vec![0u8; SYSTEM_RAM_SIZE];
@@ -549,7 +547,7 @@ impl System {
     fn call_function(&mut self, target_pc: Option<u32>, opcode_raw: u16) -> Result<bool, String> {
         let (next_addr, opcode) = self
             .get_instruction(self.core.as_ref().unwrap().pc)
-            .map(|(pc, op)| (pc.0, op))
+            .map(|pc_op| (pc_op.0, pc_op.1.clone()))
             .unwrap();
 
         let sub_addr = calculate_sub_address(&opcode, &self.core.as_ref().unwrap()).unwrap();
@@ -565,8 +563,14 @@ impl System {
                 .call_hook(&mut self.core.as_mut().unwrap(), sub_addr)
                 .unwrap();
             unsafe {
-                if let Some(msg) = (&raw const DESYNC_SCRIPT_MESSAGE).as_ref().unwrap() {
-                    return Err(msg.clone());
+                match DESYNC_SCRIPT_MESSAGE.lock() {
+                    Ok(msg) => match msg.as_ref() {
+                        Some(msg) => {
+                            return Err(msg.clone());
+                        }
+                        None => {}
+                    },
+                    Err(_) => {}
                 }
             }
             self.sync_pcs.fill(0);
@@ -658,8 +662,14 @@ impl System {
 
                 // check for error from script check
                 unsafe {
-                    if let Some(msg) = &DESYNC_SCRIPT_MESSAGE {
-                        return Err(msg.clone());
+                    match DESYNC_SCRIPT_MESSAGE.lock() {
+                        Ok(msg) => match msg.as_ref() {
+                            Some(msg) => {
+                                return Err(msg.clone());
+                            }
+                            None => {}
+                        },
+                        Err(_) => {}
                     }
                 }
 
