@@ -2,7 +2,6 @@
 
 mod dacdriver;
 pub mod driver;
-mod kosinski;
 pub(crate) mod vgm_ffi;
 
 pub(crate) const MD_CLOCK: f64 = 53693175.0;

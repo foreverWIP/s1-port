@@ -1,4 +1,4 @@
-use crate::kosinski;
+use mdcomp::kosinski;
 
 #[derive(Clone, Copy)]
 pub enum DacSampleMode {
