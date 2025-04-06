@@ -5,9 +5,7 @@ float normpdf(in float x, in float sigma)
 
 void main()
 {
-	uint lookup = texture(CurTexture, Frag_UV.xy / texture_size.xy).r;
-	// if (mod(lookup, 16) == 0) discard;
-	vec3 c = palette[lookup].rgb;
+	vec3 c = readtex(CurTexture, Frag_UV.xy / texture_size.xy).rgb;
 
 	//declare stuff
 	const int mSize = 7;
@@ -34,8 +32,7 @@ void main()
 	{
 		for (int j=-kSize; j <= kSize; ++j)
 		{
-			lookup = texture(CurTexture, (Frag_UV.xy+vec2(float(i),float(j))) / texture_size.xy).r;
-			vec3 c = palette[lookup].rgb;
+			vec3 c = readtex(CurTexture, (Frag_UV.xy+vec2(float(i),float(j))) / texture_size.xy).rgb;
 			final_colour += kernel[kSize+j]*kernel[kSize+i]*c.rgb;
 
 		}

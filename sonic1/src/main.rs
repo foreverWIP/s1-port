@@ -228,6 +228,10 @@ fn run_window(rom: Vec<u8>, test_mode: bool, repro_inputs: Vec<Input>) -> Result
 
     /* create new glow and imgui contexts */
     let gl = glow_context(&window);
+    unsafe {
+        gl.enable(glow::BLEND);
+        gl.blend_color(1.0, 1.0, 1.0, 1.0);
+    }
 
     /* create context */
     let mut imgui = Context::create();
