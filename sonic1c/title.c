@@ -20,7 +20,7 @@ ROMFUNC(rom_2EF4) {
 ROMFUNC(rom_2F04) {
   DEF_ROMLOC(2F04) : move_tosr_16(0x2700, &SR); // MOVE.W	#$2700,SR
   DEF_ROMLOC(2F0C)
-      : move_toreg_32(VDP_CONTROL_PORT, &A6);              // LEA.L	$00C00004,A6
+      : move_toreg_32(VDP_CONTROL_PORT, &A6); // LEA.L	$00C00004,A6
   DEF_ROMLOC(2F12) : write_vdp_control_16(0x8004);
   DEF_ROMLOC(2F16) : write_vdp_control_16(0x8230);
   DEF_ROMLOC(2F1A) : write_vdp_control_16(0x8407);
@@ -37,14 +37,12 @@ ROMFUNC(rom_2F04) {
   DEF_ROMLOC(2F42) : dec_reg_16(&D1);
   if ((D1 & 0xffff) != 0xffff)
     goto rom_2F40; // DBF.W	D1,$2F40
-  DEF_ROMLOC(2F46)
-      : write_vdp_control_32(0x40000000);
+  DEF_ROMLOC(2F46) : write_vdp_control_32(0x40000000);
   DEF_ROMLOC(2F50) : move_toreg_32(0x2184C, &A0); // LEA.L	$0002184C,A0
   DEF_ROMLOC(2F56) : decompress_nemesis();        // BSR.W	$1438
-  DEF_ROMLOC(2F5A)
-      : write_vdp_control_32(0x54C00000);
-  DEF_ROMLOC(2F64) : move_toreg_32(0x6203A, &A0); // LEA.L	$0006203A,A0
-  DEF_ROMLOC(2F6A) : decompress_nemesis();        // BSR.W	$1438
+  DEF_ROMLOC(2F5A) : write_vdp_control_32(0x54C00000);
+  DEF_ROMLOC(2F64) : move_toreg_32(0x6203A, &A0);   // LEA.L	$0006203A,A0
+  DEF_ROMLOC(2F6A) : decompress_nemesis();          // BSR.W	$1438
   DEF_ROMLOC(2F6E) : move_toreg_32(v_256x256, &A1); // LEA.L	$00FF0000,A1
   DEF_ROMLOC(2F74) : move_toreg_32(0x2178E, &A0);   // LEA.L	$0002178E,A0
   DEF_ROMLOC(2F7A) : move_toreg_16(0x0, &D0);       // MOVE.W	#$0000,D0
@@ -63,35 +61,30 @@ ROMFUNC(rom_2F04) {
       : move_tomem_8(0xFFFFFF8A, 0xFFFFD080); // MOVE.B
                                               // #$8A,$D080
   DEF_ROMLOC(2FB2) : rom_D9C6();              // JSR	$0000D9C6
-  DEF_ROMLOC(2FB8) : rom_DCEC();              // JSR	$0000DCEC
+  DEF_ROMLOC(2FB8) : build_sprites();         // JSR	$0000DCEC
   DEF_ROMLOC(2FBE) : game_state = rom_2FC2;
   palette_fade_in(true); // BSR.W	$1DA4
 }
 ROMFUNC(rom_2FC2) {
   DEF_ROMLOC(2FC2) : move_tosr_16(0x2700, &SR); // MOVE.W	#$2700,SR
-  DEF_ROMLOC(2FC6)
-      : write_vdp_control_32(0x40000001);
+  DEF_ROMLOC(2FC6) : write_vdp_control_32(0x40000001);
   DEF_ROMLOC(2FD0) : move_toreg_32(0x1ED80, &A0); // LEA.L	$0001ED80,A0
   DEF_ROMLOC(2FD6) : decompress_nemesis();        // BSR.W	$1438
-  DEF_ROMLOC(2FDA)
-      : write_vdp_control_32(0x60000001);
+  DEF_ROMLOC(2FDA) : write_vdp_control_32(0x60000001);
   DEF_ROMLOC(2FE4) : move_toreg_32(0x1FD8C, &A0); // LEA.L	$0001FD8C,A0
   DEF_ROMLOC(2FEA) : decompress_nemesis();        // BSR.W	$1438
-  DEF_ROMLOC(2FEE)
-      : write_vdp_control_32(0x62000002);
+  DEF_ROMLOC(2FEE) : write_vdp_control_32(0x62000002);
   DEF_ROMLOC(2FF8) : move_toreg_32(0x2175A, &A0); // LEA.L	$0002175A,A0
   DEF_ROMLOC(2FFE) : decompress_nemesis();        // BSR.W	$1438
   DEF_ROMLOC(3002)
       : move_toreg_32(VDP_DATA_PORT, &A6); // LEA.L	$00C00000,A6
-  DEF_ROMLOC(3008)
-      : write_vdp_control_32(0x50000003);
+  DEF_ROMLOC(3008) : write_vdp_control_32(0x50000003);
   DEF_ROMLOC(3010) : move_toreg_32(0x5F0, &A5); // LEA.L	$000005F0,A5
   DEF_ROMLOC(3016) : move_toreg_16(0x28F, &D1); // MOVE.W	#$028F,D1
   rom_301A(); // Detected flow into next function
 }
 ROMFUNC(rom_301A) {
-  DEF_ROMLOC(301A)
-      : write_vdp_data_16(read_16((A5 += 2, A5 - 2)));
+  DEF_ROMLOC(301A) : write_vdp_data_16(read_16((A5 += 2, A5 - 2)));
   DEF_ROMLOC(301C) : dec_reg_16(&D1);
   if ((D1 & 0xffff) != 0xffff)
     goto rom_301A;                                    // DBF.W	D1,$301A
@@ -131,12 +124,11 @@ ROMFUNC(rom_3076) {
   DEF_ROMLOC(30A6) : move_toreg_16(0x0, &D0);        // MOVE.W	#$0000,D0
   DEF_ROMLOC(30AA) : decompress_enigma();            // BSR.W	$1716
   copy_tilemap(v_256x256, VRAM_FG, 3, 4, 34, 22);
-  DEF_ROMLOC(30C2)
-      : write_vdp_control_32(0x40000000);
-  DEF_ROMLOC(30CC) : move_toreg_32(0x3CB3C, &A0); // LEA.L	$0003CB3C,A0
-  DEF_ROMLOC(30D2) : decompress_nemesis();        // BSR.W	$1438
-  DEF_ROMLOC(30D6) : move_toreg_32(0x1, &D0);     // MOVEQ.L	$01,D0
-  DEF_ROMLOC(30D8) : load_palette_fading();       // BSR.W	$20F4
+  DEF_ROMLOC(30C2) : write_vdp_control_32(0x40000000);
+  DEF_ROMLOC(30CC) : move_toreg_32(0x3CB3C, &A0);   // LEA.L	$0003CB3C,A0
+  DEF_ROMLOC(30D2) : decompress_nemesis();          // BSR.W	$1438
+  DEF_ROMLOC(30D6) : move_toreg_32(0x1, &D0);       // MOVEQ.L	$01,D0
+  DEF_ROMLOC(30D8) : load_palette_fading();         // BSR.W	$20F4
   DEF_ROMLOC(30DC) : move_toreg_8(BGM_TITLE, &D0);  // MOVE.B	#$8A,D0
   DEF_ROMLOC(30E0) : play_sound_special();          // BSR.W	$1394
   DEF_ROMLOC(30E4) : move_tomem_8(0x0, 0xFFFFFFFA); // MOVE.B	#$00,$FFFA
@@ -160,7 +152,7 @@ ROMFUNC(rom_3076) {
   DEF_ROMLOC(3124) : move_tomem_8(0x2, 0xFFFFD11A);  // MOVE.B	#$02,$D11A
   DEF_ROMLOC(312A) : rom_D9C6();                     // JSR	$0000D9C6
   DEF_ROMLOC(3130) : rom_626E();                     // BSR.W	$626E
-  DEF_ROMLOC(3134) : rom_DCEC();                     // JSR	$0000DCEC
+  DEF_ROMLOC(3134) : build_sprites();                // JSR	$0000DCEC
   DEF_ROMLOC(313A) : move_toreg_32(0x0, &D0);        // MOVEQ.L	$00,D0
   DEF_ROMLOC(313C) : new_plc();                      // BSR.W	$15AA
   DEF_ROMLOC(3140) : move_tomem_16(0x0, 0xFFFFFFE4); // MOVE.W	#$0000,$FFE4
@@ -168,8 +160,7 @@ ROMFUNC(rom_3076) {
   DEF_ROMLOC(314C)
       : move_toreg_16(read_16(0xFFFFF60C), &D0); // MOVE.W	$F60C,D0
   DEF_ROMLOC(3150) : or_toreg_8(0x40, &D0);      // ORI.B	#$40,D0
-  DEF_ROMLOC(3154)
-      : write_vdp_control_16(D0);
+  DEF_ROMLOC(3154) : write_vdp_control_16(D0);
   DEF_ROMLOC(315A) : game_state = rom_315E;
   palette_fade_in(true); // BSR.W	$1DA4
 }
@@ -181,7 +172,7 @@ void level_palette_cycle_ghz(bool title_screen);
 ROMFUNC(rom_3168) {
   DEF_ROMLOC(3168) : rom_D9C6();                    // JSR	$0000D9C6
   DEF_ROMLOC(316E) : rom_626E();                    // BSR.W	$626E
-  DEF_ROMLOC(3172) : rom_DCEC();                    // JSR	$0000DCEC
+  DEF_ROMLOC(3172) : build_sprites();               // JSR	$0000DCEC
   DEF_ROMLOC(3178) : level_palette_cycle_ghz(true); // BSR.W	$1954
   DEF_ROMLOC(317C) : run_plc();                     // BSR.W	$15E4
   DEF_ROMLOC(3180)
@@ -272,8 +263,7 @@ ROMFUNC(rom_3224) {
   DEF_ROMLOC(3250) : move_tosr_16(0x2700, &SR);     // MOVE.W	#$2700,SR
   DEF_ROMLOC(3254)
       : move_toreg_32(VDP_DATA_PORT, &A6); // LEA.L	$00C00000,A6
-  DEF_ROMLOC(325A)
-      : write_vdp_control_32(0x60000003);
+  DEF_ROMLOC(325A) : write_vdp_control_32(0x60000003);
   DEF_ROMLOC(3264) : move_toreg_16(0x3FF, &D1); // MOVE.W	#$03FF,D1
   DEF_ROMLOC(3268) : write_vdp_data_32(D0);
   DEF_ROMLOC(326A) : dec_reg_16(&D1);
@@ -529,8 +519,7 @@ ROMFUNC(rom_34FA) {
   DEF_ROMLOC(3540) : cmp_tomem_16(0x14, 0xFFFFFF82); // CMPI.W	#$0014,$FF82
   DEF_ROMLOC(3546) : if (!CCR_EQ) goto rom_354C;     // BNE.B	$354C
   DEF_ROMLOC(3548) : move_toreg_16(0xFFFFC680, &D3); // MOVE.W	#$C680,D3
-  DEF_ROMLOC(354C)
-      : write_vdp_control_32(0x6C300003);
+  DEF_ROMLOC(354C) : write_vdp_control_32(0x6C300003);
   DEF_ROMLOC(3556)
       : move_toreg_16(read_16(0xFFFFFF84), &D0); // MOVE.W	$FF84,D0
   DEF_ROMLOC(355A) : add_toreg_16(0x80, &D0);    // ADDI.W	#$0080,D0
@@ -548,7 +537,7 @@ ROMFUNC(rom_356E) {
   DEF_ROMLOC(3578) : add_toreg_8(0x7, &D0);     // ADDI.B	#$07,D0
   DEF_ROMLOC(357C) : add_toreg_16(D3, &D0);     // ADD.W	D3,D0
   DEF_ROMLOC(357E) : write_vdp_data_16(D0);
-  DEF_ROMLOC(3580) : return;                    // RTS
+  DEF_ROMLOC(3580) : return; // RTS
 }
 ROMFUNC(rom_3582) {
   DEF_ROMLOC(3582) : move_toreg_32(0x17, &D2);        // MOVEQ.L	$17,D2

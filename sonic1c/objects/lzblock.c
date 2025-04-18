@@ -152,7 +152,7 @@ ROMFUNC(rom_12720) {
     rom_DCCE();
     return;
   } // BHI.W	$DCCE
-  rom_DC92(); // BRA.W	$DC92
+  queue_sprite(); // BRA.W	$DC92
 }
 ROMFUNC(rom_12782) {
   DEF_ROMLOC(12782) : or_tomem_8(0x12, A0);   // ORI.B	#$12,(A0)

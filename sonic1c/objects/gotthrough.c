@@ -97,7 +97,7 @@ ROMFUNC(rom_CC78) {
   DEF_ROMLOC(CC90) : if (CCR_MI) goto rom_CC9C; // BMI.B	$CC9C
   DEF_ROMLOC(CC92) : cmp_toreg_16(0x200, &D0);  // CMPI.W	#$0200,D0
   DEF_ROMLOC(CC96) : if (CCR_CC) goto rom_CC9C; // BCC.B	$CC9C
-  rom_DC92();
+  queue_sprite();
   return;                                          // BRA.W	$DC92
   DEF_ROMLOC(CC9C) : return;                       // RTS
   DEF_ROMLOC(CC9E) : move_tomem_8(0xE, A0 + 0x24); // MOVE.B	#$0E,36(A0)
@@ -115,10 +115,10 @@ ROMFUNC(rom_CCC2) {
   DEF_ROMLOC(CCC2) : sub_tomem_16(0x1, A0 + 0x1E); // SUBQ.W	#$01,30(A0)
   DEF_ROMLOC(CCC6) : if (!CCR_EQ) goto rom_CCCC;   // BNE.B	$CCCC
   DEF_ROMLOC(CCC8) : add_tomem_8(0x2, A0 + 0x24);  // ADDQ.B	#$02,36(A0)
-  DEF_ROMLOC(CCCC) : rom_DC92();                   // BRA.W	$DC92
+  DEF_ROMLOC(CCCC) : queue_sprite();               // BRA.W	$DC92
 }
 ROMFUNC(rom_CCD0) {
-  DEF_ROMLOC(CCD0) : rom_DC92();                    // BSR.W	$DC92
+  DEF_ROMLOC(CCD0) : queue_sprite();                // BSR.W	$DC92
   DEF_ROMLOC(CCD4) : move_tomem_8(0x1, 0xFFFFF7D6); // MOVE.B	#$01,$F7D6
   DEF_ROMLOC(CCDA) : move_toreg_32(0x0, &D0);       // MOVEQ.L	$00,D0
   DEF_ROMLOC(CCDC) : tst_mem_16(0xFFFFF7D2);        // TST.W	$F7D2
@@ -172,7 +172,7 @@ ROMFUNC(rom_CD3C) {
   DEF_ROMLOC(CD70) : v_gamemode = GM_SPECIAL;
   goto rom_CD7E;                                     // BRA.B	$CD7E
   DEF_ROMLOC(CD78) : move_tomem_16(0x1, 0xFFFFFE02); // MOVE.W	#$0001,$FE02
-  DEF_ROMLOC(CD7E) : rom_DC92();                     // BRA.W	$DC92
+  DEF_ROMLOC(CD7E) : queue_sprite();                 // BRA.W	$DC92
 }
 ROMFUNC(rom_CDB2) {
   DEF_ROMLOC(CDB2) : move_toreg_32(0x20, &D1); // MOVEQ.L	$20,D1
@@ -197,7 +197,7 @@ ROMFUNC(rom_CDC2) {
   DEF_ROMLOC(CDCA) : if (CCR_MI) goto rom_CDD6; // BMI.B	$CDD6
   DEF_ROMLOC(CDCC) : cmp_toreg_16(0x200, &D0);  // CMPI.W	#$0200,D0
   DEF_ROMLOC(CDD0) : if (CCR_CC) goto rom_CDD6; // BCC.B	$CDD6
-  rom_DC92();
+  queue_sprite();
   return;                    // BRA.W	$DC92
   DEF_ROMLOC(CDD6) : return; // RTS
 }
@@ -218,8 +218,8 @@ ROMFUNC(rom_CDD8) {
   } // JMP	$0000138E
 }
 ROMFUNC(rom_CDF4) {
-  DEF_ROMLOC(CDF4)
-      : add_tomem_16(0x2, v_limitright2); // ADDQ.W	#$02,$F72A
+  DEF_ROMLOC(CDF4) : add_tomem_16(0x2, v_limitright2); // ADDQ.W
+                                                       // #$02,$F72A
   DEF_ROMLOC(CDF8)
       : cmp_tomem_16(0x2100, v_limitright2); // CMPI.W
                                              // #$2100,$F72A

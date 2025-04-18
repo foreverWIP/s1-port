@@ -106,7 +106,7 @@ ROMFUNC(rom_C0E2) {
   DEF_ROMLOC(C0F6)
       : move_toreg_16(read_16((A7 += 2, A7 - 2)), &D4); // MOVE.W	(A7)+,D4
   DEF_ROMLOC(C0F8) : rom_10062();                       // BSR.W	$10062
-  DEF_ROMLOC(C0FC) : rom_DC92();                        // BSR.W	$DC92
+  DEF_ROMLOC(C0FC) : queue_sprite();                    // BSR.W	$DC92
   rom_C130();                                           // BRA.W	$C130
 }
 ROMFUNC(rom_C104) {
@@ -134,8 +134,8 @@ ROMFUNC(rom_C118) {
   rom_C12C(); // Detected flow into next function
 }
 ROMFUNC(rom_C12C) {
-  DEF_ROMLOC(C12C) : rom_DC92(); // BSR.W	$DC92
-  rom_C130();                    // Detected flow into next function
+  DEF_ROMLOC(C12C) : queue_sprite(); // BSR.W	$DC92
+  rom_C130();                        // Detected flow into next function
 }
 ROMFUNC(rom_C130) {
   DEF_ROMLOC(C130)

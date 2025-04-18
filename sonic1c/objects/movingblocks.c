@@ -114,7 +114,7 @@ ROMFUNC(rom_10550) {
     rom_DCCE();
     return;
   } // BHI.W	$DCCE
-  rom_DC92(); // BRA.W	$DC92
+  queue_sprite(); // BRA.W	$DC92
 }
 ROMFUNC(rom_10572) {
   u8 switchindex = 0;

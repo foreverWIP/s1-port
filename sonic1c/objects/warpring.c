@@ -69,7 +69,7 @@ ROMFUNC(rom_A4E4) {
     rom_DCCE();
     return;
   } // BHI.W	$DCCE
-  rom_DC92(); // BRA.W	$DC92
+  queue_sprite(); // BRA.W	$DC92
 }
 ROMFUNC(rom_A50C) {
   DEF_ROMLOC(A50C) : sub_tomem_8(0x2, A0 + 0x24);  // SUBQ.B	#$02,36(A0)

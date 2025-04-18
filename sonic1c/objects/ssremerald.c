@@ -2,7 +2,6 @@
 #include "../opcodes.h"
 #include "../system.h"
 
-
 ROMFUNC(rom_CFE4) {
   u8 switchindex = 0;
   DEF_ROMLOC(CFE4) : move_toreg_32(0x0, &D0); // MOVEQ.L	$00,D0
@@ -38,11 +37,13 @@ ROMFUNC(rom_D002) {
   DEF_ROMLOC(D014) : if (CCR_CS) {
     rom_DCCE();
     return;
-  }           // BCS.W	$DCCE
+  } // BCS.W	$DCCE
   rom_D018(); // Detected flow into next function
 }
 ROMFUNC(rom_D018) {
-  DEF_ROMLOC(D018) : move_tomem_8(OBJ_SSRCHAOS, A1 + offsetof(object, id)); // MOVE.B	#$7F,0(A1)
+  DEF_ROMLOC(D018)
+      : move_tomem_8(OBJ_SSRCHAOS,
+                     A1 + offsetof(object, id)); // MOVE.B	#$7F,0(A1)
   DEF_ROMLOC(D01E)
       : move_tomem_16(read_16((A2 += 2, A2 - 2)),
                       A1 + 0x8);                     // MOVE.W	(A2)+,8(A1)
@@ -75,9 +76,9 @@ ROMFUNC(rom_D05A) {
   DEF_ROMLOC(D06A)
       : move_tomem_8(read_8(A0 + 0x1C), A0 + 0x1A); // MOVE.B	28(A0),26(A0)
   DEF_ROMLOC(D070) : {
-    rom_DC92();
+    queue_sprite();
     return;
-  }                                          // BRA.W	$DC92
+  } // BRA.W	$DC92
   DEF_ROMLOC(D074) : or_tomem_8(0x46, A0++); // ORI.B	#$46,(A0)+
   DEF_ROMLOC(D078)
       : or_tomem_16(0x94, (s32)A4 + (s8)0xC2 +

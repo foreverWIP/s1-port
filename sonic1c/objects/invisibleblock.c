@@ -68,7 +68,7 @@ ROMFUNC(rom_11B38) {
   DEF_ROMLOC(11B76) : tst_mem_16(v_debuguse);      // TST.W	$FE08
   DEF_ROMLOC(11B7A) : if (CCR_EQ) goto rom_11B82;  // BEQ.B	$11B82
   DEF_ROMLOC(11B7C) : {
-    rom_DC92();
+    queue_sprite();
     return;
   } // JMP	$0000DC92
   DEF_ROMLOC(11B82) : return; // RTS

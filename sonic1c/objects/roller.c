@@ -78,7 +78,7 @@ ROMFUNC(rom_E6E2) {
   DEF_ROMLOC(E710)
       : cmp_toreg_16(128 + GAME_WIDTH + 192, &D0); // CMPI.W	#$0280,D0
   DEF_ROMLOC(E714) : if (CCR_GT) goto rom_E71C;    // BGT.W	$E71C
-  rom_DC92();
+  queue_sprite();
   return;                                            // BRA.W	$DC92
   DEF_ROMLOC(E71C) : move_toreg_32(0xFFFFFC00, &A2); // LEA.L	$FC00,A2
   DEF_ROMLOC(E720) : move_toreg_32(0x0, &D0);        // MOVEQ.L	$00,D0

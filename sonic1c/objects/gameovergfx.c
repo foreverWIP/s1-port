@@ -49,7 +49,7 @@ ROMFUNC(rom_CB96) {
   DEF_ROMLOC(CBA0) : if (CCR_CS) goto rom_CBA4;     // BCS.B	$CBA4
   DEF_ROMLOC(CBA2) : neg_reg_16(&D1);               // NEG.W	D1
   DEF_ROMLOC(CBA4) : add_tomem_16(D1, A0 + 0x8);    // ADD.W	D1,8(A0)
-  rom_DC92();
+  queue_sprite();
   return;                                             // BRA.W	$DC92
   DEF_ROMLOC(CBAC) : move_tomem_16(0x2D0, A0 + 0x1E); // MOVE.W	#$02D0,30(A0)
   DEF_ROMLOC(CBB2) : add_tomem_8(0x2, A0 + 0x24);     // ADDQ.B	#$02,36(A0)
@@ -65,7 +65,7 @@ ROMFUNC(rom_CBB8) {
   DEF_ROMLOC(CBCA) : tst_mem_16(A0 + 0x1E);        // TST.W	30(A0)
   DEF_ROMLOC(CBCE) : if (CCR_EQ) goto rom_CBD8;    // BEQ.B	$CBD8
   DEF_ROMLOC(CBD0) : sub_tomem_16(0x1, A0 + 0x1E); // SUBQ.W	#$01,30(A0)
-  rom_DC92();
+  queue_sprite();
   return;                                        // BRA.W	$DC92
   DEF_ROMLOC(CBD8) : tst_mem_8(0xFFFFFE1A);      // TST.B	$FE1A
   DEF_ROMLOC(CBDC) : if (!CCR_EQ) goto rom_CBF2; // BNE.B	$CBF2
@@ -76,5 +76,5 @@ ROMFUNC(rom_CBB8) {
   goto rom_CBFC;                                     // BRA.B	$CBFC
   DEF_ROMLOC(CBF2) : clr_mem_32(0xFFFFFE38);         // CLR.L	$FE38
   DEF_ROMLOC(CBF6) : move_tomem_16(0x1, 0xFFFFFE02); // MOVE.W	#$0001,$FE02
-  DEF_ROMLOC(CBFC) : rom_DC92();                     // BRA.W	$DC92
+  DEF_ROMLOC(CBFC) : queue_sprite();                 // BRA.W	$DC92
 }

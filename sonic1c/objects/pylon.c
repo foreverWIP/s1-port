@@ -44,6 +44,6 @@ ROMFUNC(rom_11742) {
   DEF_ROMLOC(1175C) : neg_reg_16(&D1);             // NEG.W	D1
   DEF_ROMLOC(1175E) : add_toreg_16(0x100, &D1);    // ADDI.W	#$0100,D1
   DEF_ROMLOC(11762) : move_tomem_16(D1, A0 + 0xA); // MOVE.W	D1,10(A0)
-  DEF_ROMLOC(11766) : rom_DC92();
+  DEF_ROMLOC(11766) : queue_sprite();
   return; // BRA.W	$DC92
 }

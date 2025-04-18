@@ -2,7 +2,6 @@
 #include "../opcodes.h"
 #include "../system.h"
 
-
 ROMFUNC(rom_9B6E) {
   u8 switchindex = 0;
   DEF_ROMLOC(9B6E) : move_toreg_32(0x0, &D0); // MOVEQ.L	$00,D0
@@ -70,7 +69,7 @@ ROMFUNC(rom_9BDA) {
     break;
   }
   DEF_ROMLOC(9BE8) : move_toreg_32(0x9D98, &A1); // LEA.L	$00009D98,A1
-  DEF_ROMLOC(9BEE) : animate_sprite();                 // BSR.W	$ADA2
+  DEF_ROMLOC(9BEE) : animate_sprite();           // BSR.W	$ADA2
   DEF_ROMLOC(9BF2) : {
     rom_FD38();
     return;
@@ -97,18 +96,22 @@ ROMFUNC(rom_9BFA) {
   DEF_ROMLOC(9C3C) : move_tomem_8(0x6, A0 + 0x1C);   // MOVE.B	#$06,28(A0)
   DEF_ROMLOC(9C42) : rom_E11A();                     // BSR.W	$E11A
   DEF_ROMLOC(9C46) : if (!CCR_EQ) goto rom_9C6C;     // BNE.B	$9C6C
-  DEF_ROMLOC(9C48) : move_tomem_8(OBJ_CRABMEAT, A1 + offsetof(object, id));   // MOVE.B	#$1F,0(A1)
-  DEF_ROMLOC(9C4E) : move_tomem_8(0x6, A1 + 0x24);   // MOVE.B	#$06,36(A1)
+  DEF_ROMLOC(9C48)
+      : move_tomem_8(OBJ_CRABMEAT,
+                     A1 + offsetof(object, id));   // MOVE.B	#$1F,0(A1)
+  DEF_ROMLOC(9C4E) : move_tomem_8(0x6, A1 + 0x24); // MOVE.B	#$06,36(A1)
   DEF_ROMLOC(9C54)
       : move_tomem_16(read_16(A0 + 0x8), A1 + 0x8); // MOVE.W	8(A0),8(A1)
   DEF_ROMLOC(9C5A) : sub_tomem_16(0x10, A1 + 0x8);  // SUBI.W	#$0010,8(A1)
   DEF_ROMLOC(9C60)
       : move_tomem_16(read_16(A0 + 0xC), A1 + 0xC); // MOVE.W	12(A0),12(A1)
   DEF_ROMLOC(9C66)
-      : move_tomem_16(0xFFFFFF00, A1 + 0x10);      // MOVE.W	#$FF00,16(A1)
-  DEF_ROMLOC(9C6C) : rom_E11A();                   // BSR.W	$E11A
-  DEF_ROMLOC(9C70) : if (!CCR_EQ) goto rom_9C96;   // BNE.B	$9C96
-  DEF_ROMLOC(9C72) : move_tomem_8(OBJ_CRABMEAT, A1 + offsetof(object, id)); // MOVE.B	#$1F,0(A1)
+      : move_tomem_16(0xFFFFFF00, A1 + 0x10);    // MOVE.W	#$FF00,16(A1)
+  DEF_ROMLOC(9C6C) : rom_E11A();                 // BSR.W	$E11A
+  DEF_ROMLOC(9C70) : if (!CCR_EQ) goto rom_9C96; // BNE.B	$9C96
+  DEF_ROMLOC(9C72)
+      : move_tomem_8(OBJ_CRABMEAT,
+                     A1 + offsetof(object, id));   // MOVE.B	#$1F,0(A1)
   DEF_ROMLOC(9C78) : move_tomem_8(0x6, A1 + 0x24); // MOVE.B	#$06,36(A1)
   DEF_ROMLOC(9C7E)
       : move_tomem_16(read_16(A0 + 0x8), A1 + 0x8); // MOVE.W	8(A0),8(A1)
@@ -124,9 +127,8 @@ ROMFUNC(rom_9C98) {
   DEF_ROMLOC(9C9E) : rom_DC6C();                   // BSR.W	$DC6C
   DEF_ROMLOC(9CA2) : bchg_tomem_8(0x0, A0 + 0x32); // BCHG.B	#$00,50(A0)
   DEF_ROMLOC(9CA8) : if (!CCR_EQ) goto rom_9CD2;   // BNE.B	$9CD2
-  DEF_ROMLOC(9CAA)
-      : move_toreg_16(read_16(A0 + 0x8), &D3);       // MOVE.W	8(A0),D3
-  DEF_ROMLOC(9CAE) : add_toreg_16(0x10, &D3);        // ADDI.W	#$0010,D3
+  DEF_ROMLOC(9CAA) : move_toreg_16(read_16(A0 + 0x8), &D3); // MOVE.W	8(A0),D3
+  DEF_ROMLOC(9CAE) : add_toreg_16(0x10, &D3);               // ADDI.W	#$0010,D3
   DEF_ROMLOC(9CB2) : btst_tomem_8(0x0, A0 + 0x22);   // BTST.B	#$00,34(A0)
   DEF_ROMLOC(9CB8) : if (CCR_EQ) goto rom_9CBE;      // BEQ.B	$9CBE
   DEF_ROMLOC(9CBA) : sub_toreg_16(0x20, &D3);        // SUBI.W	#$0020,D3
@@ -191,9 +193,9 @@ ROMFUNC(rom_9D3C) {
 }
 ROMFUNC(rom_9D72) {
   DEF_ROMLOC(9D72) : move_toreg_32(0x9D98, &A1); // LEA.L	$00009D98,A1
-  DEF_ROMLOC(9D78) : animate_sprite();                 // BSR.W	$ADA2
+  DEF_ROMLOC(9D78) : animate_sprite();           // BSR.W	$ADA2
   DEF_ROMLOC(9D7C) : rom_DC40();                 // BSR.W	$DC40
-  DEF_ROMLOC(9D80) : rom_DC92();                 // BSR.W	$DC92
+  DEF_ROMLOC(9D80) : queue_sprite();             // BSR.W	$DC92
   DEF_ROMLOC(9D84)
       : move_toreg_16(read_16(0xFFFFF72E), &D0); // MOVE.W	$F72E,D0
   DEF_ROMLOC(9D88) : add_toreg_16(0xE0, &D0);    // ADDI.W	#$00E0,D0

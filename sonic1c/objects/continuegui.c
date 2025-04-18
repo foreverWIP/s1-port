@@ -2,7 +2,6 @@
 #include "../opcodes.h"
 #include "../system.h"
 
-
 ROMFUNC(rom_4E4E) {
   u8 switchindex = 0;
   DEF_ROMLOC(4E4E) : move_toreg_32(0x0, &D0); // MOVEQ.L	$00,D0
@@ -41,7 +40,7 @@ ROMFUNC(rom_4E64) {
   rom_4E94(); // Detected flow into next function
 }
 ROMFUNC(rom_4E94) {
-  DEF_ROMLOC(4E94) : rom_DC92();
+  DEF_ROMLOC(4E94) : queue_sprite();
   return; // JMP	$0000DC92
 }
 ROMFUNC(rom_4E9A) {
@@ -69,8 +68,9 @@ ROMFUNC(rom_4EB8) {
   rom_4EE2(); // Detected flow into next function
 }
 ROMFUNC(rom_4EE2) {
-  DEF_ROMLOC(4EE2) : move_tomem_8(OBJ_CONTSCRITEM, A1 + offsetof(object, id)); // MOVE.B
-                                                         // #$80,0(A1)
+  DEF_ROMLOC(4EE2)
+      : move_tomem_8(OBJ_CONTSCRITEM, A1 + offsetof(object, id)); // MOVE.B
+                                                                  // #$80,0(A1)
   DEF_ROMLOC(4EE8)
       : move_tomem_16(read_16((A2 += 2, A2 - 2)),
                       A1 + 0x8);                    // MOVE.W	(A2)+,8(A1)
@@ -110,7 +110,7 @@ ROMFUNC(rom_4F2C) {
   DEF_ROMLOC(4F50) : and_toreg_8(0xF, &D0);        // ANDI.B	#$0F,D0
   DEF_ROMLOC(4F54) : if (!CCR_EQ) goto rom_4F5C;   // BNE.B	$4F5C
   DEF_ROMLOC(4F56) : bchg_tomem_8(0x0, A0 + 0x1A); // BCHG.B	#$00,26(A0)
-  DEF_ROMLOC(4F5C) : rom_DC92();
+  DEF_ROMLOC(4F5C) : queue_sprite();
   return; // JMP	$0000DC92
   DEF_ROMLOC(4F62) : rom_DCCE();
   return; // JMP	$0000DCCE

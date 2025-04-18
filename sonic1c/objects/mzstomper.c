@@ -150,7 +150,7 @@ ROMFUNC(rom_BE22) {
   DEF_ROMLOC(BE58) : move_toreg_32(0xFFFFD000, &A0); // LEA.L	$D000,A0
   DEF_ROMLOC(BE5C) : rom_1B84E();                    // JSR	$0001B84E
   DEF_ROMLOC(BE62) : move_toreg_32(A2, &A0);         // MOVEA.L	A2,A0
-  DEF_ROMLOC(BE64) : rom_DC92();                     // BSR.W	$DC92
+  DEF_ROMLOC(BE64) : queue_sprite();                 // BSR.W	$DC92
   rom_BE9E();                                        // BRA.W	$BE9E
 }
 ROMFUNC(rom_BE6C) {
@@ -179,8 +179,8 @@ ROMFUNC(rom_BE88) {
   rom_BE9A(); // Detected flow into next function
 }
 ROMFUNC(rom_BE9A) {
-  DEF_ROMLOC(BE9A) : rom_DC92(); // BSR.W	$DC92
-  rom_BE9E();                    // Detected flow into next function
+  DEF_ROMLOC(BE9A) : queue_sprite(); // BSR.W	$DC92
+  rom_BE9E();                        // Detected flow into next function
 }
 ROMFUNC(rom_BE9E) {
   DEF_ROMLOC(BE9E) : move_toreg_16(read_16(A0 + 0x8), &D0); // MOVE.W	8(A0),D0

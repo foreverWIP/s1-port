@@ -25,12 +25,13 @@ ROMFUNC(rom_4F68) {
     rom_502C();
     break;
   }
-  DEF_ROMLOC(4F76) : rom_DC92();
+  DEF_ROMLOC(4F76) : queue_sprite();
   return; // JMP	$0000DC92
 }
 ROMFUNC(rom_4F84) {
-  DEF_ROMLOC(4F84) : add_tomem_8(0x2, A0 + 0x24);   // ADDQ.B	#$02,36(A0)
-  DEF_ROMLOC(4F88) : move_tomem_16(GAME_WIDTH / 2, A0 + 0x8); // MOVE.W	#$00A0,8(A0)
+  DEF_ROMLOC(4F84) : add_tomem_8(0x2, A0 + 0x24); // ADDQ.B	#$02,36(A0)
+  DEF_ROMLOC(4F88)
+      : move_tomem_16(GAME_WIDTH / 2, A0 + 0x8);    // MOVE.W	#$00A0,8(A0)
   DEF_ROMLOC(4F8E) : move_tomem_16(0xC0, A0 + 0xC); // MOVE.W	#$00C0,12(A0)
   DEF_ROMLOC(4F94)
       : move_tomem_32(0x21CF4, A0 + 0x4);             // MOVE.L	#$00021CF4,4(A0)
@@ -71,7 +72,7 @@ ROMFUNC(rom_4FF2) {
   DEF_ROMLOC(5016) : move_tomem_8(0x1E, A0 + 0x1C);  // MOVE.B	#$1E,28(A0)
   DEF_ROMLOC(501C) : clr_mem_16(A0 + 0x14);          // CLR.W	20(A0)
   DEF_ROMLOC(5020) : sub_tomem_16(0x8, A0 + 0xC);    // SUBQ.W	#$08,12(A0)
-  DEF_ROMLOC(5024) : move_toreg_8(COMSFX_FADE, &D0);  // MOVE.B	#$E0,D0
+  DEF_ROMLOC(5024) : move_toreg_8(COMSFX_FADE, &D0); // MOVE.B	#$E0,D0
   DEF_ROMLOC(5028) : play_sound_special();           // BSR.W	$1394
   rom_502C(); // Detected flow into next function
 }

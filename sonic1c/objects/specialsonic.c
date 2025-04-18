@@ -74,7 +74,7 @@ ROMFUNC(rom_1C19A) {
   }
   DEF_ROMLOC(1C1C6) : rom_14312(); // JSR	$00014312
   DEF_ROMLOC(1C1CC) : {
-    rom_DC92();
+    queue_sprite();
     return;
   } // JMP	$0000DC92
 }

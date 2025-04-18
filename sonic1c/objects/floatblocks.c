@@ -224,7 +224,7 @@ ROMFUNC(rom_10A34) {
   DEF_ROMLOC(10A82)
       : cmp_toreg_16(128 + GAME_WIDTH + 192, &D0); // CMPI.W	#$0280,D0
   DEF_ROMLOC(10A86) : if (CCR_HI) goto rom_10A8C;  // BHI.B	$10A8C
-  DEF_ROMLOC(10A88) : rom_DC92();
+  DEF_ROMLOC(10A88) : queue_sprite();
   return;                                           // BRA.W	$DC92
   DEF_ROMLOC(10A8C) : cmp_tomem_8(0x37, A0 + 0x28); // CMPI.B	#$37,40(A0)
   DEF_ROMLOC(10A92) : if (!CCR_EQ) goto rom_10A9A;  // BNE.B	$10A9A

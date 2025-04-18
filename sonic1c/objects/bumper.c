@@ -98,7 +98,7 @@ ROMFUNC(rom_F098) {
       : cmp_toreg_16(128 + GAME_WIDTH + 192, &D0); // CMPI.W	#$0280,D0
   DEF_ROMLOC(F160) : if (CCR_HI) goto rom_F166;    // BHI.B	$F166
   DEF_ROMLOC(F162) : {
-    rom_DC92();
+    queue_sprite();
     return;
   } // BRA.W	$DC92
   DEF_ROMLOC(F166) : move_toreg_32(0xFFFFFC00, &A2); // LEA.L	$FC00,A2

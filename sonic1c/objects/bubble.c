@@ -122,7 +122,7 @@ ROMFUNC(rom_12E0A) {
   DEF_ROMLOC(12EAE) : rom_DC6C();                     // BSR.W	$DC6C
   DEF_ROMLOC(12EB2) : tst_mem_8(A0 + 0x1);            // TST.B	1(A0)
   DEF_ROMLOC(12EB6) : if (CCR_PL) goto rom_12EBE;     // BPL.B	$12EBE
-  DEF_ROMLOC(12EB8) : rom_DC92();
+  DEF_ROMLOC(12EB8) : queue_sprite();
   return; // JMP	$0000DC92
   DEF_ROMLOC(12EBE) : rom_DCCE();
   return; // JMP	$0000DCCE
@@ -132,7 +132,7 @@ ROMFUNC(rom_12EC4) {
   DEF_ROMLOC(12ECA) : animate_sprite();            // JSR	$0000ADA2
   DEF_ROMLOC(12ED0) : tst_mem_8(A0 + 0x1);         // TST.B	1(A0)
   DEF_ROMLOC(12ED4) : if (CCR_PL) goto rom_12EDC;  // BPL.B	$12EDC
-  DEF_ROMLOC(12ED6) : rom_DC92();
+  DEF_ROMLOC(12ED6) : queue_sprite();
   return; // JMP	$0000DC92
   DEF_ROMLOC(12EDC) : rom_DCCE();
   return; // JMP	$0000DCCE
@@ -226,7 +226,8 @@ ROMFUNC(rom_12EE6) {
   DEF_ROMLOC(13000) : sub_toreg_16(0x80, &D1);       // SUBI.W	#$0080,D1
   DEF_ROMLOC(13004) : and_toreg_16(0xFFFFFF80, &D1); // ANDI.W	#$FF80,D1
   DEF_ROMLOC(13008) : sub_toreg_16(D1, &D0);         // SUB.W	D1,D0
-  DEF_ROMLOC(1300A) : cmp_toreg_16(128 + GAME_WIDTH + 192, &D0);      // CMPI.W	#$0280,D0
+  DEF_ROMLOC(1300A)
+      : cmp_toreg_16(128 + GAME_WIDTH + 192, &D0); // CMPI.W	#$0280,D0
   DEF_ROMLOC(1300E) : if (CCR_HI) {
     rom_DCCE();
     return;
@@ -237,7 +238,7 @@ ROMFUNC(rom_12EE6) {
       : cmp_toreg_16(read_16(A0 + 0xC), &D0); // CMP.W
                                               // 12(A0),D0
   DEF_ROMLOC(1301A) : if (CCR_CS) {
-    rom_DC92();
+    queue_sprite();
     return;
   } // BCS.W	$DC92
   DEF_ROMLOC(1301E) : return; // RTS

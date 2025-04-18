@@ -94,15 +94,15 @@ ROMFUNC(rom_D51E) {
   DEF_ROMLOC(D5A8) : rom_1B7AA();                 // JSR	$0001B7AA
   DEF_ROMLOC(D5AE)
       : move_toreg_32(read_32((A7 += 4, A7 - 4)), &A0); // MOVEA.L	(A7)+,A0
-  DEF_ROMLOC(D5B0) : rom_DC92();                        // BSR.W	$DC92
+  DEF_ROMLOC(D5B0) : queue_sprite();                    // BSR.W	$DC92
   DEF_ROMLOC(D5B4)
       : move_toreg_16(read_16(A0 + 0x30), &D0);     // MOVE.W	48(A0),D0
   DEF_ROMLOC(D5B8) : and_toreg_16(0xFFFFFF80, &D0); // ANDI.W	#$FF80,D0
   DEF_ROMLOC(D5BC)
-      : move_toreg_16(read_16(v_screenposx), &D1);  // MOVE.W	$F700,D1
-  DEF_ROMLOC(D5C0) : sub_toreg_16(0x80, &D1);       // SUBI.W	#$0080,D1
-  DEF_ROMLOC(D5C4) : and_toreg_16(0xFF80, &D1); // ANDI.W	#$FF80,D1
-  DEF_ROMLOC(D5C8) : sub_toreg_16(D1, &D0);         // SUB.W	D1,D0
+      : move_toreg_16(read_16(v_screenposx), &D1); // MOVE.W	$F700,D1
+  DEF_ROMLOC(D5C0) : sub_toreg_16(0x80, &D1);      // SUBI.W	#$0080,D1
+  DEF_ROMLOC(D5C4) : and_toreg_16(0xFF80, &D1);    // ANDI.W	#$FF80,D1
+  DEF_ROMLOC(D5C8) : sub_toreg_16(D1, &D0);        // SUB.W	D1,D0
   DEF_ROMLOC(D5CA)
       : cmp_toreg_16(128 + GAME_WIDTH + 192, &D0); // CMPI.W	#$0280,D0
   DEF_ROMLOC(D5CE) : if (CCR_HI) {

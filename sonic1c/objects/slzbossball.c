@@ -50,7 +50,7 @@ ROMFUNC(rom_1947E) {
     rom_19062();
     return;
   } // BHI.W	$19062
-  DEF_ROMLOC(194AE) : rom_DC92();
+  DEF_ROMLOC(194AE) : queue_sprite();
   return; // JMP	$0000DC92
 }
 ROMFUNC(rom_194C0) {

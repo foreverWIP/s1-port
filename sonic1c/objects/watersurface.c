@@ -64,5 +64,5 @@ ROMFUNC(rom_117D0) {
   DEF_ROMLOC(1182E) : cmp_tomem_8(0x3, A0 + 0x1A);   // CMPI.B	#$03,26(A0)
   DEF_ROMLOC(11834) : if (CCR_CS) goto rom_1183C;    // BCS.B	$1183C
   DEF_ROMLOC(11836) : move_tomem_8(0x0, A0 + 0x1A);  // MOVE.B	#$00,26(A0)
-  DEF_ROMLOC(1183C) : rom_DC92();                    // BRA.W	$DC92
+  DEF_ROMLOC(1183C) : queue_sprite();                // BRA.W	$DC92
 }

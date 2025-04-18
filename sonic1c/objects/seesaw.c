@@ -50,7 +50,7 @@ ROMFUNC(rom_11D10) {
     rom_DCCE();
     return;
   } // BHI.W	$DCCE
-  rom_DC92(); // BRA.W	$DC92
+  queue_sprite(); // BRA.W	$DC92
 }
 ROMFUNC(rom_11D50) {
   DEF_ROMLOC(11D50) : add_tomem_8(0x2, A0 + 0x24); // ADDQ.B	#$02,36(A0)

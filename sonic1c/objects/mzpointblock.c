@@ -2,7 +2,6 @@
 #include "../opcodes.h"
 #include "../system.h"
 
-
 ROMFUNC(rom_1031E) {
   u8 switchindex = 0;
   DEF_ROMLOC(1031E) : move_toreg_32(0x0, &D0); // MOVEQ.L	$00,D0
@@ -30,11 +29,13 @@ ROMFUNC(rom_10336) {
   DEF_ROMLOC(10336) : add_tomem_8(0x2, A0 + 0x24); // ADDQ.B	#$02,36(A0)
   DEF_ROMLOC(1033A)
       : move_tomem_32(0x10460, A0 + 0x4); // MOVE.L	#$00010460,4(A0)
-  DEF_ROMLOC(10342) : move_tomem_16(0x42B8, A0 + 0x2); // MOVE.W
-                                                       // #$42B8,2(A0)
-  DEF_ROMLOC(10348) : move_tomem_8(0x4, A0 + 0x1);     // MOVE.B	#$04,1(A0)
-  DEF_ROMLOC(1034E) : move_tomem_8(0x10, A0 + 0x19);   // MOVE.B	#$10,25(A0)
-  DEF_ROMLOC(10354) : move_tomem_8(0x4, A0 + 0x18);    // MOVE.B	#$04,24(A0)
+  DEF_ROMLOC(10342)
+      : move_tomem_16(0x42B8, A0 + 0x2);           // MOVE.W
+                                                   // #$42B8,2(A0)
+  DEF_ROMLOC(10348) : move_tomem_8(0x4, A0 + 0x1); // MOVE.B	#$04,1(A0)
+  DEF_ROMLOC(1034E)
+      : move_tomem_8(0x10, A0 + 0x19);              // MOVE.B	#$10,25(A0)
+  DEF_ROMLOC(10354) : move_tomem_8(0x4, A0 + 0x18); // MOVE.B	#$04,24(A0)
   DEF_ROMLOC(1035A)
       : move_tomem_8(read_8(A0 + 0x28), A0 + 0x1A); // MOVE.B	40(A0),26(A0)
   rom_10360(); // Detected flow into next function
@@ -79,8 +80,10 @@ ROMFUNC(rom_10360) {
   DEF_ROMLOC(103EC) : if (!CCR_EQ) {
     rom_10430();
     return;
-  }                                                 // BNE.B	$10430
-  DEF_ROMLOC(103EE) : move_tomem_8(OBJ_POINTS, A1 + offsetof(object, id)); // MOVE.B	#$29,0(A1)
+  } // BNE.B	$10430
+  DEF_ROMLOC(103EE)
+      : move_tomem_8(OBJ_POINTS,
+                     A1 + offsetof(object, id)); // MOVE.B	#$29,0(A1)
   DEF_ROMLOC(103F4)
       : move_tomem_16(read_16(A0 + 0x8), A1 + 0x8); // MOVE.W	8(A0),8(A1)
   DEF_ROMLOC(103FA)
@@ -107,11 +110,11 @@ ROMFUNC(rom_10360) {
 ROMFUNC(rom_10430) {
   DEF_ROMLOC(10430) : rom_DC6C();                    // BSR.W	$DC6C
   DEF_ROMLOC(10434) : add_tomem_16(0x38, A0 + 0x12); // ADDI.W	#$0038,18(A0)
-  DEF_ROMLOC(1043A) : rom_DC92();                    // BSR.W	$DC92
+  DEF_ROMLOC(1043A) : queue_sprite();                // BSR.W	$DC92
   DEF_ROMLOC(1043E) : tst_mem_8(A0 + 0x1);           // TST.B	1(A0)
   DEF_ROMLOC(10442) : if (CCR_PL) {
     rom_DCCE();
     return;
-  }                           // BPL.W	$DCCE
+  } // BPL.W	$DCCE
   DEF_ROMLOC(10446) : return; // RTS
 }

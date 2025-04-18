@@ -51,5 +51,5 @@ ROMFUNC(rom_EFCE) {
     rom_DCCE();
     return;
   } // BHI.W	$DCCE
-  rom_DC92(); // BRA.W	$DC92
+  queue_sprite(); // BRA.W	$DC92
 }

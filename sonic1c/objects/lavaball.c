@@ -22,7 +22,7 @@ ROMFUNC(rom_E992) {
     rom_EB4E();
     break;
   }
-  DEF_ROMLOC(E9A0) : rom_DC92(); // BRA.W	$DC92
+  DEF_ROMLOC(E9A0) : queue_sprite(); // BRA.W	$DC92
 }
 ROMFUNC(rom_E9BC) {
   DEF_ROMLOC(E9BC) : add_tomem_8(0x2, A0 + 0x24);  // ADDQ.B	#$02,36(A0)

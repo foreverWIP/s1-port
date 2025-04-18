@@ -41,7 +41,7 @@ ROMFUNC(rom_BA28) {
     rom_BA58();
     return;
   } // BHI.W	$BA58
-  rom_DC92(); // BRA.W	$DC92
+  queue_sprite(); // BRA.W	$DC92
 }
 ROMFUNC(rom_BA58) {
   DEF_ROMLOC(BA58) : {

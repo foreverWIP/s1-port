@@ -82,7 +82,7 @@ ROMFUNC(rom_1D77A) {
   DEF_ROMLOC(1D796)
       : move_toreg_16(read_16((A2 += 2, A2 - 2)), &D6); // MOVE.W	(A2)+,D6
   DEF_ROMLOC(1D798) : rom_1D7A2();                      // BSR.W	$1D7A2
-  DEF_ROMLOC(1D79C) : rom_DC92();                       // JMP	$0000DC92
+  DEF_ROMLOC(1D79C) : queue_sprite();                       // JMP	$0000DC92
 }
 ROMFUNC(rom_1D7A2) {
   DEF_ROMLOC(1D7A2) : move_toreg_32(0x0, &D4);               // MOVEQ.L	$00,D4

@@ -15,10 +15,10 @@
 #include "sega.h"
 #include "sound.h"
 #include "special.h"
+#include "sprite.h"
 #include "system.h"
 #include "util.h"
 #include "vblank.h"
-
 
 enum {
   GM_SEGA = 4 * 0,

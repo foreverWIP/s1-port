@@ -149,9 +149,9 @@ ROMFUNC(rom_815A) {
   rom_816A(); // Detected flow into next function
 }
 ROMFUNC(rom_816A) {
-  DEF_ROMLOC(816A) : rom_81E2(); // BSR.W	$81E2
-  DEF_ROMLOC(816E) : rom_DC92(); // BSR.W	$DC92
-  rom_827C();                    // BRA.W	$827C
+  DEF_ROMLOC(816A) : rom_81E2();     // BSR.W	$81E2
+  DEF_ROMLOC(816E) : queue_sprite(); // BSR.W	$DC92
+  rom_827C();                        // BRA.W	$827C
 }
 ROMFUNC(rom_8176) {
   DEF_ROMLOC(8176) : move_toreg_32(0x0, &D1); // MOVEQ.L	$00,D1
@@ -170,7 +170,7 @@ ROMFUNC(rom_8176) {
                                               // 22(A0),D3
   DEF_ROMLOC(8190) : add_toreg_8(0x1, &D3);   // ADDQ.B	#$01,D3
   DEF_ROMLOC(8192) : rom_81A0();              // BSR.W	$81A0
-  DEF_ROMLOC(8196) : rom_DC92();              // BSR.W	$DC92
+  DEF_ROMLOC(8196) : queue_sprite();          // BSR.W	$DC92
   DEF_ROMLOC(819A) : {
     rom_827C();
     return;
@@ -289,5 +289,5 @@ ROMFUNC(rom_82BC) {
   DEF_ROMLOC(82C0) : return;     // RTS
 }
 ROMFUNC(rom_82C2) {
-  DEF_ROMLOC(82C2) : rom_DC92(); // BRA.W	$DC92
+  DEF_ROMLOC(82C2) : queue_sprite(); // BRA.W	$DC92
 }

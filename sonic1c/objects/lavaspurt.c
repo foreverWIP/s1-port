@@ -25,7 +25,7 @@ ROMFUNC(rom_F4FC) {
     rom_F6E6();
     break;
   }
-  rom_DC92(); // BRA.W	$DC92
+  queue_sprite(); // BRA.W	$DC92
 }
 ROMFUNC(rom_F546) {
   DEF_ROMLOC(F546) : rom_E130();                 // BSR.W	$E130
@@ -150,8 +150,9 @@ ROMFUNC(rom_F51A) {
 ROMFUNC(rom_F606) {
   u8 switchindex = 0;
   DEF_ROMLOC(F606) : move_toreg_32(0x0, &D0); // MOVEQ.L	$00,D0
-  DEF_ROMLOC(F608) : move_toreg_8(read_8(A0 + 0x28), &D0); // MOVE.B	40(A0),D0
-  DEF_ROMLOC(F60C) : add_toreg_16(D0, &D0); // ADD.W	D0,D0
+  DEF_ROMLOC(F608)
+      : move_toreg_8(read_8(A0 + 0x28), &D0); // MOVE.B	40(A0),D0
+  DEF_ROMLOC(F60C) : add_toreg_16(D0, &D0);   // ADD.W	D0,D0
   switchindex = D0 / 2;
   DEF_ROMLOC(F60E)
       : move_toreg_16(read_16(0xF644 + (s16)(D0 & 0xffff)),

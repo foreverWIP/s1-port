@@ -129,7 +129,7 @@ ROMFUNC(rom_A40C) {
     rom_A480();
     return;
   } // BCS.B	$A480
-  rom_DC92(); // BRA.W	$DC92
+  queue_sprite(); // BRA.W	$DC92
 }
 ROMFUNC(rom_A45E) {
   DEF_ROMLOC(A45E) : add_tomem_8(0x2, A0 + 0x24);  // ADDQ.B	#$02,36(A0)
@@ -141,7 +141,7 @@ ROMFUNC(rom_A45E) {
 ROMFUNC(rom_A472) {
   DEF_ROMLOC(A472) : move_toreg_32(0xA608, &A1); // LEA.L	$0000A608,A1
   DEF_ROMLOC(A478) : animate_sprite();           // BSR.W	$ADA2
-  rom_DC92();                                    // BRA.W	$DC92
+  queue_sprite();                                // BRA.W	$DC92
 }
 ROMFUNC(rom_A480) {
   rom_DCCE(); // BRA.W	$DCCE

@@ -28,15 +28,16 @@ ROMFUNC(rom_1AC04) {
   }
 }
 ROMFUNC(rom_1AC28) {
-  DEF_ROMLOC(1AC28) : move_toreg_32(0x1AC18, &A1);          // LEA.L	-18(PC),A1
-  DEF_ROMLOC(1AC2C) : move_toreg_32(0x0, &D0);              // MOVEQ.L	$00,D0
-  DEF_ROMLOC(1AC2E) : move_toreg_8(read_8(A0 + 0x28), &D0); // MOVE.B
-                                                            // 40(A0),D0
-  DEF_ROMLOC(1AC32) : add_toreg_16(D0, &D0);                // ADD.W	D0,D0
-  DEF_ROMLOC(1AC34) : add_toreg_16(D0, &A1);                // ADDA.W	D0,A1
-  DEF_ROMLOC(1AC36) : move_tomem_8(0x4, A0 + 0x1);          // MOVE.B	#$04,1(A0)
-  DEF_ROMLOC(1AC3C) : bset_tomem_8(0x7, A0 + 0x1);          // BSET.B	#$07,1(A0)
-  DEF_ROMLOC(1AC42) : bset_tomem_8(0x4, A0 + 0x1);          // BSET.B	#$04,1(A0)
+  DEF_ROMLOC(1AC28) : move_toreg_32(0x1AC18, &A1); // LEA.L	-18(PC),A1
+  DEF_ROMLOC(1AC2C) : move_toreg_32(0x0, &D0);     // MOVEQ.L	$00,D0
+  DEF_ROMLOC(1AC2E)
+      : move_toreg_8(read_8(A0 + 0x28), &D0);         // MOVE.B
+                                                      // 40(A0),D0
+  DEF_ROMLOC(1AC32) : add_toreg_16(D0, &D0);          // ADD.W	D0,D0
+  DEF_ROMLOC(1AC34) : add_toreg_16(D0, &A1);          // ADDA.W	D0,A1
+  DEF_ROMLOC(1AC36) : move_tomem_8(0x4, A0 + 0x1);    // MOVE.B	#$04,1(A0)
+  DEF_ROMLOC(1AC3C) : bset_tomem_8(0x7, A0 + 0x1);    // BSET.B	#$07,1(A0)
+  DEF_ROMLOC(1AC42) : bset_tomem_8(0x4, A0 + 0x1);    // BSET.B	#$04,1(A0)
   DEF_ROMLOC(1AC48) : move_tomem_16(0x300, A0 + 0x2); // MOVE.W	#$0300,2(A0)
   DEF_ROMLOC(1AC4E)
       : move_tomem_32(0x1AE2C, A0 + 0x4); // MOVE.L	#$0001AE2C,4(A0)
@@ -65,7 +66,7 @@ ROMFUNC(rom_1AC84) {
   DEF_ROMLOC(1AC9A) : if (CCR_EQ) {
     rom_1ACA0();
     return;
-  }                                                // BEQ.B	$1ACA0
+  } // BEQ.B	$1ACA0
   DEF_ROMLOC(1AC9C) : add_tomem_8(0x2, A0 + 0x24); // ADDQ.B	#$02,36(A0)
   rom_1ACA0();
 }
@@ -126,7 +127,7 @@ ROMFUNC(rom_1ACA0) {
     rom_1ABFE();
     return;
   } // BPL.W	$1ABFE
-  DEF_ROMLOC(1AD2E) : rom_DC92();
+  DEF_ROMLOC(1AD2E) : queue_sprite();
   return; // JMP	$0000DC92
 }
 ROMFUNC(rom_1AD34) {

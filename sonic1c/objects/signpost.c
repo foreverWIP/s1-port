@@ -30,7 +30,7 @@ ROMFUNC(rom_F1B4) {
   }
   DEF_ROMLOC(F1C2) : move_toreg_32(0xF3A8, &A1); // LEA.L	$0000F3A8,A1
   DEF_ROMLOC(F1C8) : animate_sprite();           // BSR.W	$ADA2
-  DEF_ROMLOC(F1CC) : rom_DC92();                 // BSR.W	$DC92
+  DEF_ROMLOC(F1CC) : queue_sprite();             // BSR.W	$DC92
   DEF_ROMLOC(F1D0) : move_toreg_16(read_16(A0 + 0x8), &D0); // MOVE.W	8(A0),D0
   DEF_ROMLOC(F1D4) : and_toreg_16(0xFFFFFF80, &D0);         // ANDI.W	#$FF80,D0
   DEF_ROMLOC(F1D8)
@@ -171,10 +171,10 @@ ROMFUNC(rom_F316) {
   DEF_ROMLOC(F368) : mulu_toreg_16(0xA, &D0);       // MULU.W	#$000A,D0
   DEF_ROMLOC(F36C) : move_tomem_16(D0, 0xFFFFF7D4); // MOVE.W	D0,$F7D4
   DEF_ROMLOC(F370)
-      : move_toreg_16(BGM_GOTTHROUGH, &D0);  // MOVE.W
-                                           // #$008E,D0
-  DEF_ROMLOC(F374) : play_sound_special(); // JSR	$00001394
-  DEF_ROMLOC(F37A) : return;               // RTS
+      : move_toreg_16(BGM_GOTTHROUGH, &D0); // MOVE.W
+                                            // #$008E,D0
+  DEF_ROMLOC(F374) : play_sound_special();  // JSR	$00001394
+  DEF_ROMLOC(F37A) : return;                // RTS
 }
 ROMFUNC(rom_F3A6) {
   DEF_ROMLOC(F3A6) : return; // RTS

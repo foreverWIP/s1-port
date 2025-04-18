@@ -55,7 +55,7 @@ ROMFUNC(rom_A592) {
     rom_DCCE();
     return;
   } // BHI.W	$DCCE
-  rom_DC92(); // BRA.W	$DC92
+  queue_sprite(); // BRA.W	$DC92
 }
 ROMFUNC(rom_A5B6) {
   returnearly = false;

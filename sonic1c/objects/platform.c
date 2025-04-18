@@ -76,10 +76,10 @@ ROMFUNC(rom_8554) {
   rom_8568(); // Detected flow into next function
 }
 ROMFUNC(rom_8568) {
-  DEF_ROMLOC(8568) : rom_85C4(); // BSR.W	$85C4
-  DEF_ROMLOC(856C) : rom_85AA(); // BSR.W	$85AA
-  DEF_ROMLOC(8570) : rom_DC92(); // BSR.W	$DC92
-  rom_8756();                    // BRA.W	$8756
+  DEF_ROMLOC(8568) : rom_85C4();     // BSR.W	$85C4
+  DEF_ROMLOC(856C) : rom_85AA();     // BSR.W	$85AA
+  DEF_ROMLOC(8570) : queue_sprite(); // BSR.W	$DC92
+  rom_8756();                        // BRA.W	$8756
 }
 ROMFUNC(rom_8578) {
   DEF_ROMLOC(8578) : cmp_tomem_8(0x40, A0 + 0x38); // CMPI.B	#$40,56(A0)
@@ -97,7 +97,7 @@ ROMFUNC(rom_8578) {
   DEF_ROMLOC(859A)
       : move_toreg_16(read_16((A7 += 2, A7 - 2)), &D2); // MOVE.W	(A7)+,D2
   DEF_ROMLOC(859C) : rom_81AC();                        // BSR.W	$81AC
-  DEF_ROMLOC(85A0) : rom_DC92();                        // BSR.W	$DC92
+  DEF_ROMLOC(85A0) : queue_sprite();                    // BSR.W	$DC92
   DEF_ROMLOC(85A4) : {
     rom_8756();
     return;

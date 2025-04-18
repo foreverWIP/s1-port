@@ -207,7 +207,7 @@ ROMFUNC(rom_10F8A) {
   DEF_ROMLOC(10FFA)
       : cmp_toreg_16(128 + GAME_WIDTH + 192, &D0); // CMPI.W	#$0280,D0
   DEF_ROMLOC(10FFE) : if (CCR_HI) goto rom_11006;  // BHI.W	$11006
-  DEF_ROMLOC(11002) : rom_DC92();
+  DEF_ROMLOC(11002) : queue_sprite();
   return;                                              // BRA.W	$DC92
   DEF_ROMLOC(11006) : move_toreg_32(0x0, &D2);         // MOVEQ.L	$00,D2
   DEF_ROMLOC(11008) : move_toreg_32(A0 + 0x29, &A2);   // LEA.L	41(A0),A2
@@ -215,15 +215,16 @@ ROMFUNC(rom_10F8A) {
   DEF_ROMLOC(1100E) : move_toreg_32(0x0, &D0);         // MOVEQ.L	$00,D0
   DEF_ROMLOC(11010) : move_toreg_8(read_8(A2++), &D0); // MOVE.B	(A2)+,D0
   DEF_ROMLOC(11012) : lsl_toreg_16(0x6, &D0);          // LSL.W	#$06,D0
-  DEF_ROMLOC(11014) : add_toreg_32(0xFFD000, &D0);     // ADDI.L	#$00FFD000,D0
-  DEF_ROMLOC(1101A) : move_toreg_32(D0, &A1);          // MOVEA.L	D0,A1
-  DEF_ROMLOC(1101C) : rom_DCD0();                      // BSR.W	$DCD0
+  DEF_ROMLOC(11014)
+      : add_toreg_32(0xFFD000, &D0);          // ADDI.L	#$00FFD000,D0
+  DEF_ROMLOC(1101A) : move_toreg_32(D0, &A1); // MOVEA.L	D0,A1
+  DEF_ROMLOC(1101C) : rom_DCD0();             // BSR.W	$DCD0
   DEF_ROMLOC(11020) : dec_reg_16(&D2);
   if ((D2 & 0xffff) != 0xffff)
     goto rom_1100E;           // DBF.W	D2,$1100E
   DEF_ROMLOC(11024) : return; // RTS
 }
 ROMFUNC(rom_11026) {
-  DEF_ROMLOC(11026) : rom_DC92();
+  DEF_ROMLOC(11026) : queue_sprite();
   return; // BRA.W	$DC92
 }

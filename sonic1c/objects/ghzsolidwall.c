@@ -47,7 +47,7 @@ ROMFUNC(rom_E8AE) {
   rom_E8BA(); // Detected flow into next function
 }
 ROMFUNC(rom_E8BA) {
-  DEF_ROMLOC(E8BA) : rom_DC92();                            // BSR.W	$DC92
+  DEF_ROMLOC(E8BA) : queue_sprite();                        // BSR.W	$DC92
   DEF_ROMLOC(E8BE) : move_toreg_16(read_16(A0 + 0x8), &D0); // MOVE.W	8(A0),D0
   DEF_ROMLOC(E8C2) : and_toreg_16(0xFFFFFF80, &D0);         // ANDI.W	#$FF80,D0
   DEF_ROMLOC(E8C6)

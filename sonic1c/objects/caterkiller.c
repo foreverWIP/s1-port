@@ -171,7 +171,7 @@ ROMFUNC(rom_171AA) {
     rom_17214();
     return;
   } // BHI.W	$17214
-  DEF_ROMLOC(1720E) : rom_DC92(); // JMP	$0000DC92
+  DEF_ROMLOC(1720E) : queue_sprite(); // JMP	$0000DC92
 }
 ROMFUNC(rom_17214) {
   DEF_ROMLOC(17214) : move_toreg_32(0xFFFFFC00, &A2); // LEA.L	$FC00,A2
@@ -380,7 +380,7 @@ ROMFUNC(rom_17354) {
   DEF_ROMLOC(17420) : cmp_tomem_8(0xA, A1 + 0x24);  // CMPI.B	#$0A,36(A1)
   DEF_ROMLOC(17426) : if (!CCR_EQ) goto rom_1742E;  // BNE.B	$1742E
   DEF_ROMLOC(17428) : move_tomem_8(0xA, A0 + 0x24); // MOVE.B	#$0A,36(A0)
-  DEF_ROMLOC(1742E) : rom_DC92();
+  DEF_ROMLOC(1742E) : queue_sprite();
   return;                                           // JMP	$0000DC92
   DEF_ROMLOC(1743C) : bset_tomem_8(0x7, A1 + 0x22); // BSET.B	#$07,34(A1)
   rom_17442(); // Detected flow into next function
@@ -419,5 +419,5 @@ ROMFUNC(rom_1746C) {
     rom_17214();
     return;
   } // BPL.W	$17214
-  DEF_ROMLOC(17494) : rom_DC92(); // JMP	$0000DC92
+  DEF_ROMLOC(17494) : queue_sprite(); // JMP	$0000DC92
 }

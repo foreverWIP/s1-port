@@ -131,7 +131,7 @@ ROMFUNC(rom_124D4) {
   DEF_ROMLOC(124EA)
       : cmp_toreg_16(128 + GAME_WIDTH + 192, &D0); // CMPI.W	#$0280,D0
   DEF_ROMLOC(124EE) : if (CCR_HI) goto rom_124F6;  // BHI.W	$124F6
-  DEF_ROMLOC(124F2) : rom_DC92();
+  DEF_ROMLOC(124F2) : queue_sprite();
   return;                                             // BRA.W	$DC92
   DEF_ROMLOC(124F6) : move_toreg_32(0xFFFFFC00, &A2); // LEA.L	$FC00,A2
   DEF_ROMLOC(124FA) : move_toreg_32(0x0, &D0);        // MOVEQ.L	$00,D0
@@ -149,9 +149,10 @@ ROMFUNC(rom_124D4) {
   DEF_ROMLOC(12514) : move_toreg_32(0x0, &D0);         // MOVEQ.L	$00,D0
   DEF_ROMLOC(12516) : move_toreg_8(read_8(A2++), &D0); // MOVE.B	(A2)+,D0
   DEF_ROMLOC(12518) : lsl_toreg_16(0x6, &D0);          // LSL.W	#$06,D0
-  DEF_ROMLOC(1251A) : add_toreg_32(0xFFD000, &D0);     // ADDI.L	#$00FFD000,D0
-  DEF_ROMLOC(12520) : move_toreg_32(D0, &A1);          // MOVEA.L	D0,A1
-  DEF_ROMLOC(12522) : rom_DCD0();                      // BSR.W	$DCD0
+  DEF_ROMLOC(1251A)
+      : add_toreg_32(0xFFD000, &D0);          // ADDI.L	#$00FFD000,D0
+  DEF_ROMLOC(12520) : move_toreg_32(D0, &A1); // MOVEA.L	D0,A1
+  DEF_ROMLOC(12522) : rom_DCD0();             // BSR.W	$DCD0
   DEF_ROMLOC(12526) : dec_reg_16(&D2);
   if ((D2 & 0xffff) != 0xffff)
     goto rom_12514;               // DBF.W	D2,$12514
@@ -180,7 +181,7 @@ ROMFUNC(rom_1252E) {
   DEF_ROMLOC(12560) : btst_tomem_8(0x0, A1 + 0x22); // BTST.B	#$00,34(A1)
   DEF_ROMLOC(12566) : if (CCR_EQ) goto rom_1256C;   // BEQ.B	$1256C
   DEF_ROMLOC(12568) : neg_mem_16(A0 + 0x10);        // NEG.W	16(A0)
-  DEF_ROMLOC(1256C) : rom_DC92();
+  DEF_ROMLOC(1256C) : queue_sprite();
   return; // BRA.W	$DC92
   DEF_ROMLOC(12570)
       : move_toreg_8(read_8(A0 + 0x26), &D0); // MOVE.B
@@ -197,7 +198,7 @@ ROMFUNC(rom_1252E) {
   DEF_ROMLOC(1258E)
       : move_toreg_8(read_8(A1 + 0x36), &D0);     // MOVE.B	54(A1),D0
   DEF_ROMLOC(12592) : add_tomem_8(D0, A0 + 0x26); // ADD.B	D0,38(A0)
-  rom_DC92();                                     // BRA.W	$DC92
+  queue_sprite();                                 // BRA.W	$DC92
 }
 ROMFUNC(rom_1259A) {
   DEF_ROMLOC(1259A) : rom_DC6C();          // BSR.W	$DC6C
@@ -206,6 +207,6 @@ ROMFUNC(rom_1259A) {
     rom_DCCE();
     return;
   } // BPL.W	$DCCE
-  DEF_ROMLOC(125A6) : rom_DC92();
+  DEF_ROMLOC(125A6) : queue_sprite();
   return; // BRA.W	$DC92
 }

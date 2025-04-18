@@ -111,7 +111,7 @@ ROMFUNC(rom_F79E) {
   DEF_ROMLOC(F7D8) : cmp_tomem_8(0x4, 0xFFFFD024);      // CMPI.B	#$04,$D024
   DEF_ROMLOC(F7DE) : if (CCR_CC) goto rom_F7E4;         // BCC.B	$F7E4
   DEF_ROMLOC(F7E0) : rom_DC6C();                        // BSR.W	$DC6C
-  DEF_ROMLOC(F7E4) : rom_DC92();                        // BSR.W	$DC92
+  DEF_ROMLOC(F7E4) : queue_sprite();                    // BSR.W	$DC92
   DEF_ROMLOC(F7E8) : tst_mem_8(A0 + 0x36);              // TST.B	54(A0)
   DEF_ROMLOC(F7EC) : if (!CCR_EQ) goto rom_F80A;        // BNE.B	$F80A
   DEF_ROMLOC(F7EE) : move_toreg_16(read_16(A0 + 0x8), &D0); // MOVE.W	8(A0),D0
@@ -147,7 +147,7 @@ ROMFUNC(rom_F824) {
   DEF_ROMLOC(F830)
       : move_tomem_16(read_16(A1 + 0x8), A0 + 0x8); // MOVE.W	8(A1),8(A0)
   DEF_ROMLOC(F836) : sub_tomem_16(0x80, A0 + 0x8);  // SUBI.W	#$0080,8(A0)
-  rom_DC92();                                       // BRA.W	$DC92
+  queue_sprite();                                   // BRA.W	$DC92
 }
 ROMFUNC(rom_F840) {
   rom_DCCE(); // BRA.W	$DCCE

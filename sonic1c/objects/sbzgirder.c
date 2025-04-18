@@ -77,7 +77,7 @@ ROMFUNC(rom_16CDE) {
   DEF_ROMLOC(16D34)
       : cmp_toreg_16(128 + GAME_WIDTH + 192, &D0); // CMPI.W	#$0280,D0
   DEF_ROMLOC(16D38) : if (CCR_HI) goto rom_16D40;  // BHI.B	$16D40
-  DEF_ROMLOC(16D3A) : rom_DC92();
+  DEF_ROMLOC(16D3A) : queue_sprite();
   return; // JMP	$0000DC92
   DEF_ROMLOC(16D40) : rom_DCCE();
   return; // JMP	$0000DCCE

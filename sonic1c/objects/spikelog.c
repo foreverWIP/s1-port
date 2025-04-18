@@ -95,9 +95,9 @@ ROMFUNC(rom_8338) {
   rom_83FA();
 }
 ROMFUNC(rom_83FA) {
-  DEF_ROMLOC(83FA) : rom_8406(); // BSR.W	$8406
-  DEF_ROMLOC(83FE) : rom_DC92(); // BSR.W	$DC92
-  rom_8426();                    // BRA.W	$8426
+  DEF_ROMLOC(83FA) : rom_8406();     // BSR.W	$8406
+  DEF_ROMLOC(83FE) : queue_sprite(); // BSR.W	$DC92
+  rom_8426();                        // BRA.W	$8426
 }
 ROMFUNC(rom_8406) {
   DEF_ROMLOC(8406)
@@ -152,7 +152,7 @@ ROMFUNC(rom_8468) {
 ROMFUNC(rom_846E) {
   DEF_ROMLOC(846E) : rom_8406(); // BSR.W	$8406
   DEF_ROMLOC(8472) : {
-    rom_DC92();
+    queue_sprite();
     return;
   } // BRA.W	$DC92
   DEF_ROMLOC(8476) : or_tomem_8(0x16, A0);        // ORI.B	#$16,(A0)

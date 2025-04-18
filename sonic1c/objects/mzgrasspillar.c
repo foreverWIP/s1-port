@@ -91,7 +91,7 @@ ROMFUNC(rom_B5BE) {
   DEF_ROMLOC(B618)
       : move_toreg_32(read_32(A0 + 0x30), &A2); // MOVEA.L	48(A0),A2
   DEF_ROMLOC(B61C) : rom_100EE();               // BSR.W	$100EE
-  DEF_ROMLOC(B620) : rom_DC92();                // BSR.W	$DC92
+  DEF_ROMLOC(B620) : queue_sprite();            // BSR.W	$DC92
   rom_B744();                                   // BRA.W	$B744
 }
 ROMFUNC(rom_B628) {

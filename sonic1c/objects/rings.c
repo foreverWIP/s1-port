@@ -107,8 +107,8 @@ ROMFUNC(rom_A1DC) {
 ROMFUNC(rom_A294) {
   DEF_ROMLOC(A294)
       : move_tomem_8(read_8(v_ani1_frame),
-                     A0 + 0x1A); // MOVE.B	$FEC3,26(A0)
-  DEF_ROMLOC(A29A) : rom_DC92(); // BSR.W	$DC92
+                     A0 + 0x1A);     // MOVE.B	$FEC3,26(A0)
+  DEF_ROMLOC(A29A) : queue_sprite(); // BSR.W	$DC92
   DEF_ROMLOC(A29E)
       : move_toreg_16(read_16(A0 + 0x32), &D0);     // MOVE.W	50(A0),D0
   DEF_ROMLOC(A2A2) : and_toreg_16(0xFFFFFF80, &D0); // ANDI.W	#$FF80,D0
@@ -146,7 +146,7 @@ ROMFUNC(rom_A2BC) {
 ROMFUNC(rom_A2E2) {
   DEF_ROMLOC(A2E2) : move_toreg_32(0xA608, &A1); // LEA.L	$0000A608,A1
   DEF_ROMLOC(A2E8) : animate_sprite();           // BSR.W	$ADA2
-  rom_DC92();                                    // BRA.W	$DC92
+  queue_sprite();                                // BRA.W	$DC92
 }
 ROMFUNC(rom_A2F0) {
   rom_DCCE(); // BRA.W	$DCCE

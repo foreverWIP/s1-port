@@ -43,7 +43,7 @@ ROMFUNC(rom_8F1A) {
   DEF_ROMLOC(8F2A) : add_tomem_16(0x2, A0 + 0xC);    // ADDQ.W	#$02,12(A0)
   DEF_ROMLOC(8F2E) : move_toreg_32(0x1, &D0);        // MOVEQ.L	$01,D0
   DEF_ROMLOC(8F30) : move_tomem_16(D0, 0xFFFFF7E0);  // MOVE.W	D0,$F7E0
-  DEF_ROMLOC(8F34) : rom_DC92();                     // BSR.W	$DC92
+  DEF_ROMLOC(8F34) : queue_sprite();                 // BSR.W	$DC92
   DEF_ROMLOC(8F38) : move_toreg_16(read_16(A0 + 0x8), &D0); // MOVE.W	8(A0),D0
   DEF_ROMLOC(8F3C) : and_toreg_16(0xFFFFFF80, &D0);         // ANDI.W	#$FF80,D0
   DEF_ROMLOC(8F40)

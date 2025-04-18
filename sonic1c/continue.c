@@ -16,14 +16,11 @@ void continue_screen_init_part2(void) {
   DEF_ROMLOC(4CF4)
       : move_toreg_16(read_16(0xFFFFF60C), &D0);   // MOVE.W	$F60C,D0
   DEF_ROMLOC(4CF8) : and_toreg_8(0xFFFFFFBF, &D0); // ANDI.B	#$BF,D0
-  DEF_ROMLOC(4CFC)
-      : write_vdp_control_16(D0);
+  DEF_ROMLOC(4CFC) : write_vdp_control_16(D0);
   DEF_ROMLOC(4D02)
       : move_toreg_32(VDP_CONTROL_PORT, &A6); // LEA.L	$00C00004,A6
-  DEF_ROMLOC(4D08)
-      : write_vdp_control_16(0x8004);
-  DEF_ROMLOC(4D0C)
-      : write_vdp_control_16(0x8700);
+  DEF_ROMLOC(4D08) : write_vdp_control_16(0x8004);
+  DEF_ROMLOC(4D0C) : write_vdp_control_16(0x8700);
   DEF_ROMLOC(4D10) : clear_screen();                       // BSR.W	$12C4
   DEF_ROMLOC(4D14) : move_toreg_32(0xFFFFD000, &A1);       // LEA.L	$D000,A1
   DEF_ROMLOC(4D18) : move_toreg_32(0x0, &D0);              // MOVEQ.L	$00,D0
@@ -32,19 +29,16 @@ void continue_screen_init_part2(void) {
   DEF_ROMLOC(4D20) : dec_reg_16(&D1);
   if ((D1 & 0xffff) != 0xffff)
     goto rom_4D1E; // DBF.W	D1,$4D1E
-  DEF_ROMLOC(4D24)
-      : write_vdp_control_32(0x70000002);
+  DEF_ROMLOC(4D24) : write_vdp_control_32(0x70000002);
   DEF_ROMLOC(4D2E) : move_toreg_32(0x39204, &A0); // LEA.L	$00039204,A0
   DEF_ROMLOC(4D34) : decompress_nemesis();        // BSR.W	$1438
-  DEF_ROMLOC(4D38)
-      : write_vdp_control_32(0x60000002);
+  DEF_ROMLOC(4D38) : write_vdp_control_32(0x60000002);
   DEF_ROMLOC(4D42) : move_toreg_32(0x3B39A, &A0); // LEA.L	$0003B39A,A0
   DEF_ROMLOC(4D48) : decompress_nemesis();        // BSR.W	$1438
-  DEF_ROMLOC(4D4C)
-      : write_vdp_control_32(0x6A200002);
-  DEF_ROMLOC(4D56) : move_toreg_32(0x3B64A, &A0); // LEA.L	$0003B64A,A0
-  DEF_ROMLOC(4D5C) : decompress_nemesis();        // BSR.W	$1438
-  DEF_ROMLOC(4D60) : move_toreg_32(0xA, &D1);     // MOVEQ.L	$0A,D1
+  DEF_ROMLOC(4D4C) : write_vdp_control_32(0x6A200002);
+  DEF_ROMLOC(4D56) : move_toreg_32(0x3B64A, &A0);     // LEA.L	$0003B64A,A0
+  DEF_ROMLOC(4D5C) : decompress_nemesis();            // BSR.W	$1438
+  DEF_ROMLOC(4D60) : move_toreg_32(0xA, &D1);         // MOVEQ.L	$0A,D1
   DEF_ROMLOC(4D62) : continue_screen_load_numbers();  // JSR	$0001D104
   DEF_ROMLOC(4D68) : move_toreg_32(0x12, &D0);        // MOVEQ.L	$12,D0
   DEF_ROMLOC(4D6A) : load_palette_fading();           // BSR.W	$20F4
@@ -70,12 +64,11 @@ void continue_screen_init_part2(void) {
       : move_tomem_8(0xFFFFFF80, 0xFFFFD0C0);       // MOVE.B	#$80,$D0C0
   DEF_ROMLOC(4DAC) : move_tomem_8(0x4, 0xFFFFD0E4); // MOVE.B	#$04,$D0E4
   DEF_ROMLOC(4DB2) : rom_D9C6();                    // JSR	$0000D9C6
-  DEF_ROMLOC(4DB8) : rom_DCEC();                    // JSR	$0000DCEC
+  DEF_ROMLOC(4DB8) : build_sprites();               // JSR	$0000DCEC
   DEF_ROMLOC(4DBE)
       : move_toreg_16(read_16(0xFFFFF60C), &D0); // MOVE.W	$F60C,D0
   DEF_ROMLOC(4DC2) : or_toreg_8(0x40, &D0);      // ORI.B	#$40,D0
-  DEF_ROMLOC(4DC6)
-      : write_vdp_control_16(D0);
+  DEF_ROMLOC(4DC6) : write_vdp_control_16(D0);
   DEF_ROMLOC(4DCC) : game_state = continue_screen_loop;
   palette_fade_in(true); // BSR.W	$1DA4
 }
@@ -93,7 +86,7 @@ void continue_screen_loop_part2(void) {
   DEF_ROMLOC(4DF4) : continue_screen_load_numbers();  // JSR	$0001D104
   DEF_ROMLOC(4DFA) : move_tosr_16(0x2300, &SR);       // MOVE.W	#$2300,SR
   DEF_ROMLOC(4DFE) : rom_D9C6();                      // JSR	$0000D9C6
-  DEF_ROMLOC(4E04) : rom_DCEC();                      // JSR	$0000DCEC
+  DEF_ROMLOC(4E04) : build_sprites();                 // JSR	$0000DCEC
   DEF_ROMLOC(4E0A) : cmp_tomem_16(0x180, 0xFFFFD008); // CMPI.W	#$0180,$D008
   DEF_ROMLOC(4E10) : if (CCR_CC) goto rom_4E2A;       // BCC.B	$4E2A
   DEF_ROMLOC(4E12) : cmp_tomem_8(0x6, 0xFFFFD024);    // CMPI.B	#$06,$D024
@@ -119,8 +112,7 @@ void continue_screen_loop_part2(void) {
   DEF_ROMLOC(4E4C) : return;                        // RTS
 }
 void continue_screen_load_numbers(void) {
-  DEF_ROMLOC(1D104)
-      : write_vdp_control_32(0x5F800003);
+  DEF_ROMLOC(1D104) : write_vdp_control_32(0x5F800003);
   DEF_ROMLOC(1D10E)
       : move_toreg_32(VDP_DATA_PORT, &A6);         // LEA.L	$00C00000,A6
   DEF_ROMLOC(1D114) : move_toreg_32(0x1D16C, &A2); // LEA.L	$0001D16C,A2

@@ -45,7 +45,7 @@ ROMFUNC(rom_111A6) {
     rom_DCCE();
     return;
   } // BHI.W	$DCCE
-  DEF_ROMLOC(111D2) : rom_DC92();
+  DEF_ROMLOC(111D2) : queue_sprite();
   return; // BRA.W	$DC92
 }
 ROMFUNC(rom_111FE) {
