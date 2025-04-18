@@ -62,7 +62,7 @@ ROMFUNC(rom_92F0) {
   DEF_ROMLOC(9328) : neg_mem_16(A0 + 0x10);        // NEG.W	16(A0)
   DEF_ROMLOC(932C) : sub_tomem_16(0x1, A0 + 0x30); // SUBQ.W	#$01,48(A0)
   DEF_ROMLOC(9330) : if (CCR_PL) goto rom_9348;    // BPL.B	$9348
-  DEF_ROMLOC(9332) : move_tomem_8(OBJ_CANNONBALL, A0 + offsetof(object, id)); // MOVE.B	#$24,0(A0)
+  DEF_ROMLOC(9332) : move_tomem_8(OBJ_EXPLOSIONBOMB, A0 + offsetof(object, id)); // MOVE.B	#$24,0(A0)
   DEF_ROMLOC(933E) : move_tomem_8(0x0, A0 + 0x24); // MOVE.B	#$00,36(A0)
   rom_9474();
   return;                                          // BRA.W	$9474

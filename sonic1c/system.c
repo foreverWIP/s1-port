@@ -46,6 +46,7 @@ void (*speedshoes__play_sound_cb)(void *emu, u8 sound);
 void (*speedshoes__play_sound_special_cb)(void *emu, u8 sound);
 
 void *speedshoes__emu;
+bool speedshoes__dirtymem = false;
 
 #define CHECK_EMU()                                                            \
   if (!speedshoes__emu)                                                        \
@@ -65,14 +66,17 @@ u32 speedshoes__read_32(u32 loc) {
 }
 void speedshoes__write_8(u32 loc, u8 value) {
   CHECK_EMU();
+  speedshoes__dirtymem |= true;
   speedshoes__write_8_cb(speedshoes__emu, loc, value);
 }
 void speedshoes__write_16(u32 loc, u16 value) {
   CHECK_EMU();
+  speedshoes__dirtymem |= true;
   speedshoes__write_16_cb(speedshoes__emu, loc, value);
 }
 void speedshoes__write_32(u32 loc, u32 value) {
   CHECK_EMU();
+  speedshoes__dirtymem |= true;
   speedshoes__write_32_cb(speedshoes__emu, loc, value);
 }
 u8 read_joy1(void) {

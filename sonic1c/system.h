@@ -76,6 +76,7 @@ extern EXPORT u32 speedshoes__a7;
 extern EXPORT u32 speedshoes__sr;
 extern EXPORT u32 speedshoes__readbuf;
 extern jmp_buf speedshoes__desync_jumpbuf;
+extern bool speedshoes__dirtymem;
 
 #define D0 speedshoes__d0
 #define D1 speedshoes__d1
@@ -136,9 +137,12 @@ extern void print(const char *msg, ...);
 
 #define DEF_ROMLOC(loc)                                                        \
   rom_##loc : if (CHECK_STUFF && (TEST_LEVEL & TEST_PER_INSTRUCTION)) {        \
-    print("synching to romloc " #loc);                                         \
-    if (!speedshoes__synchronize(0x##loc)) {                                   \
-      longjmp(speedshoes__desync_jumpbuf, 1);                                  \
+    if (speedshoes__dirtymem) {                                                \
+      print("synching to romloc " #loc);                                       \
+      if (!speedshoes__synchronize(0x##loc)) {                                 \
+        speedshoes__dirtymem = false;                                          \
+        longjmp(speedshoes__desync_jumpbuf, 1);                                \
+      }                                                                        \
     }                                                                          \
   }                                                                            \
   rom_##loc##_colon
