@@ -1,3 +1,5 @@
+mod game_sprite;
+
 use std::{fs, ops::Range};
 
 use itertools::Itertools;

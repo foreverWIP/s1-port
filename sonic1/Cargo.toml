@@ -15,6 +15,7 @@ imgui-glow-renderer = "0.13.0"
 imgui-sdl2-support = "0.13.0"
 itertools = "0.14.0"
 md5 = "0.7.0"
+mdcomp = { version = "0.1.0", path = "../mdcomp" }
 sdl2 = { version = "0.37.0", features = ["default"] }
 sdl2-sys = { version = "0.37.0", features = ["default"] }
 smps = { version = "0.1.0", path = "../smps" }
