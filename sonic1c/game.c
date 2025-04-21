@@ -66,7 +66,7 @@ void rom_388_nosega(void) {
 EXPORT u32 get_test_level(void) { return TEST_LEVEL; }
 
 EXPORT void reset_game(void) {
-  // print("reseting game");
+  print("reseting game");
   for (u16 i = 0; i < 0x4000; i++) {
     write_32(0xFF0000 + (i * 4), 0);
   }
@@ -91,7 +91,7 @@ EXPORT void reset_game(void) {
   // print("game_state = 300");
   serialize_ram();
 }
-EXPORT void run_game_frame(void) {
+EXPORT void run_game_frame(void) {S
   exit_mainloop = false;
   while (true) {
     if (game_state != NULL) {

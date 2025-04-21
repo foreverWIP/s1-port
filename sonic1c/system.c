@@ -3,19 +3,6 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-typedef struct {
-  void *emu;
-  u8 (*read_8_cb)(void *emu, u32 loc);
-  u16 (*read_16_cb)(void *emu, u32 loc);
-  u32 (*read_32_cb)(void *emu, u32 loc);
-  void (*write_8_cb)(void *emu, u32 loc, u8 value);
-  void (*write_16_cb)(void *emu, u32 loc, u16 value);
-  void (*write_32_cb)(void *emu, u32 loc, u32 value);
-  bool (*synchronize)(u32 pc);
-  void (*play_sound)(void *emu, u8 sound);
-  void (*play_sound_special)(void *emu, u8 sound);
-} FFIInfo;
-
 EXPORT u32 speedshoes__d0;
 EXPORT u32 speedshoes__d1;
 EXPORT u32 speedshoes__d2;
