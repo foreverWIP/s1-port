@@ -502,8 +502,8 @@ ROMFUNC(rom_E00E) {
   DEF_ROMLOC(E072) : tst_mem_8(A0 - 0x2);           // TST.B	-2(A0)
   DEF_ROMLOC(E076) : if (CCR_PL) goto rom_E07A;     // BPL.B	$E07A
   DEF_ROMLOC(E078) : sub_tomem_8(0x1, A2);          // SUBQ.B	#$01,(A2)
-  DEF_ROMLOC(E07A) : sub_toreg_16(0x6, &A0);        // SUBQ.W	#$06,A0
-  goto rom_E06C;                                    // BRA.B	$E06C
+  DEF_ROMLOC(E07A) : A0 -= 6;
+  DEF_ROMLOC(E07C) : goto rom_E06C;                                    // BRA.B	$E06C
   DEF_ROMLOC(E07E) : move_tomem_32(A0, 0xFFFFF770); // MOVE.L	A0,$F770
   DEF_ROMLOC(E082) : return;                        // RTS
   DEF_ROMLOC(E084) : move_tomem_16(D6, 0xFFFFF76E); // MOVE.W	D6,$F76E
