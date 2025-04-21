@@ -91,7 +91,7 @@ EXPORT void reset_game(void) {
   // print("game_state = 300");
   serialize_ram();
 }
-EXPORT void run_game_frame(void) {S
+EXPORT void run_game_frame(void) {
   exit_mainloop = false;
   while (true) {
     if (game_state != NULL) {
