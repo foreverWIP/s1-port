@@ -34,6 +34,7 @@ void (*speedshoes__play_sound_special_cb)(void *emu, u8 sound);
 
 void *speedshoes__emu;
 bool speedshoes__dirtymem = false;
+void (*speedshoes__print_cb)(char* buf);
 
 #define CHECK_EMU()                                                            \
   if (!speedshoes__emu)                                                        \
@@ -68,11 +69,11 @@ void speedshoes__write_32(u32 loc, u32 value) {
 }
 u8 read_joy1(void) {
   CHECK_EMU() 0;
-  speedshoes__read_8_cb(speedshoes__emu, 0xa10003);
+  return speedshoes__read_8_cb(speedshoes__emu, 0xa10003);
 }
 u8 read_joy2(void) {
   CHECK_EMU() 0;
-  speedshoes__read_8_cb(speedshoes__emu, 0xa10005);
+  return speedshoes__read_8_cb(speedshoes__emu, 0xa10005);
 }
 void write_joy1(u8 value) {
   CHECK_EMU();
@@ -92,7 +93,7 @@ void write_vdp_control_16(u16 value) {
 }
 u16 read_vdp_control_16(void) {
   CHECK_EMU() 0;
-  speedshoes__read_16_cb(speedshoes__emu, VDP_CONTROL_PORT);
+  return speedshoes__read_16_cb(speedshoes__emu, VDP_CONTROL_PORT);
 }
 void write_vdp_data_32(u32 value) {
   CHECK_EMU();
@@ -142,10 +143,13 @@ void print(const char *msg, ...) {
 
   va_start(args, msg);
   vsnprintf(stringbuf, sizeof(stringbuf), msg, args);
-  sprintf(stringbuf, "%.*s\n", (s32)sizeof(stringbuf) - 1, stringbuf);
+  sprintf(stringbuf, "%.*s\n", (int)sizeof(stringbuf) - 1, stringbuf);
   va_end(args);
   printf("%s", stringbuf);
   fflush(stdout);
+  if (speedshoes__print_cb) {
+	speedshoes__print_cb(stringbuf);
+  }
 }
 
 EXPORT void speedshoes__runframe(void) {}
