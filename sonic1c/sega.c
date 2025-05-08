@@ -98,11 +98,11 @@ void sega_init(void) {
 }
 void sega_init_part2(void) {
   A6 = VDP_CONTROL_PORT;
-  write_vdp_control_16(0x8004);
-  write_vdp_control_16(0x8230);
-  write_vdp_control_16(0x8407);
-  write_vdp_control_16(0x8700);
-  write_vdp_control_16(0x8B00);
+  set_vdp_register(0x80, 0x04);
+  set_vdp_register(0x82, 0x30);
+  set_vdp_register(0x84, 0x07);
+  set_vdp_register(0x87, 0x00);
+  set_vdp_register(0x8B, 0x00);
   clr_mem_8(0xFFFFF64E);                   // CLR.B	$F64E
   move_tosr_16(0x2700, &SR);               // MOVE.W	#$2700,SR
   move_toreg_16(read_16(0xFFFFF60C), &D0); // MOVE.W	$F60C,D0

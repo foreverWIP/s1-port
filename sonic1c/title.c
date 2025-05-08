@@ -21,13 +21,13 @@ ROMFUNC(rom_2F04) {
   DEF_ROMLOC(2F04) : move_tosr_16(0x2700, &SR); // MOVE.W	#$2700,SR
   DEF_ROMLOC(2F0C)
       : move_toreg_32(VDP_CONTROL_PORT, &A6); // LEA.L	$00C00004,A6
-  DEF_ROMLOC(2F12) : write_vdp_control_16(0x8004);
-  DEF_ROMLOC(2F16) : write_vdp_control_16(0x8230);
-  DEF_ROMLOC(2F1A) : write_vdp_control_16(0x8407);
-  DEF_ROMLOC(2F1E) : write_vdp_control_16(0x9001);
-  DEF_ROMLOC(2F22) : write_vdp_control_16(0x9200);
-  DEF_ROMLOC(2F26) : write_vdp_control_16(0x8B03);
-  DEF_ROMLOC(2F2A) : write_vdp_control_16(0x8720);
+  DEF_ROMLOC(2F12) : set_vdp_register(0x80, 0x04);
+  DEF_ROMLOC(2F16) : set_vdp_register(0x82, 0x30);
+  DEF_ROMLOC(2F1A) : set_vdp_register(0x84, 0x07);
+  DEF_ROMLOC(2F1E) : set_vdp_register(0x90, 0x01);
+  DEF_ROMLOC(2F22) : set_vdp_register(0x92, 0x00);
+  DEF_ROMLOC(2F26) : set_vdp_register(0x8B, 0x03);
+  DEF_ROMLOC(2F2A) : set_vdp_register(0x87, 0x20);
   DEF_ROMLOC(2F2E) : clr_mem_8(0xFFFFF64E);                // CLR.B	$F64E
   DEF_ROMLOC(2F32) : clear_screen();                       // BSR.W	$12C4
   DEF_ROMLOC(2F36) : move_toreg_32(0xFFFFD000, &A1);       // LEA.L	$D000,A1

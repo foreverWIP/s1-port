@@ -16,11 +16,11 @@ void continue_screen_init_part2(void) {
   DEF_ROMLOC(4CF4)
       : move_toreg_16(read_16(0xFFFFF60C), &D0);   // MOVE.W	$F60C,D0
   DEF_ROMLOC(4CF8) : and_toreg_8(0xFFFFFFBF, &D0); // ANDI.B	#$BF,D0
-  DEF_ROMLOC(4CFC) : write_vdp_control_16(D0);
+  DEF_ROMLOC(4CFC) : set_vdp_register(D0 >> 8, D0);
   DEF_ROMLOC(4D02)
       : move_toreg_32(VDP_CONTROL_PORT, &A6); // LEA.L	$00C00004,A6
-  DEF_ROMLOC(4D08) : write_vdp_control_16(0x8004);
-  DEF_ROMLOC(4D0C) : write_vdp_control_16(0x8700);
+  DEF_ROMLOC(4D08) : set_vdp_register(0x80, 0x04);
+  DEF_ROMLOC(4D0C) : set_vdp_register(0x87, 0x00);
   DEF_ROMLOC(4D10) : clear_screen();                       // BSR.W	$12C4
   DEF_ROMLOC(4D14) : move_toreg_32(0xFFFFD000, &A1);       // LEA.L	$D000,A1
   DEF_ROMLOC(4D18) : move_toreg_32(0x0, &D0);              // MOVEQ.L	$00,D0
@@ -68,7 +68,7 @@ void continue_screen_init_part2(void) {
   DEF_ROMLOC(4DBE)
       : move_toreg_16(read_16(0xFFFFF60C), &D0); // MOVE.W	$F60C,D0
   DEF_ROMLOC(4DC2) : or_toreg_8(0x40, &D0);      // ORI.B	#$40,D0
-  DEF_ROMLOC(4DC6) : write_vdp_control_16(D0);
+  DEF_ROMLOC(4DC6) : set_vdp_register(D0 >> 8, D0);
   DEF_ROMLOC(4DCC) : game_state = continue_screen_loop;
   palette_fade_in(true); // BSR.W	$1DA4
 }

@@ -44,17 +44,17 @@ ROMFUNC(rom_50FE) {
   DEF_ROMLOC(5142)
       : move_toreg_16(read_16(0xFFFFF60C), &D0);   // MOVE.W	$F60C,D0
   DEF_ROMLOC(5146) : and_toreg_8(0xFFFFFFBF, &D0); // ANDI.B	#$BF,D0
-  DEF_ROMLOC(514A) : write_vdp_control_16(D0);
+  DEF_ROMLOC(514A) : set_vdp_register(D0 >> 8, D0);
   DEF_ROMLOC(5150) : clear_screen(); // BSR.W	$12C4
   DEF_ROMLOC(5154)
       : move_toreg_32(VDP_CONTROL_PORT, &A6); // LEA.L	$00C00004,A6
-  DEF_ROMLOC(515A) : write_vdp_control_16(0x8B03);
-  DEF_ROMLOC(515E) : write_vdp_control_16(0x8230);
-  DEF_ROMLOC(5162) : write_vdp_control_16(0x8407);
-  DEF_ROMLOC(5166) : write_vdp_control_16(0x857C);
-  DEF_ROMLOC(516A) : write_vdp_control_16(0x9001);
-  DEF_ROMLOC(516E) : write_vdp_control_16(0x8004);
-  DEF_ROMLOC(5172) : write_vdp_control_16(0x8720);
+  DEF_ROMLOC(515A) : set_vdp_register(0x8B, 0x03);
+  DEF_ROMLOC(515E) : set_vdp_register(0x82, 0x30);
+  DEF_ROMLOC(5162) : set_vdp_register(0x84, 0x07);
+  DEF_ROMLOC(5166) : set_vdp_register(0x85, 0x7C);
+  DEF_ROMLOC(516A) : set_vdp_register(0x90, 0x01);
+  DEF_ROMLOC(516E) : set_vdp_register(0x80, 0x04);
+  DEF_ROMLOC(5172) : set_vdp_register(0x87, 0x20);
   DEF_ROMLOC(5176)
       : move_tomem_16(0x8ADF, 0xFFFFF624); // MOVE.W	#$8ADF,$F624
   DEF_ROMLOC(517C) : write_vdp_control_16(read_16(0xFFF624));
@@ -126,7 +126,7 @@ ROMFUNC(rom_50FE) {
 ROMFUNC(rom_5278) {
   DEF_ROMLOC(5278) : move_toreg_16(read_16(0xFFFFF60C), &D0); // MOVE.W	$F60C,D0
   DEF_ROMLOC(527C) : or_toreg_8(0x40, &D0);                   // ORI.B	#$40,D0
-  DEF_ROMLOC(5280) : write_vdp_control_16(D0);
+  DEF_ROMLOC(5280) : set_vdp_register(D0 >> 8, D0);
   // D0,$00C00004
   DEF_ROMLOC(5286) : move_tomem_16(0x3F, 0xFFFFF626); // MOVE.W	#$003F,$F626
   DEF_ROMLOC(528C) : game_state = rom_5290;

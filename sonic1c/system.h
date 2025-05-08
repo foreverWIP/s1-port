@@ -132,6 +132,7 @@ void write_vdp_control_16(u16 value);
 u16 read_vdp_control_16(void);
 void write_vdp_data_32(u32 value);
 void write_vdp_control_32(u32 value);
+void set_vdp_register(u8 reg, u8 value);
 
 #define VRAM_PTR_TO_VDP_COMMAND(loc)                                           \
   (0x40000000 + (((loc) & 0x3FFF) << 16) + (((loc) & 0xC000) >> 14))

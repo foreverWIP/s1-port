@@ -34,7 +34,7 @@ void (*speedshoes__play_sound_special_cb)(void *emu, u8 sound);
 
 void *speedshoes__emu;
 bool speedshoes__dirtymem = false;
-void (*speedshoes__print_cb)(char* buf);
+void (*speedshoes__print_cb)(char *buf);
 
 #define CHECK_EMU()                                                            \
   if (!speedshoes__emu)                                                        \
@@ -91,6 +91,9 @@ void write_vdp_control_16(u16 value) {
   CHECK_EMU();
   speedshoes__write_16_cb(speedshoes__emu, VDP_CONTROL_PORT, value);
 }
+void set_vdp_register(u8 reg, u8 value) {
+  write_vdp_control_16((((u16)reg) << 8) | value);
+}
 u16 read_vdp_control_16(void) {
   CHECK_EMU() 0;
   return speedshoes__read_16_cb(speedshoes__emu, VDP_CONTROL_PORT);
@@ -104,12 +107,12 @@ void write_vdp_control_32(u32 value) {
   speedshoes__write_32_cb(speedshoes__emu, VDP_CONTROL_PORT, value);
 }
 void speedshoes__play_sound(void) {
-	CHECK_EMU();
-	speedshoes__play_sound_cb(speedshoes__emu, D0);
+  CHECK_EMU();
+  speedshoes__play_sound_cb(speedshoes__emu, D0);
 }
 void speedshoes__play_sound_special(void) {
-	CHECK_EMU();
-	speedshoes__play_sound_special_cb(speedshoes__emu, D0);
+  CHECK_EMU();
+  speedshoes__play_sound_special_cb(speedshoes__emu, D0);
 }
 
 EXPORT void speedshoes__bind_functions(FFIInfo *ffiinfo) {
@@ -132,7 +135,7 @@ bool speedshoes__synchronize(u32 pc) {
   if (speedshoes__synchronize_cb) {
     return speedshoes__synchronize_cb(pc);
   } else {
-	return true;
+    return true;
   }
 }
 
@@ -148,7 +151,7 @@ void print(const char *msg, ...) {
   printf("%s", stringbuf);
   fflush(stdout);
   if (speedshoes__print_cb) {
-	speedshoes__print_cb(stringbuf);
+    speedshoes__print_cb(stringbuf);
   }
 }
 

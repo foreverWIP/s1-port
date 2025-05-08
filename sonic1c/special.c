@@ -14,11 +14,11 @@ ROMFUNC(rom_45EA) {
   DEF_ROMLOC(45EA) : move_tosr_16(0x2700, &SR); // MOVE.W	#$2700,SR
   DEF_ROMLOC(45EE)
       : move_toreg_32(VDP_CONTROL_PORT, &A6); // LEA.L	$00C00004,A6
-  DEF_ROMLOC(45F4) : write_vdp_control_16(0x8B03);
-  DEF_ROMLOC(45F8) : write_vdp_control_16(0x8004);
+  DEF_ROMLOC(45F4) : set_vdp_register(0x8B, 0x03);
+  DEF_ROMLOC(45F8) : set_vdp_register(0x80, 0x04);
   DEF_ROMLOC(45FC)
       : move_tomem_16(0xFFFF8AAF, 0xFFFFF624); // MOVE.W	#$8AAF,$F624
-  DEF_ROMLOC(4602) : write_vdp_control_16(0x9011);
+  DEF_ROMLOC(4602) : set_vdp_register(0x90, 0x11);
   DEF_ROMLOC(4606) : move_toreg_16(read_16(0xFFFFF60C), &D0); // MOVE.W	$F60C,D0
   DEF_ROMLOC(460A) : and_toreg_8(0xFFFFFFBF, &D0);            // ANDI.B	#$BF,D0
   DEF_ROMLOC(460E) : write_vdp_control_16(D0);
@@ -26,16 +26,17 @@ ROMFUNC(rom_45EA) {
   DEF_ROMLOC(4618) : move_tosr_16(0x2300, &SR); // MOVE.W	#$2300,SR
   DEF_ROMLOC(461C)
       : move_toreg_32(VDP_CONTROL_PORT, &A5); // LEA.L	$00C00004,A5
-  DEF_ROMLOC(4622) : write_vdp_control_16(0x8F01);
-  DEF_ROMLOC(4626) : write_vdp_control_32(0x946F93FF);
-  DEF_ROMLOC(462C) : write_vdp_control_16(0x9780);
+  DEF_ROMLOC(4622) : set_vdp_register(0x8F, 0x01);
+  DEF_ROMLOC(4626) : set_vdp_register(0x94, 0x6F);
+  					 set_vdp_register(0x93, 0xFF);
+  DEF_ROMLOC(462C) : set_vdp_register(0x97, 0x80);
   DEF_ROMLOC(4630) : write_vdp_control_32(0x50000081);
   DEF_ROMLOC(4636) : write_vdp_data_16(0x0);
   DEF_ROMLOC(463E)
       : move_toreg_16(read_vdp_control_16(), &D1); // MOVE.W	(A5),D1
   DEF_ROMLOC(4640) : btst_toreg_32(0x1, &D1);      // BTST.L	#$01,D1
   DEF_ROMLOC(4644) : if (!CCR_EQ) goto rom_463E;   // BNE.B	$463E
-  DEF_ROMLOC(4646) : write_vdp_control_16(0x8F02);
+  DEF_ROMLOC(4646) : set_vdp_register(0x8F, 0x02);
   DEF_ROMLOC(464A) : rom_48A8();                           // BSR.W	$48A8
   DEF_ROMLOC(464E) : move_toreg_32(0x14, &D0);             // MOVEQ.L	$14,D0
   DEF_ROMLOC(4650) : quick_plc();                          // BSR.W	$16E4
@@ -183,9 +184,9 @@ ROMFUNC(rom_47A6) {
   DEF_ROMLOC(47DC) : move_tosr_16(0x2700, &SR); // MOVE.W	#$2700,SR
   DEF_ROMLOC(47E0)
       : move_toreg_32(VDP_CONTROL_PORT, &A6); // LEA.L	$00C00004,A6
-  DEF_ROMLOC(47E6) : write_vdp_control_16(0x8230);
-  DEF_ROMLOC(47EA) : write_vdp_control_16(0x8407);
-  DEF_ROMLOC(47EE) : write_vdp_control_16(0x9001);
+  DEF_ROMLOC(47E6) : set_vdp_register(0x82, 0x30);
+  DEF_ROMLOC(47EA) : set_vdp_register(0x84, 0x07);
+  DEF_ROMLOC(47EE) : set_vdp_register(0x90, 0x01);
   DEF_ROMLOC(47F2) : clear_screen(); // BSR.W	$12C4
   DEF_ROMLOC(47F6) : write_vdp_control_32(0x70000002);
   DEF_ROMLOC(4800) : move_toreg_32(0x39204, &A0);   // LEA.L	$00039204,A0

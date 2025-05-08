@@ -12,13 +12,13 @@ ROMFUNC(rom_57D2) {
 ROMFUNC(rom_57DA) {
   DEF_ROMLOC(57DA)
       : move_toreg_32(VDP_CONTROL_PORT, &A6); // LEA.L	$00C00004,A6
-  DEF_ROMLOC(57E0) : write_vdp_control_16(0x8004);
-  DEF_ROMLOC(57E4) : write_vdp_control_16(0x8230);
-  DEF_ROMLOC(57E8) : write_vdp_control_16(0x8407);
-  DEF_ROMLOC(57EC) : write_vdp_control_16(0x9001);
-  DEF_ROMLOC(57F0) : write_vdp_control_16(0x9200);
-  DEF_ROMLOC(57F4) : write_vdp_control_16(0x8B03);
-  DEF_ROMLOC(57F8) : write_vdp_control_16(0x8720);
+  DEF_ROMLOC(57E0) : set_vdp_register(0x80, 0x04);
+  DEF_ROMLOC(57E4) : set_vdp_register(0x82, 0x30);
+  DEF_ROMLOC(57E8) : set_vdp_register(0x84, 0x07);
+  DEF_ROMLOC(57EC) : set_vdp_register(0x90, 0x01);
+  DEF_ROMLOC(57F0) : set_vdp_register(0x92, 0x00);
+  DEF_ROMLOC(57F4) : set_vdp_register(0x8B, 0x03);
+  DEF_ROMLOC(57F8) : set_vdp_register(0x87, 0x20);
   DEF_ROMLOC(57FC) : clr_mem_8(0xFFFFF64E);                // CLR.B	$F64E
   DEF_ROMLOC(5800) : clear_screen();                       // BSR.W	$12C4
   DEF_ROMLOC(5804) : move_toreg_32(0xFFFFD000, &A1);       // LEA.L	$D000,A1
@@ -130,13 +130,13 @@ ROMFUNC(rom_593A) {
 ROMFUNC(rom_5942) {
   DEF_ROMLOC(5942)
       : move_toreg_32(VDP_CONTROL_PORT, &A6); // LEA.L	$00C00004,A6
-  DEF_ROMLOC(5948) : write_vdp_control_16(0x8004);
-  DEF_ROMLOC(594C) : write_vdp_control_16(0x8230);
-  DEF_ROMLOC(5950) : write_vdp_control_16(0x8407);
-  DEF_ROMLOC(5954) : write_vdp_control_16(0x9001);
-  DEF_ROMLOC(5958) : write_vdp_control_16(0x9200);
-  DEF_ROMLOC(595C) : write_vdp_control_16(0x8B03);
-  DEF_ROMLOC(5960) : write_vdp_control_16(0x8720);
+  DEF_ROMLOC(5948) : set_vdp_register(0x80, 0x04);
+  DEF_ROMLOC(594C) : set_vdp_register(0x82, 0x30);
+  DEF_ROMLOC(5950) : set_vdp_register(0x84, 0x07);
+  DEF_ROMLOC(5954) : set_vdp_register(0x90, 0x01);
+  DEF_ROMLOC(5958) : set_vdp_register(0x92, 0x00);
+  DEF_ROMLOC(595C) : set_vdp_register(0x8B, 0x03);
+  DEF_ROMLOC(5960) : set_vdp_register(0x87, 0x20);
   DEF_ROMLOC(5964) : clr_mem_8(0xFFFFF64E);                // CLR.B	$F64E
   DEF_ROMLOC(5968) : clear_screen();                       // BSR.W	$12C4
   DEF_ROMLOC(596C) : move_toreg_32(0xFFFFD000, &A1);       // LEA.L	$D000,A1

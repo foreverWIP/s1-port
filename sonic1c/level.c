@@ -73,19 +73,19 @@ ROMFUNC(rom_37BA) {
   DEF_ROMLOC(3842) : clear_screen();            // BSR.W	$12C4
   DEF_ROMLOC(3846)
       : move_toreg_32(VDP_CONTROL_PORT, &A6); // LEA.L	$00C00004,A6
-  DEF_ROMLOC(384C) : write_vdp_control_16(0x8B03);
-  DEF_ROMLOC(3850) : write_vdp_control_16(0x8230);
-  DEF_ROMLOC(3854) : write_vdp_control_16(0x8407);
-  DEF_ROMLOC(3858) : write_vdp_control_16(0x857C);
-  DEF_ROMLOC(385C) : write_vdp_control_16(0x9001);
-  DEF_ROMLOC(3860) : write_vdp_control_16(0x8004);
-  DEF_ROMLOC(3864) : write_vdp_control_16(0x8720);
+  DEF_ROMLOC(384C) : set_vdp_register(0x8B, 0x03);
+  DEF_ROMLOC(3850) : set_vdp_register(0x82, 0x30);
+  DEF_ROMLOC(3854) : set_vdp_register(0x84, 0x07);
+  DEF_ROMLOC(3858) : set_vdp_register(0x85, 0x7C);
+  DEF_ROMLOC(385C) : set_vdp_register(0x90, 0x01);
+  DEF_ROMLOC(3860) : set_vdp_register(0x80, 0x04);
+  DEF_ROMLOC(3864) : set_vdp_register(0x87, 0x20);
   DEF_ROMLOC(3868)
       : move_tomem_16(0xFFFF8ADF, 0xFFFFF624); // MOVE.W	#$8ADF,$F624
   DEF_ROMLOC(386E) : write_vdp_control_16(read_16(0xFFFFF624));
   DEF_ROMLOC(3872) : cmp_tomem_8(ZONE_LZ, v_zone); // CMPI.B	#$01,$FE10
   DEF_ROMLOC(3878) : if (!CCR_EQ) goto rom_38AA;   // BNE.B	$38AA
-  DEF_ROMLOC(387A) : write_vdp_control_16(0x8014);
+  DEF_ROMLOC(387A) : set_vdp_register(0x80, 0x14);
   DEF_ROMLOC(387E) : move_toreg_32(0x0, &D0);          // MOVEQ.L	$00,D0
   DEF_ROMLOC(3880) : move_toreg_8(read_8(v_act), &D0); // MOVE.B	$FE11,D0
   DEF_ROMLOC(3884) : add_toreg_16(D0, &D0);            // ADD.W	D0,D0
