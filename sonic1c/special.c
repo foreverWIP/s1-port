@@ -32,10 +32,6 @@ ROMFUNC(rom_45EA) {
   DEF_ROMLOC(462C) : set_vdp_register(0x97, 0x80);
   DEF_ROMLOC(4630) : write_vdp_control_32(0x50000081);
   DEF_ROMLOC(4636) : write_vdp_data_16(0x0);
-  DEF_ROMLOC(463E)
-      : move_toreg_16(read_vdp_control_16(), &D1); // MOVE.W	(A5),D1
-  DEF_ROMLOC(4640) : btst_toreg_32(0x1, &D1);      // BTST.L	#$01,D1
-  DEF_ROMLOC(4644) : if (!CCR_EQ) goto rom_463E;   // BNE.B	$463E
   DEF_ROMLOC(4646) : set_vdp_register(0x8F, 0x02);
   DEF_ROMLOC(464A) : rom_48A8();                           // BSR.W	$48A8
   DEF_ROMLOC(464E) : move_toreg_32(0x14, &D0);             // MOVEQ.L	$14,D0

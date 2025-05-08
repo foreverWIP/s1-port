@@ -52,11 +52,7 @@ void vdp_setup(void) {
   					 set_vdp_register(0x93, 0xFF);
   DEF_ROMLOC(127C) : set_vdp_register(0x97, 0x80);
   DEF_ROMLOC(1280) : write_vdp_control_32(0x40000080);
-  DEF_ROMLOC(1286)
-      : write_vdp_data_16(0x0);
-  DEF_ROMLOC(128E) : move_toreg_16(read_vdp_control_16(), &D1); // MOVE.W	(A5),D1
-  DEF_ROMLOC(1290) : btst_toreg_32(0x1, &D1);         // BTST.L	#$01,D1
-  DEF_ROMLOC(1294) : if (!CCR_EQ) goto rom_128E;      // BNE.B	$128E
+  DEF_ROMLOC(1286) : write_vdp_data_16(0x0);
   DEF_ROMLOC(1296) : set_vdp_register(0x8F, 0x02);
   DEF_ROMLOC(129A)
       : move_toreg_32(read_32((A7 += 4, A7 - 4)), &D1); // MOVE.L	(A7)+,D1
@@ -71,11 +67,7 @@ void clear_screen(void) {
   					 set_vdp_register(0x93, 0xFF);
   DEF_ROMLOC(12D4) : set_vdp_register(0x97, 0x80);
   DEF_ROMLOC(12D8) : write_vdp_control_32(0x40000083);
-  DEF_ROMLOC(12DE)
-      : write_vdp_data_16(0x0);
-  DEF_ROMLOC(12E6) : move_toreg_16(read_vdp_control_16(), &D1); // MOVE.W	(A5),D1
-  DEF_ROMLOC(12E8) : btst_toreg_32(0x1, &D1);         // BTST.L	#$01,D1
-  DEF_ROMLOC(12EC) : if (!CCR_EQ) goto rom_12E6;      // BNE.B	$12E6
+  DEF_ROMLOC(12DE) : write_vdp_data_16(0x0);
   DEF_ROMLOC(12EE) : set_vdp_register(0x8F, 0x02);
   DEF_ROMLOC(12F2)
       : move_toreg_32(VDP_CONTROL_PORT, &A5);       // LEA.L	$00C00004,A5
@@ -84,11 +76,7 @@ void clear_screen(void) {
   					 set_vdp_register(0x93, 0xFF);
   DEF_ROMLOC(1302) : set_vdp_register(0x97, 0x80);
   DEF_ROMLOC(1306) : write_vdp_control_32(0x60000083);
-  DEF_ROMLOC(130C)
-      : write_vdp_data_16(0x0);
-  DEF_ROMLOC(1314) : move_toreg_16(read_vdp_control_16(), &D1); // MOVE.W	(A5),D1
-  DEF_ROMLOC(1316) : btst_toreg_32(0x1, &D1);         // BTST.L	#$01,D1
-  DEF_ROMLOC(131A) : if (!CCR_EQ) goto rom_1314;      // BNE.B	$1314
+  DEF_ROMLOC(130C) : write_vdp_data_16(0x0);
   DEF_ROMLOC(131C) : set_vdp_register(0x8F, 0x02);
   DEF_ROMLOC(1320) : clr_mem_32(0xFFFFF616);          // CLR.L	$F616
   DEF_ROMLOC(1324) : clr_mem_32(0xFFFFF61A);          // CLR.L	$F61A
