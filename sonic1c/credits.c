@@ -28,7 +28,7 @@ ROMFUNC(rom_57DA) {
   DEF_ROMLOC(5810) : dec_reg_16(&D1);
   if ((D1 & 0xffff) != 0xffff)
     goto rom_580E; // DBF.W	D1,$580E
-  DEF_ROMLOC(5814) : write_vdp_control_32(0x74000002);
+  DEF_ROMLOC(5814) : set_vram_ptr_direct(0x5a0 * 0x20);
   DEF_ROMLOC(581E) : move_toreg_32(0x6203A, &A0);          // LEA.L	$0006203A,A0
   DEF_ROMLOC(5824) : decompress_nemesis();                 // BSR.W	$1438
   DEF_ROMLOC(5828) : move_toreg_32(0xFFFFFB80, &A1);       // LEA.L	$FB80,A1

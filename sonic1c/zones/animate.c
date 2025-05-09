@@ -53,8 +53,7 @@ ROMFUNC(rom_1C80A) {
   DEF_ROMLOC(1C824) : and_toreg_16(0x1, &D0);         // ANDI.W	#$0001,D0
   DEF_ROMLOC(1C828) : if (CCR_EQ) goto rom_1C82E;     // BEQ.B	$1C82E
   DEF_ROMLOC(1C82A) : move_toreg_32(A1 + 0x100, &A1); // LEA.L	256(A1),A1
-  DEF_ROMLOC(1C82E)
-      : write_vdp_control_32(0x6F000001);
+  DEF_ROMLOC(1C82E) : set_vram_ptr_direct(0x378 * 0x20);
   DEF_ROMLOC(1C838) : move_toreg_16(0x7, &D1); // MOVE.W	#$0007,D1
   rom_1CB6E();
   return;                                            // BRA.W	$1CB6E
@@ -67,8 +66,7 @@ ROMFUNC(rom_1C80A) {
   DEF_ROMLOC(1C85A) : and_toreg_16(0x1, &D0);         // ANDI.W	#$0001,D0
   DEF_ROMLOC(1C85E) : if (CCR_EQ) goto rom_1C864;     // BEQ.B	$1C864
   DEF_ROMLOC(1C860) : move_toreg_32(A1 + 0x200, &A1); // LEA.L	512(A1),A1
-  DEF_ROMLOC(1C864)
-      : write_vdp_control_32(0x6B800001);
+  DEF_ROMLOC(1C864) : set_vram_ptr_direct(0x35c * 0x20);
   DEF_ROMLOC(1C86E) : move_toreg_16(0xF, &D1); // MOVE.W	#$000F,D1
   rom_1CB6E();
   return;                                            // BRA.W	$1CB6E
@@ -90,7 +88,7 @@ ROMFUNC(rom_1C80A) {
   DEF_ROMLOC(1C8A2) : add_toreg_16(D0, &D0);          // ADD.W	D0,D0
   DEF_ROMLOC(1C8A4) : add_toreg_16(D1, &D0);          // ADD.W	D1,D0
   DEF_ROMLOC(1C8A6)
-      : write_vdp_control_32(0x6D800001);
+      : set_vram_ptr_direct(ArtTile_GHZ_Small_Flower * TILE_SIZE_BYTES);
   DEF_ROMLOC(1C8B0) : move_toreg_32(0x67096, &A1); // LEA.L	$00067096,A1
   DEF_ROMLOC(1C8B6)
       : move_toreg_32((s32)A1 + (s8)0x0 + (s16)D0,
@@ -115,7 +113,7 @@ ROMFUNC(rom_1C8C8) {
   DEF_ROMLOC(1C8EE) : mulu_toreg_16(0x100, &D0);    // MULU.W	#$0100,D0
   DEF_ROMLOC(1C8F2) : add_toreg_16(D0, &A1);        // ADDA.W	D0,A1
   DEF_ROMLOC(1C8F4)
-      : write_vdp_control_32(0x5C400001);
+      : set_vram_ptr_direct(ArtTile_MZ_Animated_Lava * TILE_SIZE_BYTES);
   DEF_ROMLOC(1C8FE) : move_toreg_16(0x7, &D1); // MOVE.W	#$0007,D1
   DEF_ROMLOC(1C902) : rom_1CB6E();             // BSR.W	$1CB6E
   DEF_ROMLOC(1C906) : sub_tomem_8(0x1, 0xFFFFF7B3);  // SUBQ.B	#$01,$F7B3
@@ -128,7 +126,7 @@ ROMFUNC(rom_1C8C8) {
   DEF_ROMLOC(1C91E) : ror_toreg_16(0x7, &D0);      // ROR.W	#$07,D0
   DEF_ROMLOC(1C920) : add_toreg_16(D0, &A4);       // ADDA.W	D0,A4
   DEF_ROMLOC(1C922)
-      : write_vdp_control_32(0x5A400001);
+      : set_vram_ptr_direct(ArtTile_MZ_Animated_Magma * TILE_SIZE_BYTES);
   DEF_ROMLOC(1C92C) : move_toreg_32(0x0, &D3); // MOVEQ.L	$00,D3
   DEF_ROMLOC(1C92E)
       : move_toreg_8(read_8(0xFFFFF7B2), &D3);      // MOVE.B	$F7B2,D3
@@ -217,7 +215,7 @@ ROMFUNC(rom_1C8C8) {
   DEF_ROMLOC(1C988) : mulu_toreg_16(0xC0, &D0);     // MULU.W	#$00C0,D0
   DEF_ROMLOC(1C98C) : add_toreg_16(D0, &A1);        // ADDA.W	D0,A1
   DEF_ROMLOC(1C98E)
-      : write_vdp_control_32(0x5E400001);
+      : set_vram_ptr_direct(ArtTile_MZ_Torch * TILE_SIZE_BYTES);
   DEF_ROMLOC(1C998) : move_toreg_16(0x5, &D1); // MOVE.W	#$0005,D1
   DEF_ROMLOC(1C99C) : rom_1CB6E();
   return;                     // BRA.W	$1CB6E
@@ -233,7 +231,7 @@ ROMFUNC(rom_1C9A2) {
   DEF_ROMLOC(1C9B4) : move_tomem_8(0x7, 0xFFFFF7B1); // MOVE.B	#$07,$F7B1
   DEF_ROMLOC(1C9BA) : move_toreg_32(0x68116, &A1);   // LEA.L	$00068116,A1
   DEF_ROMLOC(1C9C0)
-      : write_vdp_control_32(0x49000002);
+      : set_vram_ptr_direct(ArtTile_SBZ_Smoke_Puff_1 * TILE_SIZE_BYTES);
   DEF_ROMLOC(1C9CA)
       : move_toreg_8(read_8(0xFFFFF7B0), &D0);      // MOVE.B	$F7B0,D0
   DEF_ROMLOC(1C9CE) : add_tomem_8(0x1, 0xFFFFF7B0); // ADDQ.B	#$01,$F7B0
@@ -264,7 +262,7 @@ ROMFUNC(rom_1C9A2) {
   DEF_ROMLOC(1CA18) : move_tomem_8(0x7, 0xFFFFF7B3); // MOVE.B	#$07,$F7B3
   DEF_ROMLOC(1CA1E) : move_toreg_32(0x68116, &A1);   // LEA.L	$00068116,A1
   DEF_ROMLOC(1CA24)
-      : write_vdp_control_32(0x4A800002);
+      : set_vram_ptr_direct(ArtTile_SBZ_Smoke_Puff_2 * TILE_SIZE_BYTES);
   DEF_ROMLOC(1CA2E)
       : move_toreg_8(read_8(0xFFFFF7B2), &D0);      // MOVE.B	$F7B2,D0
   DEF_ROMLOC(1CA32) : add_tomem_8(0x1, 0xFFFFF7B2); // ADDQ.B	#$01,$F7B2
@@ -299,12 +297,12 @@ ROMFUNC(rom_1CA58) {
   DEF_ROMLOC(1CA7C) : move_toreg_32(A1 + 0x200, &A1); // LEA.L	512(A1),A1
   DEF_ROMLOC(1CA80) : move_toreg_32(A2 + 0x200, &A2); // LEA.L	512(A2),A2
   DEF_ROMLOC(1CA84)
-      : write_vdp_control_32(0x6B800001);
+      : set_vram_ptr_direct(ArtTile_GHZ_Big_Flower_1 * TILE_SIZE_BYTES);
   DEF_ROMLOC(1CA8E) : move_toreg_16(0xF, &D1); // MOVE.W	#$000F,D1
   DEF_ROMLOC(1CA92) : rom_1CB6E();             // BSR.W	$1CB6E
   DEF_ROMLOC(1CA96) : move_toreg_32(A2, &A1);  // MOVEA.L	A2,A1
   DEF_ROMLOC(1CA98)
-      : write_vdp_control_32(0x72000001);
+      : set_vram_ptr_direct(ArtTile_GHZ_Big_Flower_2 * TILE_SIZE_BYTES);
   DEF_ROMLOC(1CAA2) : move_toreg_16(0xF, &D1); // MOVE.W	#$000F,D1
   rom_1CB6E();
   return; // BRA.W	$1CB6E
@@ -325,7 +323,7 @@ ROMFUNC(rom_1CAAA) {
   DEF_ROMLOC(1CACA) : add_toreg_16(D0, &D0);  // ADD.W	D0,D0
   DEF_ROMLOC(1CACC) : add_toreg_16(D1, &D0);  // ADD.W	D1,D0
   DEF_ROMLOC(1CACE)
-      : write_vdp_control_32(0x6D800001);
+      : set_vram_ptr_direct(ArtTile_GHZ_Small_Flower * TILE_SIZE_BYTES);
   DEF_ROMLOC(1CAD8) : move_toreg_32(0x67096, &A1); // LEA.L	$00067096,A1
   DEF_ROMLOC(1CADE)
       : move_toreg_32((s32)A1 + (s8)0x0 + (s16)D0,
@@ -351,7 +349,7 @@ ROMFUNC(rom_1CAAA) {
   DEF_ROMLOC(1CB0E) : lsl_toreg_16(0x8, &D0); // LSL.W	#$08,D0
   DEF_ROMLOC(1CB10) : add_toreg_16(D0, &D0);  // ADD.W	D0,D0
   DEF_ROMLOC(1CB12)
-      : write_vdp_control_32(0x70000001);
+      : set_vram_ptr_direct(ArtTile_GHZ_Flower_3 * TILE_SIZE_BYTES);
   DEF_ROMLOC(1CB1C)
       : move_toreg_32((v_256x256 + 0xA400) - 0x1000 + 0x400, &A1); // LEA.L	$9800,A1
   DEF_ROMLOC(1CB20)
@@ -377,7 +375,7 @@ ROMFUNC(rom_1CB30) {
   DEF_ROMLOC(1CB4C) : lsl_toreg_16(0x8, &D0); // LSL.W	#$08,D0
   DEF_ROMLOC(1CB4E) : add_toreg_16(D0, &D0);  // ADD.W	D0,D0
   DEF_ROMLOC(1CB50)
-      : write_vdp_control_32(0x68000001);
+      : set_vram_ptr_direct(ArtTile_GHZ_Flower_4 * TILE_SIZE_BYTES);
   DEF_ROMLOC(1CB5A)
       : move_toreg_32(v_256x256 + 0xA400 - 0x600, &A1); // LEA.L	$9E00,A1
   DEF_ROMLOC(1CB5E)
@@ -592,11 +590,7 @@ ROMFUNC(rom_1CCC6) {
   DEF_ROMLOC(1CCE0)
       : move_toreg_32((s32)A1 + (s8)0x0 + (s16)D0,
                       &A1);                          // LEA.L	0(A1,D0),A1
-  DEF_ROMLOC(1CCE4) : add_toreg_16(0xFFFF8000, &D0); // ADDI.W	#$8000,D0
-  DEF_ROMLOC(1CCE8) : lsl_toreg_32(0x2, &D0);        // LSL.L	#$02,D0
-  DEF_ROMLOC(1CCEA) : lsr_toreg_16(0x2, &D0);        // LSR.W	#$02,D0
-  DEF_ROMLOC(1CCEC) : or_toreg_16(0x4000, &D0);      // ORI.W	#$4000,D0
-  DEF_ROMLOC(1CCF0) : SWAPWORDS(D0);                 // SWAP.W	D0
+  D0 = VRAM_PTR_TO_VDP_COMMAND((ArtTile_Giant_Ring * TILE_SIZE_BYTES) + D0);
   DEF_ROMLOC(1CCF2) : write_vdp_control_32(D0);
   DEF_ROMLOC(1CCF6) : move_toreg_16(0xD, &D1);       // MOVE.W	#$000D,D1
   rom_1CB6E();

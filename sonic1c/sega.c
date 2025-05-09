@@ -107,9 +107,9 @@ void sega_init_part2(void) {
   move_tosr_16(0x2700, &SR);               // MOVE.W	#$2700,SR
   move_toreg_16(read_16(0xFFFFF60C), &D0); // MOVE.W	$F60C,D0
   and_toreg_8(0xFFFFFFBF, &D0);            // ANDI.B	#$BF,D0
-  write_vdp_control_16(D0);
+  set_vdp_register(D0 >> 8, D0);
   clear_screen();                          // BSR.W	$12C4
-  write_vdp_control_32(VRAM_PTR_TO_VDP_COMMAND(0x0000));
+  set_vram_ptr_direct(ArtTile_Sega_Tiles * TILE_SIZE_BYTES);
   A0 = 0x1E700;
   decompress_nemesis(); // BSR.W	$1438
   A1 = v_256x256;
@@ -129,7 +129,7 @@ void sega_init_part2(void) {
   move_tomem_16(0x0, 0xFFFFF660);          // MOVE.W	#$0000,$F660
   move_toreg_16(read_16(0xFFFFF60C), &D0); // MOVE.W	$F60C,D0
   or_toreg_8(0x40, &D0);                   // ORI.B	#$40,D0
-  write_vdp_control_16(D0);
+  set_vdp_register(D0 >> 8, D0);
   sega_wait_palette();
   game_state = sega_wait_palette_loop;
 }

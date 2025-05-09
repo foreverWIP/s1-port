@@ -170,3 +170,17 @@ u32 next_power_of_2(u32 value) {
 
   return v;
 }
+
+void fill_vram(u8 value, u16 start, u16 end) {
+  A5 = VDP_CONTROL_PORT;
+  set_vdp_register(0x8f, 0x01);
+  u16 length = end - start - 1;
+  set_vdp_register(0x94, length >> 8);
+  set_vdp_register(0x93, length & 0xff);
+  set_vdp_register(0x97, 0x80);
+  write_vdp_control_32(0x40000080 + (((u32)start & 0x3FFF) << 16) +
+                       (((u32)start & 0xC000) >> 14));
+  write_vdp_data_16(0x0000);
+  set_vdp_register(0x8f, 0x02);
+  SETWORD(D1, 0);
+}

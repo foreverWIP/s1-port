@@ -37,10 +37,10 @@ ROMFUNC(rom_2F04) {
   DEF_ROMLOC(2F42) : dec_reg_16(&D1);
   if ((D1 & 0xffff) != 0xffff)
     goto rom_2F40; // DBF.W	D1,$2F40
-  DEF_ROMLOC(2F46) : write_vdp_control_32(0x40000000);
+  DEF_ROMLOC(2F46) : set_vram_ptr_direct(0x0000);
   DEF_ROMLOC(2F50) : move_toreg_32(0x2184C, &A0); // LEA.L	$0002184C,A0
   DEF_ROMLOC(2F56) : decompress_nemesis();        // BSR.W	$1438
-  DEF_ROMLOC(2F5A) : write_vdp_control_32(0x54C00000);
+  DEF_ROMLOC(2F5A) : set_vram_ptr_direct(ArtTile_Sonic_Team_Font * TILE_SIZE_BYTES);
   DEF_ROMLOC(2F64) : move_toreg_32(0x6203A, &A0);   // LEA.L	$0006203A,A0
   DEF_ROMLOC(2F6A) : decompress_nemesis();          // BSR.W	$1438
   DEF_ROMLOC(2F6E) : move_toreg_32(v_256x256, &A1); // LEA.L	$00FF0000,A1
@@ -67,18 +67,17 @@ ROMFUNC(rom_2F04) {
 }
 ROMFUNC(rom_2FC2) {
   DEF_ROMLOC(2FC2) : move_tosr_16(0x2700, &SR); // MOVE.W	#$2700,SR
-  DEF_ROMLOC(2FC6) : write_vdp_control_32(0x40000001);
+  DEF_ROMLOC(2FC6) : set_vram_ptr_direct(ArtTile_Title_Foreground * TILE_SIZE_BYTES);
   DEF_ROMLOC(2FD0) : move_toreg_32(0x1ED80, &A0); // LEA.L	$0001ED80,A0
   DEF_ROMLOC(2FD6) : decompress_nemesis();        // BSR.W	$1438
-  DEF_ROMLOC(2FDA) : write_vdp_control_32(0x60000001);
+  DEF_ROMLOC(2FDA) : set_vram_ptr_direct(ArtTile_Title_Sonic * TILE_SIZE_BYTES);
   DEF_ROMLOC(2FE4) : move_toreg_32(0x1FD8C, &A0); // LEA.L	$0001FD8C,A0
   DEF_ROMLOC(2FEA) : decompress_nemesis();        // BSR.W	$1438
-  DEF_ROMLOC(2FEE) : write_vdp_control_32(0x62000002);
+  DEF_ROMLOC(2FEE) : set_vram_ptr_direct(ArtTile_Title_Trademark * TILE_SIZE_BYTES);
   DEF_ROMLOC(2FF8) : move_toreg_32(0x2175A, &A0); // LEA.L	$0002175A,A0
   DEF_ROMLOC(2FFE) : decompress_nemesis();        // BSR.W	$1438
-  DEF_ROMLOC(3002)
-      : move_toreg_32(VDP_DATA_PORT, &A6); // LEA.L	$00C00000,A6
-  DEF_ROMLOC(3008) : write_vdp_control_32(0x50000003);
+  DEF_ROMLOC(3002) : move_toreg_32(VDP_DATA_PORT, &A6); // LEA.L	$00C00000,A6
+  DEF_ROMLOC(3008) : set_vram_ptr_direct(ArtTile_Level_Select_Font * TILE_SIZE_BYTES);
   DEF_ROMLOC(3010) : move_toreg_32(0x5F0, &A5); // LEA.L	$000005F0,A5
   DEF_ROMLOC(3016) : move_toreg_16(0x28F, &D1); // MOVE.W	#$028F,D1
   rom_301A(); // Detected flow into next function
@@ -124,7 +123,7 @@ ROMFUNC(rom_3076) {
   DEF_ROMLOC(30A6) : move_toreg_16(0x0, &D0);        // MOVE.W	#$0000,D0
   DEF_ROMLOC(30AA) : decompress_enigma();            // BSR.W	$1716
   copy_tilemap(v_256x256, VRAM_FG, 3, 4, 34, 22);
-  DEF_ROMLOC(30C2) : write_vdp_control_32(0x40000000);
+  DEF_ROMLOC(30C2) : set_vram_ptr_direct(ArtTile_Level * TILE_SIZE_BYTES);
   DEF_ROMLOC(30CC) : move_toreg_32(0x3CB3C, &A0);   // LEA.L	$0003CB3C,A0
   DEF_ROMLOC(30D2) : decompress_nemesis();          // BSR.W	$1438
   DEF_ROMLOC(30D6) : move_toreg_32(0x1, &D0);       // MOVEQ.L	$01,D0
@@ -263,7 +262,7 @@ ROMFUNC(rom_3224) {
   DEF_ROMLOC(3250) : move_tosr_16(0x2700, &SR);     // MOVE.W	#$2700,SR
   DEF_ROMLOC(3254)
       : move_toreg_32(VDP_DATA_PORT, &A6); // LEA.L	$00C00000,A6
-  DEF_ROMLOC(325A) : write_vdp_control_32(0x60000003);
+  DEF_ROMLOC(325A) : set_vram_ptr_direct(VRAM_BG);
   DEF_ROMLOC(3264) : move_toreg_16(0x3FF, &D1); // MOVE.W	#$03FF,D1
   DEF_ROMLOC(3268) : write_vdp_data_32(D0);
   DEF_ROMLOC(326A) : dec_reg_16(&D1);
@@ -519,7 +518,7 @@ ROMFUNC(rom_34FA) {
   DEF_ROMLOC(3540) : cmp_tomem_16(0x14, 0xFFFFFF82); // CMPI.W	#$0014,$FF82
   DEF_ROMLOC(3546) : if (!CCR_EQ) goto rom_354C;     // BNE.B	$354C
   DEF_ROMLOC(3548) : move_toreg_16(0xFFFFC680, &D3); // MOVE.W	#$C680,D3
-  DEF_ROMLOC(354C) : write_vdp_control_32(0x6C300003);
+  DEF_ROMLOC(354C) : set_vram_ptr_direct(VRAM_BG + 0xC30);
   DEF_ROMLOC(3556)
       : move_toreg_16(read_16(0xFFFFFF84), &D0); // MOVE.W	$FF84,D0
   DEF_ROMLOC(355A) : add_toreg_16(0x80, &D0);    // ADDI.W	#$0080,D0

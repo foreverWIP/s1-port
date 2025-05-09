@@ -41,8 +41,7 @@ ROMFUNC(rom_B10) {
     rom_B88();
     return;
   } // BEQ.B	$B88
-  DEF_ROMLOC(B20)
-      : write_vdp_control_32(0x40000010);
+  DEF_ROMLOC(B20) : set_vsram_ptr_direct(0x00);
   DEF_ROMLOC(B2A)
       : write_vdp_data_32(read_32(0xFFFFF616));
   DEF_ROMLOC(B42) : move_toreg_8(read_8(0xFFFFF62A), &D0); // MOVE.B	$F62A,D0
@@ -580,8 +579,7 @@ ROMFUNC(rom_1126) {
       : move_toreg_32(VDP_DATA_PORT, &A1);           // LEA.L
                                                      // $00C00000,A1
   DEF_ROMLOC(1140) : move_toreg_32(0xFFFFFA80, &A0); // LEA.L	$FA80,A0
-  DEF_ROMLOC(1144)
-      : write_vdp_control_32(0xC0000000);
+  DEF_ROMLOC(1144) : set_cram_ptr_direct(0x00);
   DEF_ROMLOC(114C) : write_vdp_data_32(read_32((A0 += 4, A0 - 4)));
   DEF_ROMLOC(114E) : write_vdp_data_32(read_32((A0 += 4, A0 - 4)));
   DEF_ROMLOC(1150) : write_vdp_data_32(read_32((A0 += 4, A0 - 4)));

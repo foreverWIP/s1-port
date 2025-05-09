@@ -1,6 +1,7 @@
 // #define CHECK_STUFF 1
 #include "opcodes.h"
 #include "system.h"
+#include "vramlocs.h"
 
 ROMFUNC(rom_45EA);
 
@@ -24,15 +25,7 @@ ROMFUNC(rom_45EA) {
   DEF_ROMLOC(460E) : write_vdp_control_16(D0);
   DEF_ROMLOC(4614) : clear_screen();            // BSR.W	$12C4
   DEF_ROMLOC(4618) : move_tosr_16(0x2300, &SR); // MOVE.W	#$2300,SR
-  DEF_ROMLOC(461C)
-      : move_toreg_32(VDP_CONTROL_PORT, &A5); // LEA.L	$00C00004,A5
-  DEF_ROMLOC(4622) : set_vdp_register(0x8F, 0x01);
-  DEF_ROMLOC(4626) : set_vdp_register(0x94, 0x6F);
-  					 set_vdp_register(0x93, 0xFF);
-  DEF_ROMLOC(462C) : set_vdp_register(0x97, 0x80);
-  DEF_ROMLOC(4630) : write_vdp_control_32(0x50000081);
-  DEF_ROMLOC(4636) : write_vdp_data_16(0x0);
-  DEF_ROMLOC(4646) : set_vdp_register(0x8F, 0x02);
+  DEF_ROMLOC(461C) : fill_vram(0, (ArtTile_SS_Plane_1 * TILE_SIZE_BYTES + PLANE_SIZE_64X32), ArtTile_SS_Plane_5 * TILE_SIZE_BYTES);
   DEF_ROMLOC(464A) : rom_48A8();                           // BSR.W	$48A8
   DEF_ROMLOC(464E) : move_toreg_32(0x14, &D0);             // MOVEQ.L	$14,D0
   DEF_ROMLOC(4650) : quick_plc();                          // BSR.W	$16E4
@@ -184,7 +177,7 @@ ROMFUNC(rom_47A6) {
   DEF_ROMLOC(47EA) : set_vdp_register(0x84, 0x07);
   DEF_ROMLOC(47EE) : set_vdp_register(0x90, 0x01);
   DEF_ROMLOC(47F2) : clear_screen(); // BSR.W	$12C4
-  DEF_ROMLOC(47F6) : write_vdp_control_32(0x70000002);
+  DEF_ROMLOC(47F6) : set_vram_ptr_direct(ArtTile_Title_Card * TILE_SIZE_BYTES);
   DEF_ROMLOC(4800) : move_toreg_32(0x39204, &A0);   // LEA.L	$00039204,A0
   DEF_ROMLOC(4806) : decompress_nemesis();          // BSR.W	$1438
   DEF_ROMLOC(480A) : rom_1CFEE();                   // JSR	$0001CFEE
@@ -320,8 +313,8 @@ ROMFUNC(rom_48A8) {
   DEF_ROMLOC(4936) : move_toreg_32(0x2E18A, &A0);  // LEA.L	$0002E18A,A0
   DEF_ROMLOC(493C) : move_toreg_16(0x4000, &D0);   // MOVE.W	#$4000,D0
   DEF_ROMLOC(4940) : decompress_enigma();          // BSR.W	$1716
-  copy_tilemap(v_ssbuffer1, ARTTILE_SS_PLANE_5 * TILE_SIZE_BYTES, 0, 0, 64, 32);
-  copy_tilemap(v_ssbuffer1, ARTTILE_SS_PLANE_5 * TILE_SIZE_BYTES, 0, 32, 64,
+  copy_tilemap(v_ssbuffer1, ArtTile_SS_Plane_5 * TILE_SIZE_BYTES, 0, 0, 64, 32);
+  copy_tilemap(v_ssbuffer1, ArtTile_SS_Plane_5 * TILE_SIZE_BYTES, 0, 32, 64,
                64);
   DEF_ROMLOC(496C) : return; // RTS
 }
@@ -358,7 +351,7 @@ ROMFUNC(rom_496E) {
   DEF_ROMLOC(49C0) : move_toreg_16(0xFFFF8400, &D0);  // MOVE.W	#$8400,D0
   DEF_ROMLOC(49C4) : move_toreg_8(read_8(A0++), &D0); // MOVE.B	(A0)+,D0
   DEF_ROMLOC(49C6) : write_vdp_control_16(D0);
-  DEF_ROMLOC(49C8) : write_vdp_control_32(0x40000010);
+  DEF_ROMLOC(49C8) : set_vsram_ptr_direct(0x00);
   DEF_ROMLOC(49D2) : write_vdp_data_32(read_32(0xFFFFF616));
   DEF_ROMLOC(49DA) : move_toreg_32(0x0, &D0);         // MOVEQ.L	$00,D0
   DEF_ROMLOC(49DC) : move_toreg_8(read_8(A0++), &D0); // MOVE.B	(A0)+,D0

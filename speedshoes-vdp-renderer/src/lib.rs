@@ -2,14 +2,47 @@
 #![feature(adt_const_params)]
 extern crate alloc;
 
-mod color_lut;
+use core::{
+    cell::{LazyCell, OnceCell, UnsafeCell},
+    marker::ConstParamTy,
+};
 
-use core::marker::ConstParamTy;
+use alloc::vec::Vec;
+
+/*
+   let src_dir = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap()).join("src");
+   const CHANNEL_LOOKUP: [u32; 8] = [0, 52, 87, 116, 144, 172, 206, 255];
+   let mut color_lut = vec![0u32; 0x1_0000];
+   for i in 0..color_lut.len() {
+       let r = CHANNEL_LOOKUP[(i >> 1) & 0b111];
+       let g = CHANNEL_LOOKUP[(i >> 5) & 0b111];
+       let b = CHANNEL_LOOKUP[(i >> 9) & 0b111];
+       color_lut[i] = (0xff << 24) | (b << 16) | (g << 8) | (r << 0);
+   }
+   let mut out_lut = String::from("pub const COLOR_LUT: &[u32; 0x1_0000] = &[");
+   for c in color_lut {
+       out_lut += &format!("{:#010X},", c);
+   }
+   out_lut += "];";
+   fs::write(src_dir.join("color_lut.rs"), out_lut).map_err(|e| e.to_string())?;
+   Ok(())
+*/
+
+#[repr(transparent)]
+pub struct SyncUnsafeCell<T>(UnsafeCell<T>);
+
+unsafe impl<T: Sync> Sync for SyncUnsafeCell<T> {}
+
+const CHANNEL_LOOKUP_RAW: [u32; 8] = [0, 52, 87, 116, 144, 172, 206, 255];
 
 macro_rules! pal_index_to_32bit {
-    ($pal:expr, $index:expr) => {
-        crate::color_lut::COLOR_LUT[$pal[($index & 0x3f) as usize] as usize]
-    };
+    ($pal:expr, $index:expr) => {{
+        let i = $pal[($index & 0x3f) as usize] as usize;
+        let r = CHANNEL_LOOKUP_RAW[(i >> 1) & 0b111];
+        let g = CHANNEL_LOOKUP_RAW[(i >> 5) & 0b111];
+        let b = CHANNEL_LOOKUP_RAW[(i >> 9) & 0b111];
+        (0xff << 24) | (b << 16) | (g << 8) | (r << 0)
+    }};
 }
 
 #[derive(Clone, Copy, ConstParamTy, PartialEq, Eq)]

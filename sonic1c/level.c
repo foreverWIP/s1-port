@@ -24,7 +24,7 @@ ROMFUNC(rom_37BA) {
   DEF_ROMLOC(37BA) : tst_mem_16(0xFFFFFFF0);    // TST.W	$FFF0
   DEF_ROMLOC(37BE) : if (CCR_MI) goto rom_37FE; // BMI.B	$37FE
   DEF_ROMLOC(37C0) : move_tosr_16(0x2700, &SR); // MOVE.W	#$2700,SR
-  DEF_ROMLOC(37C4) : write_vdp_control_32(0x70000002);
+  DEF_ROMLOC(37C4) : set_vram_ptr_direct(0x580 * 0x20);
   DEF_ROMLOC(37CE) : move_toreg_32(0x39204, &A0);       // LEA.L	$00039204,A0
   DEF_ROMLOC(37D4) : decompress_nemesis();              // BSR.W	$1438
   DEF_ROMLOC(37D8) : move_tosr_16(0x2300, &SR);         // MOVE.W	#$2300,SR

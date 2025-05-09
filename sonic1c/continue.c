@@ -29,13 +29,13 @@ void continue_screen_init_part2(void) {
   DEF_ROMLOC(4D20) : dec_reg_16(&D1);
   if ((D1 & 0xffff) != 0xffff)
     goto rom_4D1E; // DBF.W	D1,$4D1E
-  DEF_ROMLOC(4D24) : write_vdp_control_32(0x70000002);
+  DEF_ROMLOC(4D24) : set_vram_ptr_direct(0x580 * 0x20);
   DEF_ROMLOC(4D2E) : move_toreg_32(0x39204, &A0); // LEA.L	$00039204,A0
   DEF_ROMLOC(4D34) : decompress_nemesis();        // BSR.W	$1438
-  DEF_ROMLOC(4D38) : write_vdp_control_32(0x60000002);
+  DEF_ROMLOC(4D38) : set_vram_ptr_direct(0x500 * 0x20);
   DEF_ROMLOC(4D42) : move_toreg_32(0x3B39A, &A0); // LEA.L	$0003B39A,A0
   DEF_ROMLOC(4D48) : decompress_nemesis();        // BSR.W	$1438
-  DEF_ROMLOC(4D4C) : write_vdp_control_32(0x6A200002);
+  DEF_ROMLOC(4D4C) : set_vram_ptr_direct(0x551 * 0x20);
   DEF_ROMLOC(4D56) : move_toreg_32(0x3B64A, &A0);     // LEA.L	$0003B64A,A0
   DEF_ROMLOC(4D5C) : decompress_nemesis();            // BSR.W	$1438
   DEF_ROMLOC(4D60) : move_toreg_32(0xA, &D1);         // MOVEQ.L	$0A,D1
@@ -112,7 +112,7 @@ void continue_screen_loop_part2(void) {
   DEF_ROMLOC(4E4C) : return;                        // RTS
 }
 void continue_screen_load_numbers(void) {
-  DEF_ROMLOC(1D104) : write_vdp_control_32(0x5F800003);
+  DEF_ROMLOC(1D104) : set_vram_ptr_direct(0x6fc * 0x20);
   DEF_ROMLOC(1D10E)
       : move_toreg_32(VDP_DATA_PORT, &A6);         // LEA.L	$00C00000,A6
   DEF_ROMLOC(1D114) : move_toreg_32(0x1D16C, &A2); // LEA.L	$0001D16C,A2

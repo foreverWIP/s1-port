@@ -35,7 +35,7 @@ void draw_bg_layer_1(void);
 void draw_blocks_scroll_vert_full(void);
 void draw_blocks_scroll_vert_alt(void);
 void draw_blocks_scroll_vert(void);
-void draw_block(void);
+void draw_block(u32 block_metadata_ptr, u32 block_ptr, u32 vram_command, u32 vram_plane, u32 plane_stride);
 void get_block_data_relative(void);
 void calc_vram_pos_relative(void);
 void calc_vram_pos(void);

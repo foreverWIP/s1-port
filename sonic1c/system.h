@@ -133,14 +133,25 @@ u16 read_vdp_control_16(void);
 void write_vdp_data_32(u32 value);
 void write_vdp_control_32(u32 value);
 void set_vdp_register(u8 reg, u8 value);
+void fill_vram(u8 value, u16 start, u16 end);
 
 #define VRAM_PTR_TO_VDP_COMMAND(loc)                                           \
-  (0x40000000 + (((loc) & 0x3FFF) << 16) + (((loc) & 0xC000) >> 14))
+  (0x40000000 + ((u32)((loc) & 0x3FFF) << 16) + ((u32)((loc) & 0xC000) >> 14))
+#define CRAM_PTR_TO_VDP_COMMAND(loc)                                           \
+  (0xc0000000 + ((u32)((loc) & 0xffff) << 16))
+#define VSRAM_PTR_TO_VDP_COMMAND(loc)                                           \
+  (0x40000010 + ((u32)((loc) & 0xffff) << 16))
+#define set_vram_ptr_direct(loc)                                               \
+  write_vdp_control_32(VRAM_PTR_TO_VDP_COMMAND(loc))
 #define set_vram_ptr(loc)                                                      \
   {                                                                            \
     loc = VRAM_PTR_TO_VDP_COMMAND(loc);                                        \
     write_vdp_control_32(loc);                                                 \
   }
+#define set_cram_ptr_direct(loc)                                               \
+  write_vdp_control_32(CRAM_PTR_TO_VDP_COMMAND(loc))
+#define set_vsram_ptr_direct(loc)                                               \
+  write_vdp_control_32(VSRAM_PTR_TO_VDP_COMMAND(loc))
 
 #define PLANE_SIZE_64X32 0x1000
 
