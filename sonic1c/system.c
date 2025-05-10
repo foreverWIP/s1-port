@@ -1,4 +1,5 @@
 #include "system.h"
+#include "opcodes.h"
 #include "ramlocs.h"
 #include <stdarg.h>
 #include <stdio.h>
@@ -183,4 +184,30 @@ void fill_vram(u8 value, u16 start, u16 end) {
   write_vdp_data_16(0x0000);
   set_vdp_register(0x8f, 0x02);
   SETWORD(D1, 0);
+}
+
+void write_vram_dma(u32 source, u32 source_end, u16 destination) {
+  u32 length = source_end - source;
+  A5 = VDP_CONTROL_PORT;
+  set_vdp_register(0x93, (length >> 1) & 0xFF);
+  set_vdp_register(0x94, ((length >> 1) & 0xFF00) >> 8);
+  set_vdp_register(0x95, (source >> 1) & 0xFF);
+  set_vdp_register(0x96, ((source >> 1) & 0xFF00) >> 8);
+  set_vdp_register(0x97, ((source >> 1) & 0x7F0000) >> 16);
+  write_vdp_control_16(0x4000 + (destination & 0x3FFF));
+  move_tomem_16(0x80 + ((destination & 0xC000) >> 14), v_vdp_buffer2);
+  write_vdp_control_16(read_16(v_vdp_buffer2));
+}
+
+void write_cram_dma(u32 source, u32 source_end, u16 destination) {
+  u32 length = source_end - source;
+  A5 = VDP_CONTROL_PORT;
+  set_vdp_register(0x93, (length >> 1) & 0xFF);
+  set_vdp_register(0x94, ((length >> 1) & 0xFF00) >> 8);
+  set_vdp_register(0x95, (source >> 1) & 0xFF);
+  set_vdp_register(0x96, ((source >> 1) & 0xFF00) >> 8);
+  set_vdp_register(0x97, (((source >> 1) & 0xFF0000) >> 16) & 0x7F);
+  write_vdp_control_16(0xc000 + (destination & 0x3FFF));
+  move_tomem_16(0x80 + ((destination & 0xC000) >> 14), v_vdp_buffer2);
+  write_vdp_control_16(read_16(0xFFFFF640));
 }

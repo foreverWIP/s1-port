@@ -1,5 +1,6 @@
 // #define CHECK_STUFF 1
 #include "opcodes.h"
+#include "ramlocs.h"
 #include "system.h"
 
 ROMFUNC(rom_391C);
@@ -82,7 +83,7 @@ ROMFUNC(rom_37BA) {
   DEF_ROMLOC(3864) : set_vdp_register(0x87, 0x20);
   DEF_ROMLOC(3868)
       : move_tomem_16(0xFFFF8ADF, 0xFFFFF624); // MOVE.W	#$8ADF,$F624
-  DEF_ROMLOC(386E) : write_vdp_control_16(read_16(0xFFFFF624));
+  DEF_ROMLOC(386E) : set_vdp_register(read_8(v_hbla_hreg), read_8(v_hbla_hreg + 1));
   DEF_ROMLOC(3872) : cmp_tomem_8(ZONE_LZ, v_zone); // CMPI.B	#$01,$FE10
   DEF_ROMLOC(3878) : if (!CCR_EQ) goto rom_38AA;   // BNE.B	$38AA
   DEF_ROMLOC(387A) : set_vdp_register(0x80, 0x14);

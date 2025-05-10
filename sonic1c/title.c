@@ -159,7 +159,7 @@ ROMFUNC(rom_3076) {
   DEF_ROMLOC(314C)
       : move_toreg_16(read_16(0xFFFFF60C), &D0); // MOVE.W	$F60C,D0
   DEF_ROMLOC(3150) : or_toreg_8(0x40, &D0);      // ORI.B	#$40,D0
-  DEF_ROMLOC(3154) : write_vdp_control_16(D0);
+  DEF_ROMLOC(3154) : set_vdp_register(D0 >> 8, D0);
   DEF_ROMLOC(315A) : game_state = rom_315E;
   palette_fade_in(true); // BSR.W	$1DA4
 }

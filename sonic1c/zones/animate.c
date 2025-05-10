@@ -590,8 +590,8 @@ ROMFUNC(rom_1CCC6) {
   DEF_ROMLOC(1CCE0)
       : move_toreg_32((s32)A1 + (s8)0x0 + (s16)D0,
                       &A1);                          // LEA.L	0(A1,D0),A1
-  D0 = VRAM_PTR_TO_VDP_COMMAND((ArtTile_Giant_Ring * TILE_SIZE_BYTES) + D0);
-  DEF_ROMLOC(1CCF2) : write_vdp_control_32(D0);
+  D0 = (ArtTile_Giant_Ring * TILE_SIZE_BYTES) + D0;
+  DEF_ROMLOC(1CCF2) : set_vram_ptr(D0);
   DEF_ROMLOC(1CCF6) : move_toreg_16(0xD, &D1);       // MOVE.W	#$000D,D1
   rom_1CB6E();
   return; // BRA.W	$1CB6E

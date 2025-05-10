@@ -57,7 +57,7 @@ ROMFUNC(rom_50FE) {
   DEF_ROMLOC(5172) : set_vdp_register(0x87, 0x20);
   DEF_ROMLOC(5176)
       : move_tomem_16(0x8ADF, 0xFFFFF624); // MOVE.W	#$8ADF,$F624
-  DEF_ROMLOC(517C) : write_vdp_control_16(read_16(0xFFF624));
+  DEF_ROMLOC(517C) : set_vdp_register(read_8(v_hbla_hreg), read_8(v_hbla_hreg + 1));
   DEF_ROMLOC(5180)
       : move_tomem_16(MAX_AIR_SECONDS, v_air); // MOVE.W	#$001E,$FE14
   DEF_ROMLOC(5186)

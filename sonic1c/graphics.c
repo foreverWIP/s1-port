@@ -25,7 +25,7 @@ void vdp_setup(void) {
   DEF_ROMLOC(122E) : move_toreg_32(0x129E, &A2); // LEA.L	$0000129E,A2
   DEF_ROMLOC(1234) : move_toreg_32(0x12, &D7);   // MOVEQ.L	$12,D7
   DEF_ROMLOC(1236)
-      : write_vdp_control_16(read_16((A2 += 2, A2 - 2)));
+      : set_vdp_register(read_8(A2), read_8(A2 + 1)); A2 += 2;
   DEF_ROMLOC(1238) : dec_reg_16(&D7);
   if ((D7 & 0xffff) != 0xffff)
     goto rom_1236; // DBF.W	D7,$1236
