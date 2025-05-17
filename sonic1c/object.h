@@ -135,7 +135,7 @@ typedef enum {
   OBJ_CREDITSTEXT,
   OBJ_ENDEGGMAN,
   OBJ_TRYCHAOS,
-};
+} object_id;
 
 #define OBJSTRUCTDEF                                                           \
   struct {                                                                     \
