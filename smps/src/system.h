@@ -94,7 +94,8 @@ extern jmp_buf smps__desync_jumpbuf;
     dst = ((dst << 16) | (dst >> 16));                                         \
   }
 
-extern void print(const char *msg, ...);
+extern void smps__print(const char *msg, ...);
+#define print smps__print
 
 #define PRINTVAL(val) print(#val " = 0x%X", val)
 #define PRINTREG(reg) print(#reg " = 0x%X", reg)
@@ -105,7 +106,8 @@ extern void print(const char *msg, ...);
   }                                                                            \
   rom_##loc##_colon
 
-u32 next_power_of_2(u32 value);
+u32 smps__next_power_of_2(u32 value);
+#define next_power_of_2 smps__next_power_of_2
 
 extern void write_fm_i(u8 a, u8 v);
 extern void write_fm_ii(u8 a, u8 v);

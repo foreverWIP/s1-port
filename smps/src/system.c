@@ -28,14 +28,14 @@ u32 smps__read_8(u32 loc) {
   loc &= 0xffffff;
   if (loc >= 0xfff000) {
     loc -= 0xfff000;
-	// print("read ram %x", loc);
+    // print("read ram %x", loc);
     return smps_ram_ptr[loc];
   }
   if (loc < 0x80000) {
-	// print("read rom %x", loc);
-	if (loc < 0x71990) {
-		// print("read before sound data at %x", loc);
-	}
+    // print("read rom %x", loc);
+    if (loc < 0x71990) {
+      // print("read before sound data at %x", loc);
+    }
     return smps_rom_ptr[loc];
   }
   return 0;
@@ -56,18 +56,18 @@ void smps__write_8(u32 loc, u8 value) {
   loc &= 0xffffff;
   if (loc >= 0xff0000) {
     loc -= 0xfff000;
-	if (value != 0) {
-	// print("write %x -> %x", value, loc);
-	}
+    if (value != 0) {
+      // print("write %x -> %x", value, loc);
+    }
     smps_ram_ptr[loc] = value;
-	return;
+    return;
   }
   if (loc == 0xa01fff) {
-	// print("dac sample = %d", value);
-	smps_ram_ptr[0xfff] = value;
+    // print("dac sample = %d", value);
+    smps_ram_ptr[0xfff] = value;
   }
   if (loc >= 0xa00000) {
-	return;
+    return;
   }
   print("unhandled write to %x", loc);
 }
@@ -84,7 +84,7 @@ void smps__write_32(u32 loc, u32 value) {
 
 static char stringbuf[0x400];
 
-void print(const char *msg, ...) {
+void smps__print(const char *msg, ...) {
   va_list args;
 
   va_start(args, msg);
@@ -95,7 +95,7 @@ void print(const char *msg, ...) {
   fflush(stdout);
 }
 
-u32 next_power_of_2(u32 value) {
+u32 smps__next_power_of_2(u32 value) {
   u32 v = value; // compute the next highest power of 2 of 32-bit v
 
   v--;
