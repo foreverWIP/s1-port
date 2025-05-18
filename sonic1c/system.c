@@ -142,7 +142,7 @@ bool speedshoes__synchronize(u32 pc) {
 
 static char stringbuf[0x400];
 
-void print(const char *msg, ...) {
+void sonic1__print(const char *msg, ...) {
   va_list args;
 
   va_start(args, msg);
@@ -156,9 +156,7 @@ void print(const char *msg, ...) {
   }
 }
 
-EXPORT void speedshoes__runframe(void) {}
-
-u32 next_power_of_2(u32 value) {
+u32 sonic1__next_power_of_2(u32 value) {
   u32 v = value; // compute the next highest power of 2 of 32-bit v
 
   v--;

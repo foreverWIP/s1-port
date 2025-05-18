@@ -7,20 +7,21 @@ use std::collections::HashMap;
 use std::env::consts::{DLL_PREFIX, DLL_SUFFIX};
 use std::fs;
 use std::rc::Rc;
-use std::sync::mpsc::Sender;
 use std::sync::Arc;
+use std::sync::mpsc::Sender;
 
 use dlopen2::symbor::Symbol;
 
 use crate::emu::SystemEmulator;
 use crate::emu::{SpeedShoesBus, SpeedShoesCore};
-use crate::system::{synchronize_script, Input, System};
+use crate::system::{Input, System, synchronize_script};
 use crate::vdp::Vdp;
 use crate::{DataSize, GAME_HEIGHT, GAME_WIDTH};
 
-type VoidCFunc = extern "C" fn() -> ();
+type VoidCFunc = unsafe extern "C" fn() -> ();
 
 bitflags! {
+    #[repr(C)]
     #[derive(PartialEq, Eq)]
     pub struct TestFlags: u32 {
         const TEST_NONE = 0 << 0;
@@ -29,6 +30,63 @@ bitflags! {
         const TEST_MEM = 1 << 2;
         const TEST_PER_INSTRUCTION = 1 << 3;
     }
+}
+
+macro_rules! get_symbol {
+    ($this:ident, $name:ident, fn( $($arg:ty),* $(,)? ) $( -> $ret:ty )?) => {
+        if cfg!(feature = "static-game") {
+            Symbol::new($name as unsafe extern "C" fn( $($arg),* ) $( -> $ret )?)
+        } else {
+            unsafe {
+                $this
+                    .lib
+                    .as_ref()
+                    .unwrap()
+                    .symbol::<unsafe extern "C" fn( $($arg),* ) $( -> $ret )?>(stringify!($name))
+                    .map_err(|e| e.to_string())?
+            }
+        }
+    };
+	($this:ident, $name:ident, $fntype:ty) => {
+        if cfg!(feature = "static-game") {
+            Symbol::new($name as $fntype)
+        } else {
+            unsafe {
+                $this
+                    .lib
+                    .as_ref()
+                    .unwrap()
+                    .symbol::<$fntype>(stringify!($name))
+                    .map_err(|e| e.to_string())?
+            }
+        }
+    };
+}
+
+#[cfg(feature = "static-game")]
+unsafe extern "C" {
+    fn speedshoes__bind_functions(ffi_info: *const FFIInfo) -> ();
+    fn reset_game();
+    fn run_game_frame();
+    fn get_test_level() -> TestFlags;
+
+    static mut speedshoes__d0: u32;
+    static mut speedshoes__d1: u32;
+    static mut speedshoes__d2: u32;
+    static mut speedshoes__d3: u32;
+    static mut speedshoes__d4: u32;
+    static mut speedshoes__d5: u32;
+    static mut speedshoes__d6: u32;
+    static mut speedshoes__d7: u32;
+    static mut speedshoes__a0: u32;
+    static mut speedshoes__a1: u32;
+    static mut speedshoes__a2: u32;
+    static mut speedshoes__a3: u32;
+    static mut speedshoes__a4: u32;
+    static mut speedshoes__a5: u32;
+    static mut speedshoes__a6: u32;
+    static mut speedshoes__a7: u32;
+    static mut speedshoes__sr: u32;
 }
 
 #[repr(C)]
@@ -152,47 +210,72 @@ impl ScriptEngine {
             play_sound_cb: Self::sound_driver_send,
             play_sound_special: Self::sound_driver_send_special,
         };
-        let libname = format!(
-            "{}{}{}{}",
-            if cfg!(debug_assertions) { "../" } else { "" },
-            DLL_PREFIX,
-            self.libname,
-            DLL_SUFFIX
-        );
-        println!("loading library {}", libname);
-        if cfg!(target_os = "windows") {
-            self.dependent_libs
-                .push(dlopen2::symbor::Library::open("msvcrt.dll").map_err(|e| e.to_string())?);
-        }
-        // fs::copy(libname, libname_use.clone()).map_err(|e| e.to_string())?;
-        self.lib = Some(dlopen2::symbor::Library::open(&libname).map_err(|e| e.to_string())?);
-        let lib = self.lib.as_ref().unwrap();
-        let bind_func = unsafe {
-            lib.symbol::<unsafe extern "C" fn(*const FFIInfo) -> ()>("speedshoes__bind_functions")
-                .map_err(|e| e.to_string())?
+        if cfg!(feature = "static-game") {
+            self.lib = Some(dlopen2::symbor::Library::open_self().unwrap());
+        } else {
+            let libname = format!(
+                "{}{}{}{}",
+                if cfg!(debug_assertions) { "../" } else { "" },
+                DLL_PREFIX,
+                self.libname,
+                DLL_SUFFIX
+            );
+            println!("loading library {}", libname);
+            if cfg!(target_os = "windows") {
+                self.dependent_libs
+                    .push(dlopen2::symbor::Library::open("msvcrt.dll").map_err(|e| e.to_string())?);
+            }
+            // fs::copy(libname, libname_use.clone()).map_err(|e| e.to_string())?;
+            self.lib = Some(dlopen2::symbor::Library::open(&libname).map_err(|e| e.to_string())?);
         };
+        let bind_func = get_symbol!(self, speedshoes__bind_functions, fn(*const FFIInfo) -> ());
         unsafe {
             bind_func(&ffi_info);
         }
-        for i in 0..16 {
-            let first_char = if i < 8 { "d" } else { "a" };
-            let second_char = (i % 8).to_string();
+        if cfg!(feature = "static-game") {
+            self.regs.push(&raw mut speedshoes__d0);
+            self.regs.push(&raw mut speedshoes__d1);
+            self.regs.push(&raw mut speedshoes__d2);
+            self.regs.push(&raw mut speedshoes__d3);
+            self.regs.push(&raw mut speedshoes__d4);
+            self.regs.push(&raw mut speedshoes__d5);
+            self.regs.push(&raw mut speedshoes__d6);
+            self.regs.push(&raw mut speedshoes__d7);
+            self.regs.push(&raw mut speedshoes__a0);
+            self.regs.push(&raw mut speedshoes__a1);
+            self.regs.push(&raw mut speedshoes__a2);
+            self.regs.push(&raw mut speedshoes__a3);
+            self.regs.push(&raw mut speedshoes__a4);
+            self.regs.push(&raw mut speedshoes__a5);
+            self.regs.push(&raw mut speedshoes__a6);
+            self.regs.push(&raw mut speedshoes__a7);
+            self.regs.push(&raw mut speedshoes__sr);
+        } else {
+            for i in 0..16 {
+                let first_char = if i < 8 { "d" } else { "a" };
+                let second_char = (i % 8).to_string();
+                unsafe {
+                    let reg_ref = self
+                        .lib
+                        .as_ref()
+                        .unwrap()
+                        .reference_mut::<u32>(&format!("speedshoes__{}{}", first_char, second_char))
+                        .map_err(|e| e.to_string())?;
+                    self.regs.push(reg_ref);
+                }
+            }
             unsafe {
-                let reg_ref = lib
-                    .reference_mut::<u32>(&format!("speedshoes__{}{}", first_char, second_char))
+                let reg_ref = self
+                    .lib
+                    .as_ref()
+                    .unwrap()
+                    .reference_mut::<u32>("speedshoes__sr")
                     .map_err(|e| e.to_string())?;
                 self.regs.push(reg_ref);
             }
         }
         unsafe {
-            let reg_ref = lib
-                .reference_mut::<u32>("speedshoes__sr")
-                .map_err(|e| e.to_string())?;
-            self.regs.push(reg_ref);
-
-            let reset = lib
-                .symbol::<VoidCFunc>("reset_game")
-                .map_err(|e| e.to_string())?;
+            let reset = get_symbol!(self, reset_game, VoidCFunc);
             reset();
         }
         self.bus
@@ -215,13 +298,17 @@ impl ScriptEngine {
     pub fn get_test_level(&self) -> TestFlags {
         unsafe {
             if let Some(lib) = &self.lib {
-                let func = match lib.symbol::<extern "C" fn() -> TestFlags>("get_test_level") {
-                    Ok(f) => f,
-                    Err(_) => {
-                        return TestFlags::TEST_NONE;
-                    }
-                };
-                func()
+                if cfg!(feature = "static-game") {
+                    get_test_level()
+                } else {
+                    let func = match lib.symbol::<extern "C" fn() -> TestFlags>("get_test_level") {
+                        Ok(f) => f,
+                        Err(_) => {
+                            return TestFlags::TEST_NONE;
+                        }
+                    };
+                    func()
+                }
             } else {
                 TestFlags::TEST_NONE
             }
@@ -302,9 +389,7 @@ impl ScriptEngine {
         self.bus.current_input = input;
         let lib = self.lib.as_ref().unwrap();
         unsafe {
-            let run_game_frame = lib
-                .symbol::<VoidCFunc>("run_game_frame")
-                .map_err(|e| e.to_string())?;
+            let run_game_frame = get_symbol!(self, run_game_frame, VoidCFunc);
             run_game_frame();
         }
         self.bus.render()?;

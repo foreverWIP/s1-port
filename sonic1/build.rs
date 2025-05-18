@@ -1,5 +1,40 @@
-use std::env;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
+use std::{env, fs};
+
+fn get_files_in_dir(
+    dir: &Path,
+    extension: &str,
+    ret: Option<&mut Vec<String>>,
+    exclusions: &[&str],
+) -> Vec<String> {
+    let mut binding = Vec::new();
+    let ret = ret.unwrap_or(&mut binding);
+
+    if dir.is_dir() {
+        for entry in fs::read_dir(dir).unwrap() {
+            let entry = entry.unwrap();
+            let path = entry.path();
+            if path.is_dir() {
+                get_files_in_dir(&path, extension, Some(ret), exclusions);
+            } else {
+                if let Some(path_extension) = path.extension() {
+                    let our_extension = if extension.starts_with('.') {
+                        &extension[1..]
+                    } else {
+                        extension
+                    };
+                    if !exclusions.contains(&path.file_name().unwrap().to_str().unwrap())
+                        && path_extension.to_str().unwrap() == our_extension
+                    {
+                        ret.push(String::from(path.to_str().unwrap()));
+                    }
+                }
+            }
+        }
+    }
+
+    ret.clone()
+}
 
 fn set_up_sdl2() {
     #[cfg(target_os = "macos")]
@@ -47,7 +82,18 @@ fn set_up_sdl2() {
         }
     }
 }
+
+#[cfg(feature = "static-game")]
+fn static_game() {
+    println!("cargo::rerun-if-changed=../sonic1c");
+    cc::Build::new()
+        .files(&get_files_in_dir(Path::new("../sonic1c"), ".c", None, &[]))
+        .compile("sonic1c");
+}
+
 fn main() -> Result<(), String> {
     set_up_sdl2();
+    #[cfg(feature = "static-game")]
+    static_game();
     Ok(())
 }

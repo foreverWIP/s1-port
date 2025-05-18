@@ -1,4 +1,4 @@
-#![feature(adt_const_params)]
+#![feature(adt_const_params, c_variadic)]
 
 use std::marker::ConstParamTy;
 use std::{

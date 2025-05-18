@@ -157,7 +157,8 @@ void write_cram_dma(u32 source, u32 source_end, u16 destination);
 
 #define PLANE_SIZE_64X32 0x1000
 
-extern void print(const char *msg, ...);
+extern void sonic1__print(const char *msg, ...);
+#define print sonic1__print
 
 #define PRINTVAL(val) print(#val " = 0x%X", val)
 #define PRINTREG(reg) print(#reg " = 0x%X", reg)
@@ -176,4 +177,5 @@ extern void print(const char *msg, ...);
 
 #include "game.h"
 
-u32 next_power_of_2(u32 value);
+extern u32 sonic1__next_power_of_2(u32 value);
+#define next_power_of_2 sonic1__next_power_of_2

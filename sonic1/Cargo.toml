@@ -19,4 +19,11 @@ mdcomp = { version = "0.1.0", path = "../mdcomp" }
 sdl2 = { version = "0.37.0", features = ["default"] }
 sdl2-sys = { version = "0.37.0", features = ["default"] }
 smps = { version = "0.1.0", path = "../smps" }
-speedshoes = { path = "../speedshoes" }
+speedshoes = { path = "../speedshoes", features = ["static-game"] }
+
+[build-dependencies]
+cc = { version = "1.2.16", optional = true }
+
+[features]
+default = ["static-game"]
+static-game = ["dep:cc", "speedshoes/static-game"]
