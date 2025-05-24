@@ -18,5 +18,5 @@ fn main() {
         .flag("-DEC_YM2612_GPGX")
         .flag("-DEC_SN76496_MAXIM")
         .compile("smps");
-    println!("cargo::rerun-if-changed=src/**/*");
+    println!("cargo::rerun-if-changed=libvgm");
 }
