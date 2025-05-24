@@ -1,10 +1,13 @@
 // #define CHECK_STUFF 1
 #include "../opcodes.h"
 #include "../system.h"
+#include "common.h"
 
 void load_palette_fading(void);
+void level_layout_load_2(void);
+void lamp_load_info(void);
 
-ROMFUNC(rom_5ECC) {
+void level_size_load(void) {
   DEF_ROMLOC(5ECC) : move_toreg_32(0x0, &D0);             // MOVEQ.L	$00,D0
   DEF_ROMLOC(5ECE) : move_tomem_8(D0, 0xFFFFF740);        // MOVE.B	D0,$F740
   DEF_ROMLOC(5ED2) : move_tomem_8(D0, 0xFFFFF741);        // MOVE.B	D0,$F741
@@ -43,7 +46,7 @@ ROMFUNC(rom_5ECC) {
   DEF_ROMLOC(5F22) : move_tomem_16(D0, 0xFFFFF73E);     // MOVE.W	D0,$F73E
   DEF_ROMLOC(609A) : tst_mem_8(0xFFFFFE30);             // TST.B	$FE30
   DEF_ROMLOC(609E) : if (CCR_EQ) goto rom_60B0;         // BEQ.B	$60B0
-  DEF_ROMLOC(60A0) : rom_177F8();                       // JSR	$000177F8
+  DEF_ROMLOC(60A0) : lamp_load_info();                       // JSR	$000177F8
   DEF_ROMLOC(60A6)
       : move_toreg_16(read_16(0xFFFFD008), &D1); // MOVE.W	$D008,D1
   DEF_ROMLOC(60AA)
@@ -98,7 +101,7 @@ ROMFUNC(rom_5ECC) {
                       0xFFFFF7AC); // MOVE.L	118(PC,D0),$F7AC
   DEF_ROMLOC(611C) : return;       // RTS
 }
-ROMFUNC(rom_72F0) {
+void level_data_load(void) {
   DEF_ROMLOC(72F0) : move_toreg_32(0x0, &D0);           // MOVEQ.L	$00,D0
   DEF_ROMLOC(72F2) : move_toreg_8(read_8(v_zone), &D0); // MOVE.B	$FE10,D0
   DEF_ROMLOC(72F6) : lsl_toreg_16(0x4, &D0);            // LSL.W	#$04,D0
@@ -117,7 +120,7 @@ ROMFUNC(rom_72F0) {
       : move_toreg_32(read_32((A2 += 4, A2 - 4)), &A0); // MOVEA.L	(A2)+,A0
   DEF_ROMLOC(7316) : move_toreg_32(v_256x256, &A1);     // LEA.L	$00FF0000,A1
   DEF_ROMLOC(731C) : rom_1894();                        // BSR.W	$1894
-  DEF_ROMLOC(7320) : rom_735C();                        // BSR.W	$735C
+  DEF_ROMLOC(7320) : level_layout_load();                        // BSR.W	$735C
   DEF_ROMLOC(7324)
       : move_toreg_16(read_16((A2 += 2, A2 - 2)), &D0); // MOVE.W	(A2)+,D0
   DEF_ROMLOC(7326) : move_toreg_16(read_16(A2), &D0);   // MOVE.W	(A2),D0
@@ -144,7 +147,7 @@ ROMFUNC(rom_72F0) {
   DEF_ROMLOC(7356) : add_plc();                         // BSR.W	$1578
   DEF_ROMLOC(735A) : return;                            // RTS
 }
-ROMFUNC(rom_735C) {
+void level_layout_load(void) {
   DEF_ROMLOC(735C) : move_toreg_32(0xFFFFA400, &A3);       // LEA.L	$A400,A3
   DEF_ROMLOC(7360) : move_toreg_16(0x1FF, &D1);            // MOVE.W	#$01FF,D1
   DEF_ROMLOC(7364) : move_toreg_32(0x0, &D0);              // MOVEQ.L	$00,D0
@@ -154,13 +157,13 @@ ROMFUNC(rom_735C) {
     goto rom_7366;                                   // DBF.W	D1,$7366
   DEF_ROMLOC(736C) : move_toreg_32(0xFFFFA400, &A3); // LEA.L	$A400,A3
   DEF_ROMLOC(7370) : move_toreg_32(0x0, &D1);        // MOVEQ.L	$00,D1
-  DEF_ROMLOC(7372) : rom_737C();                     // BSR.W	$737C
+  DEF_ROMLOC(7372) : level_layout_load_2();                     // BSR.W	$737C
   DEF_ROMLOC(7376) : move_toreg_32(0xFFFFA440, &A3); // LEA.L	$A440,A3
   DEF_ROMLOC(737A) : move_toreg_32(0x2, &D1);        // MOVEQ.L	$02,D1
-  rom_737C(); // Detected flow into next function
+  level_layout_load_2(); // Detected flow into next function
 }
 
-ROMFUNC(rom_737C) {
+void level_layout_load_2(void) {
   DEF_ROMLOC(737C) : move_toreg_16(read_16(v_zone), &D0); // MOVE.W	$FE10,D0
   DEF_ROMLOC(7380) : lsl_toreg_8(0x6, &D0);               // LSL.B	#$06,D0
   DEF_ROMLOC(7382) : lsr_toreg_16(0x5, &D0);              // LSR.W	#$05,D0
@@ -194,7 +197,7 @@ ROMFUNC(rom_737C) {
   DEF_ROMLOC(73B4) : return; // RTS
 }
 
-ROMFUNC(rom_177F8) {
+void lamp_load_info(void) {
   DEF_ROMLOC(177F8)
       : move_tomem_8(read_8(0xFFFFFE31), 0xFFFFFE30); // MOVE.B	$FE31,$FE30
   DEF_ROMLOC(177FE)

@@ -71,10 +71,10 @@ ROMFUNC(rom_50FE) {
   DEF_ROMLOC(519A) : move_toreg_32(0x1C, &D0);      // MOVEQ.L	$1C,D0
   DEF_ROMLOC(519C) : quick_plc();                   // BSR.W	$16E4
   DEF_ROMLOC(51A0) : rom_1CFEE();                   // JSR	$0001CFEE
-  DEF_ROMLOC(51A6) : rom_5ECC();                    // BSR.W	$5ECC
+  DEF_ROMLOC(51A6) : level_size_load();                    // BSR.W	$5ECC
   DEF_ROMLOC(51AA) : rom_626E();                    // BSR.W	$626E
   DEF_ROMLOC(51AE) : bset_tomem_8(0x2, 0xFFFFF754); // BSET.B	#$02,$F754
-  DEF_ROMLOC(51B4) : rom_72F0();                    // BSR.W	$72F0
+  DEF_ROMLOC(51B4) : level_data_load();                    // BSR.W	$72F0
   DEF_ROMLOC(51B8) : update_tiles_on_start();       // BSR.W	$71AC
   DEF_ROMLOC(51BC)
       : move_tomem_32(0x64A00, 0xFFFFF796);       // MOVE.L	#$00064A00,$F796

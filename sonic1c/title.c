@@ -93,7 +93,7 @@ ROMFUNC(rom_301A) {
   DEF_ROMLOC(3032) : move_tomem_16(0x0, 0xFFFFFFEA);  // MOVE.W	#$0000,$FFEA
   DEF_ROMLOC(3038) : move_tomem_16(ZONE_GHZ, v_zone); // MOVE.W	#$0000,$FE10
   DEF_ROMLOC(303E) : move_tomem_16(0x0, 0xFFFFF634);  // MOVE.W	#$0000,$F634
-  DEF_ROMLOC(3044) : rom_5ECC();                      // BSR.W	$5ECC
+  DEF_ROMLOC(3044) : level_size_load();                      // BSR.W	$5ECC
   DEF_ROMLOC(3048) : rom_626E();                      // BSR.W	$626E
   DEF_ROMLOC(304C) : move_toreg_32(v_16x16, &A1);     // LEA.L	$B000,A1
   DEF_ROMLOC(3050) : move_toreg_32(0x3C19C, &A0);     // LEA.L	$0003C19C,A0
@@ -102,7 +102,7 @@ ROMFUNC(rom_301A) {
   DEF_ROMLOC(305E) : move_toreg_32(0x3F544, &A0);     // LEA.L	$0003F544,A0
   DEF_ROMLOC(3064) : move_toreg_32(v_256x256, &A1);   // LEA.L	$00FF0000,A1
   DEF_ROMLOC(306A) : rom_1894();                      // BSR.W	$1894
-  DEF_ROMLOC(306E) : rom_735C();                      // BSR.W	$735C
+  DEF_ROMLOC(306E) : level_layout_load();                      // BSR.W	$735C
   DEF_ROMLOC(3072) : game_state = rom_3076;
   palette_fade_out(); // BSR.W	$1E4A
 }

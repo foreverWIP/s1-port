@@ -169,10 +169,10 @@ void load_palette_fading(void);
 ROMFUNC(rom_3942) {
   DEF_ROMLOC(3942) : move_toreg_32(0x3, &D0);       // MOVEQ.L	$03,D0
   DEF_ROMLOC(3944) : load_palette_fading();         // BSR.W	$20F4
-  DEF_ROMLOC(3948) : rom_5ECC();                    // BSR.W	$5ECC
+  DEF_ROMLOC(3948) : level_size_load();                    // BSR.W	$5ECC
   DEF_ROMLOC(394C) : rom_626E();                    // BSR.W	$626E
   DEF_ROMLOC(3950) : bset_tomem_8(0x2, 0xFFFFF754); // BSET.B	#$02,$F754
-  DEF_ROMLOC(3956) : rom_72F0();                    // BSR.W	$72F0
+  DEF_ROMLOC(3956) : level_data_load();                    // BSR.W	$72F0
   DEF_ROMLOC(395A) : update_tiles_on_start();       // BSR.W	$71AC
   // DEF_ROMLOC(395E): rom_153B4(); // JSR	$000153B4
   DEF_ROMLOC(3964) : rom_40F2();                      // BSR.W	$40F2
