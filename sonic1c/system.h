@@ -162,6 +162,9 @@ extern void sonic1__print(const char *msg, ...);
 
 #define PRINTVAL(val) print(#val " = 0x%X", val)
 #define PRINTREG(reg) print(#reg " = 0x%X", reg)
+#define PRINTMEM8(mem) print("u8[" #mem "] = 0x%X", read_8(mem))
+#define PRINTMEM16(mem) print("u16[" #mem "] = 0x%X", read_16(mem))
+#define PRINTMEM32(mem) print("u32[" #mem "] = 0x%X", read_32(mem))
 
 #define DEF_ROMLOC(loc)                                                        \
   rom_##loc : if (CHECK_STUFF && (TEST_LEVEL & TEST_PER_INSTRUCTION)) {        \
