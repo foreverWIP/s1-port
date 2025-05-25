@@ -5,16 +5,14 @@ float normpdf(in float x, in float sigma)
 
 void main()
 {
-	vec3 c = readtex(CurTexture, Frag_UV.xy / texture_size.xy).rgb;
-
 	//declare stuff
-	const int mSize = 7;
+	const int mSize = 9;
 	const int kSize = (mSize-1)/2;
 	float kernel[mSize];
 	vec3 final_colour = vec3(0.0);
 	
 	//create the 1-D kernel
-	float sigma = 7.0;
+	float sigma = 9.0;
 	float Z = 0.0;
 	for (int j = 0; j <= kSize; ++j)
 	{
@@ -32,9 +30,11 @@ void main()
 	{
 		for (int j=-kSize; j <= kSize; ++j)
 		{
-			vec3 c = readtex(CurTexture, (Frag_UV.xy+vec2(float(i),float(j))) / texture_size.xy).rgb;
+			vec4 c = readtex_nodiscard(CurTexture, (Frag_UV.xy+vec2(float(i),float(j))) / texture_size.xy);
+			if (c.a < 1.0) {
+				c = bgColor;
+			}
 			final_colour += kernel[kSize+j]*kernel[kSize+i]*c.rgb;
-
 		}
 	}
 	

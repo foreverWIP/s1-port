@@ -78,9 +78,19 @@ static INDEXED_PROLOGUE: &str = "\nvec4 readtex(usampler2D tex, vec2 uv)
 	uint lookup = texture(tex, uv).r;
 	if (mod(lookup, 16) == 0) discard;
 	return palette[lookup];
+}
+vec4 readtex_nodiscard(usampler2D tex, vec2 uv)
+{
+	uint lookup = texture(tex, uv).r;
+	if (mod(lookup, 16) == 0) return vec4(0.0);
+	return palette[lookup];
 }\n";
 
 static RGBA_PROLOGUE: &str = "\nvec4 readtex(sampler2D tex, vec2 uv)
+{
+	return texture(tex, uv);
+}
+vec4 readtex_nodiscard(sampler2D tex, vec2 uv)
 {
 	return texture(tex, uv);
 }\n";
@@ -177,6 +187,17 @@ impl PlaneTexture<'_> {
         }
     }
 
+    unsafe fn set_uniform_vec4(
+        &self,
+        gl: &glow::Context,
+        program: Program,
+        name: &str,
+        value: [f32; 4],
+    ) {
+        let location = gl.get_uniform_location(program, name);
+        gl.uniform_4_f32(location.as_ref(), value[0], value[1], value[2], value[3]);
+    }
+
     unsafe fn set_uniform_vec4_array(
         &self,
         gl: &glow::Context,
@@ -238,6 +259,7 @@ impl PlaneTexture<'_> {
         &mut self,
         gl: &glow::Context,
         time: f32,
+        bg_color: [f32; 4],
         fb_all_planes: NativeFramebuffer,
         program: NativeProgram,
     ) {
@@ -271,6 +293,7 @@ impl PlaneTexture<'_> {
 
                 gl.uniform_1_i32(cur_location.as_ref(), 0);
             }
+            self.set_uniform_vec4(gl, program, "bgColor", bg_color);
             set_uniform_float(&gl, program, "iTime", time);
             if !self.indexed_color {
                 gl.blend_func(glow::SRC_ALPHA, glow::ONE_MINUS_SRC_ALPHA);
@@ -415,6 +438,7 @@ impl Renderer<'_> {
 precision mediump float;
 uniform usampler2D CurTexture;
 uniform float iTime;
+uniform vec4 bgColor;
 layout (std140) uniform common_uniforms {{
 vec4 palette[64];
 }};
@@ -430,6 +454,7 @@ const vec2 texture_size = vec2({}, {});
 precision mediump float;
 uniform sampler2D CurTexture;
 uniform float iTime;
+uniform vec4 bgColor;
 layout (std140) uniform common_uniforms {{
 vec4 palette[64];
 }};
@@ -597,6 +622,7 @@ const vec2 texture_size = vec2({}, {});
         self.plane_b_low_tex.render(
             &gl,
             time as f32,
+            bg_color_f32,
             self.composite_fb,
             self.get_program(
                 self.shader_selection_plane[0],
@@ -607,6 +633,7 @@ const vec2 texture_size = vec2({}, {});
         self.plane_a_low_tex.render(
             &gl,
             time as f32,
+            bg_color_f32,
             self.composite_fb,
             self.get_program(
                 self.shader_selection_plane[1],
@@ -617,6 +644,7 @@ const vec2 texture_size = vec2({}, {});
         self.plane_s_low_tex.render(
             &gl,
             time as f32,
+            bg_color_f32,
             self.composite_fb,
             self.get_program(
                 self.shader_selection_plane[2],
@@ -627,6 +655,7 @@ const vec2 texture_size = vec2({}, {});
         self.plane_b_high_tex.render(
             &gl,
             time as f32,
+            bg_color_f32,
             self.composite_fb,
             self.get_program(
                 self.shader_selection_plane[3],
@@ -637,6 +666,7 @@ const vec2 texture_size = vec2({}, {});
         self.plane_a_high_tex.render(
             &gl,
             time as f32,
+            bg_color_f32,
             self.composite_fb,
             self.get_program(
                 self.shader_selection_plane[4],
@@ -647,6 +677,7 @@ const vec2 texture_size = vec2({}, {});
         self.plane_s_high_tex.render(
             &gl,
             time as f32,
+            bg_color_f32,
             self.composite_fb,
             self.get_program(
                 self.shader_selection_plane[5],
@@ -660,6 +691,7 @@ const vec2 texture_size = vec2({}, {});
         self.plane_s_extra_tex.render(
             &gl,
             time as f32,
+            bg_color_f32,
             self.composite_fb,
             self.get_program(
                 self.shader_selection_plane[6],
