@@ -7,16 +7,17 @@ use std::collections::HashMap;
 use std::env::consts::{DLL_PREFIX, DLL_SUFFIX};
 use std::fs;
 use std::rc::Rc;
-use std::sync::Arc;
 use std::sync::mpsc::Sender;
+use std::sync::{Arc, RwLock};
 
 use dlopen2::symbor::Symbol;
 
 use crate::emu::SystemEmulator;
 use crate::emu::{SpeedShoesBus, SpeedShoesCore};
+use crate::gamesettings::GameSettings;
 use crate::system::{Input, System, synchronize_script};
 use crate::vdp::Vdp;
-use crate::{DataSize, GAME_HEIGHT, GAME_WIDTH};
+use crate::{DataSize, GAME_HEIGHT};
 
 type VoidCFunc = unsafe extern "C" fn() -> ();
 
@@ -101,6 +102,7 @@ struct FFIInfo {
     sync_cb: fn(pc: u32) -> bool,
     play_sound_cb: fn(emu: &ScriptEngine, sound: u8) -> (),
     play_sound_special: fn(emu: &ScriptEngine, sound: u8) -> (),
+    get_game_width: fn(emu: &ScriptEngine) -> u16,
 }
 
 pub(crate) struct ScriptEngine {
@@ -112,6 +114,7 @@ pub(crate) struct ScriptEngine {
     pub(crate) bus: Box<SpeedShoesBus>,
     last_state_ram: Rc<RefCell<Vec<u8>>>,
     sound_driver_sender: Arc<Sender<i16>>,
+    game_settings: Arc<RwLock<GameSettings>>,
 }
 
 impl ScriptEngine {
@@ -121,6 +124,7 @@ impl ScriptEngine {
         last_state_ram: Rc<RefCell<Vec<u8>>>,
         hw_planes_mode: bool,
         sound_driver_sender: Arc<Sender<i16>>,
+        game_settings: Arc<RwLock<GameSettings>>,
     ) -> Result<Self, String> {
         let ram = Rc::new(RefCell::new(vec![0u8; 0x1_0000]));
         let vdp = Vdp::new(rom.clone(), ram.clone(), hw_planes_mode, false);
@@ -129,12 +133,12 @@ impl ScriptEngine {
             rom,
             ram,
             vdp: Rc::new(RefCell::new(vdp)),
-            fb_plane_a_low: vec![0u32; (GAME_WIDTH * GAME_HEIGHT) as usize].into_boxed_slice(),
-            fb_plane_b_low: vec![0u32; (GAME_WIDTH * GAME_HEIGHT) as usize].into_boxed_slice(),
-            fb_plane_b_high: vec![0u32; (GAME_WIDTH * GAME_HEIGHT) as usize].into_boxed_slice(),
-            fb_plane_s_low: vec![0u32; (GAME_WIDTH * GAME_HEIGHT) as usize].into_boxed_slice(),
-            fb_plane_a_high: vec![0u32; (GAME_WIDTH * GAME_HEIGHT) as usize].into_boxed_slice(),
-            fb_plane_s_high: vec![0u32; (GAME_WIDTH * GAME_HEIGHT) as usize].into_boxed_slice(),
+            fb_plane_a_low: vec![0u32; (432 * GAME_HEIGHT) as usize].into_boxed_slice(),
+            fb_plane_b_low: vec![0u32; (432 * GAME_HEIGHT) as usize].into_boxed_slice(),
+            fb_plane_b_high: vec![0u32; (432 * GAME_HEIGHT) as usize].into_boxed_slice(),
+            fb_plane_s_low: vec![0u32; (432 * GAME_HEIGHT) as usize].into_boxed_slice(),
+            fb_plane_a_high: vec![0u32; (432 * GAME_HEIGHT) as usize].into_boxed_slice(),
+            fb_plane_s_high: vec![0u32; (432 * GAME_HEIGHT) as usize].into_boxed_slice(),
             current_input: Input::default(),
             input_th_toggle: false,
             // sound_writes: Vec::new(),
@@ -148,6 +152,7 @@ impl ScriptEngine {
             bus: Box::new(bus),
             last_state_ram,
             sound_driver_sender: sound_driver_sender.clone(),
+            game_settings,
         })
     }
 
@@ -190,6 +195,10 @@ impl ScriptEngine {
         self.sound_driver_sender.send(0x300 | (id as i16)).unwrap();
     }
 
+    fn get_game_width(&self) -> u16 {
+        self.game_settings.read().unwrap().screen_width
+    }
+
     pub fn reset(&mut self) -> Result<(), String> {
         {
             if self.lib.is_some() {
@@ -209,6 +218,7 @@ impl ScriptEngine {
             sync_cb: synchronize_script,
             play_sound_cb: Self::sound_driver_send,
             play_sound_special: Self::sound_driver_send_special,
+            get_game_width: Self::get_game_width,
         };
         if cfg!(feature = "static-game") {
             self.lib = Some(dlopen2::symbor::Library::open_self().unwrap());
@@ -392,7 +402,8 @@ impl ScriptEngine {
             let run_game_frame = get_symbol!(self, run_game_frame, VoidCFunc);
             run_game_frame();
         }
-        self.bus.render()?;
+        self.bus
+            .render(self.game_settings.read().unwrap().screen_width)?;
         Ok(())
     }
 }

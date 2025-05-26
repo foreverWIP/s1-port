@@ -38,9 +38,6 @@ enum {
   GM_TITLECARD_FLAG = (1 << GM_TITLECARD_FLAG_BIT),
 };
 
-#define GAME_WIDTH 320
-// #define GAME_WIDTH 432
-
 extern void (*game_state)(void);
 extern bool exit_mainloop;
 

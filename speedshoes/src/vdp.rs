@@ -1,12 +1,12 @@
 use std::{cell::RefCell, fmt::Display, rc::Rc};
 
 use speedshoes_vdp_renderer::{
-    render_plane_line_a_high, render_plane_line_a_low, render_plane_line_b_high,
-    render_plane_line_b_low, render_screen_line, render_sprites_line_high, render_sprites_line_low,
-    HScrollMode, PlaneSize, Sprite, TileAttributes, VScrollMode,
+    HScrollMode, PlaneSize, Sprite, TileAttributes, VScrollMode, render_plane_line_a_high,
+    render_plane_line_a_low, render_plane_line_b_high, render_plane_line_b_low, render_screen_line,
+    render_sprites_line_high, render_sprites_line_low,
 };
 
-use crate::{GAME_HEIGHT, GAME_WIDTH};
+use crate::GAME_HEIGHT;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(crate) enum VdpRegion {
@@ -525,6 +525,7 @@ impl Vdp {
     pub(crate) fn render_screen_line(
         &mut self,
         y: u16,
+        width: u16,
         fb_plane_b_low: &mut [u32],
         fb_plane_b_high: &mut [u32],
         fb_plane_a_low: &mut [u32],
@@ -543,7 +544,7 @@ impl Vdp {
             }
             render_plane_line_b_low(
                 y,
-                GAME_WIDTH as u16,
+                width,
                 self.vram.as_ref(),
                 &self.palette,
                 self.plane_size,
@@ -556,7 +557,7 @@ impl Vdp {
             );
             render_plane_line_a_low(
                 y,
-                GAME_WIDTH as u16,
+                width,
                 self.vram.as_ref(),
                 &self.palette,
                 self.plane_size,
@@ -572,13 +573,13 @@ impl Vdp {
                 &self.palette,
                 sprite_table,
                 y,
-                GAME_WIDTH as u16,
+                width,
                 fb_plane_s_low,
                 true,
             );
             render_plane_line_b_high(
                 y,
-                GAME_WIDTH as u16,
+                width,
                 self.vram.as_ref(),
                 &self.palette,
                 self.plane_size,
@@ -591,7 +592,7 @@ impl Vdp {
             );
             render_plane_line_a_high(
                 y,
-                GAME_WIDTH as u16,
+                width,
                 self.vram.as_ref(),
                 &self.palette,
                 self.plane_size,
@@ -607,7 +608,7 @@ impl Vdp {
                 &self.palette,
                 sprite_table,
                 y,
-                GAME_WIDTH as u16,
+                width,
                 fb_plane_s_high,
                 true,
             );
@@ -626,7 +627,7 @@ impl Vdp {
                 &self.vscroll_buffer,
                 self.vscroll_mode,
                 y,
-                GAME_WIDTH as u16,
+                width,
                 self.plane_size,
                 fb_plane_a_high,
             );

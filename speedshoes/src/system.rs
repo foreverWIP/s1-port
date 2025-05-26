@@ -16,8 +16,9 @@ use r68k_tools::{Exception, OpcodeInstance, PC, disassembler::Disassembler, memo
 // use smps::emulation::SoundEmulator;
 
 use crate::{
-    DataSize, GAME_HEIGHT, GAME_WIDTH, comma_separated,
+    DataSize, GAME_HEIGHT, comma_separated,
     emu::{SpeedShoesCore, SystemEmulator, SystemEmulatorRegister},
+    gamesettings::GameSettings,
     script::{ScriptEngine, TestFlags},
     vdp::Vdp,
 };
@@ -225,6 +226,7 @@ pub struct System {
     pub unimplemented_subs_frame: HashSet<u32>,
     unimplemented_subs_total: HashSet<u32>,
     test_mode: bool,
+    pub game_settings: Arc<RwLock<GameSettings>>,
 }
 
 impl Drop for System {
@@ -472,6 +474,7 @@ impl System {
         test_mode: bool,
         hw_planes_mode: bool,
         sound_driver_sender: Arc<Sender<i16>>,
+        game_settings: Arc<RwLock<GameSettings>>,
     ) -> Result<System, String> {
         unsafe {
             *DESYNC_SCRIPT_MESSAGE.lock().unwrap() = None;
@@ -525,10 +528,12 @@ impl System {
                 Rc::new(RefCell::new(ram.clone())),
                 hw_planes_mode,
                 sound_driver_sender.clone(),
+                game_settings.clone(),
             )?),
             unimplemented_subs_frame: HashSet::new(),
             unimplemented_subs_total: HashSet::new(),
             test_mode,
+            game_settings: game_settings.clone(),
         })
     }
 

@@ -16,7 +16,7 @@ use sdl2::{
     render::SurfaceCanvas,
     surface::Surface,
 };
-use speedshoes::{GAME_HEIGHT, GAME_WIDTH};
+use speedshoes::GAME_HEIGHT;
 use std::num::NonZeroU32;
 
 #[repr(C)]
@@ -53,12 +53,12 @@ static VERTEX_SHADER_PLANE_NORMAL: LazyLock<String> = LazyLock::new(|| {
 layout (location = 0) in vec2 Position;
 layout (location = 1) in vec2 UV;
 layout (location = 0) out vec2 Frag_UV;
+uniform float GameWidth;
 void main()
 {{
-	Frag_UV = UV.xy * vec2({}, {});
+	Frag_UV = UV.xy * vec2(GameWidth, {});
 	gl_Position = vec4(Position.xy,0,1);
 }}",
-        PlaneTexture::SIZE.0,
         PlaneTexture::SIZE.1,
     )
 });
@@ -113,16 +113,14 @@ pub struct PlaneTexture<'plane> {
     pub frame_texture_handle: NativeTexture,
     indexed_color: bool,
     pub(self) sdl_renderer: SurfaceCanvas<'plane>,
+    prev_width: u16,
 }
 
 impl PlaneTexture<'_> {
     pub const SCALE: usize = 4;
-    pub const SIZE: (usize, usize) = (
-        GAME_WIDTH as usize * Self::SCALE,
-        GAME_HEIGHT as usize * Self::SCALE,
-    );
+    pub const SIZE: (usize, usize) = (320 * Self::SCALE, GAME_HEIGHT as usize * Self::SCALE);
 
-    pub(self) fn new(gl: &glow::Context, indexed_color: bool) -> Self {
+    pub(self) fn new(gl: &glow::Context, indexed_color: bool, width: u16) -> Self {
         unsafe {
             let frame_texture_handle = gl.create_texture().unwrap();
             gl.bind_texture(glow::TEXTURE_2D, Some(frame_texture_handle));
@@ -134,7 +132,7 @@ impl PlaneTexture<'_> {
                 } else {
                     glow::RGBA8 as i32
                 },
-                GAME_WIDTH as i32,
+                width as i32,
                 GAME_HEIGHT as i32,
                 0,
                 if indexed_color {
@@ -172,7 +170,7 @@ impl PlaneTexture<'_> {
                 indexed_color,
                 sdl_renderer: SurfaceCanvas::from_surface(
                     Surface::new(
-                        GAME_WIDTH as u32,
+                        432 as u32,
                         GAME_HEIGHT as u32,
                         if indexed_color {
                             PixelFormatEnum::Index8
@@ -183,6 +181,7 @@ impl PlaneTexture<'_> {
                     .unwrap(),
                 )
                 .unwrap(),
+                prev_width: width,
             }
         }
     }
@@ -258,6 +257,7 @@ impl PlaneTexture<'_> {
     pub(self) fn render(
         &mut self,
         gl: &glow::Context,
+        width: u16,
         time: f32,
         bg_color: [f32; 4],
         fb_all_planes: NativeFramebuffer,
@@ -265,14 +265,35 @@ impl PlaneTexture<'_> {
     ) {
         unsafe {
             let cur_texture = self.frame_texture_handle;
-            gl.viewport(0, 0, Self::SIZE.0 as i32, Self::SIZE.1 as i32);
             gl.bind_texture(glow::TEXTURE_2D, Some(cur_texture));
+            if self.prev_width != width {
+                gl.tex_image_2d(
+                    glow::TEXTURE_2D,
+                    0,
+                    if self.indexed_color {
+                        glow::R8UI as i32
+                    } else {
+                        glow::RGBA8 as i32
+                    },
+                    width as i32,
+                    GAME_HEIGHT as i32,
+                    0,
+                    if self.indexed_color {
+                        glow::RED_INTEGER
+                    } else {
+                        glow::RGBA
+                    },
+                    glow::UNSIGNED_BYTE,
+                    None,
+                );
+            }
+            gl.viewport(0, 0, width as i32 * Self::SCALE as i32, Self::SIZE.1 as i32);
             gl.tex_sub_image_2d(
                 glow::TEXTURE_2D,
                 0,
                 0,
                 0,
-                GAME_WIDTH as i32,
+                width as i32,
                 GAME_HEIGHT as i32,
                 if self.indexed_color {
                     glow::RED_INTEGER
@@ -295,12 +316,14 @@ impl PlaneTexture<'_> {
             }
             self.set_uniform_vec4(gl, program, "bgColor", bg_color);
             set_uniform_float(&gl, program, "iTime", time);
+            set_uniform_float(&gl, program, "GameWidth", width as f32 * Self::SCALE as f32);
             if !self.indexed_color {
                 gl.blend_func(glow::SRC_ALPHA, glow::ONE_MINUS_SRC_ALPHA);
             }
             gl.draw_arrays(glow::TRIANGLES, 0, 6);
             gl.bind_framebuffer(glow::FRAMEBUFFER, None);
         }
+        self.prev_width = width;
     }
 
     pub(self) fn destroy(&self, gl: &glow::Context) {
@@ -335,6 +358,8 @@ pub struct Renderer<'renderer> {
 
     pub shader_selection_plane: [usize; 7],
     pub shader_selection_screen: usize,
+
+    prev_width: u16,
 }
 impl Drop for Renderer<'_> {
     fn drop(&mut self) {
@@ -357,7 +382,7 @@ impl Drop for Renderer<'_> {
 }
 const COMMON_UNIFORMS_SIZE: usize = (std::mem::size_of::<f32>() * 4 * 64);
 impl Renderer<'_> {
-    pub fn new(gl_context: Arc<glow::Context>) -> Self {
+    pub fn new(gl_context: Arc<glow::Context>, width: u16) -> Self {
         let fb = unsafe { gl_context.create_framebuffer().unwrap() };
         let fb_tex = unsafe {
             let ret = gl_context.create_texture().unwrap();
@@ -366,7 +391,7 @@ impl Renderer<'_> {
                 glow::TEXTURE_2D,
                 0,
                 glow::RGB as i32,
-                PlaneTexture::SIZE.0 as i32,
+                width as i32 * PlaneTexture::SCALE as i32,
                 PlaneTexture::SIZE.1 as i32,
                 0,
                 glow::RGB,
@@ -402,7 +427,7 @@ impl Renderer<'_> {
                 glow::TEXTURE_2D,
                 0,
                 glow::RGB as i32,
-                PlaneTexture::SIZE.0 as i32,
+                width as i32 * PlaneTexture::SCALE as i32,
                 PlaneTexture::SIZE.1 as i32,
                 0,
                 glow::RGB,
@@ -430,6 +455,13 @@ impl Renderer<'_> {
             );
             ret
         };
+        let plane_b_low_tex = PlaneTexture::new(&gl_context, true, width);
+        let plane_a_low_tex = PlaneTexture::new(&gl_context, true, width);
+        let plane_s_low_tex = PlaneTexture::new(&gl_context, true, width);
+        let plane_b_high_tex = PlaneTexture::new(&gl_context, true, width);
+        let plane_a_high_tex = PlaneTexture::new(&gl_context, true, width);
+        let plane_s_high_tex = PlaneTexture::new(&gl_context, true, width);
+        let plane_s_extra_tex = PlaneTexture::new(&gl_context, false, width);
         let mut shader_cache_plane_indexed = Vec::new();
         let mut shader_cache_plane_rgba = Vec::new();
         let mut shader_cache_screen = Vec::new();
@@ -439,14 +471,14 @@ precision mediump float;
 uniform usampler2D CurTexture;
 uniform float iTime;
 uniform vec4 bgColor;
+uniform float GameWidth;
 layout (std140) uniform common_uniforms {{
 vec4 palette[64];
 }};
 layout (location = 0) in vec2 Frag_UV;
 layout (location = 0) out vec4 Out_Color;
-const vec2 texture_size = vec2({}, {});
+vec2 texture_size = vec2(GameWidth, {});
 ",
-            PlaneTexture::SIZE.0,
             PlaneTexture::SIZE.1,
         );
         let fragment_header_plane_rgba = format!(
@@ -455,14 +487,14 @@ precision mediump float;
 uniform sampler2D CurTexture;
 uniform float iTime;
 uniform vec4 bgColor;
+uniform float GameWidth;
 layout (std140) uniform common_uniforms {{
 vec4 palette[64];
 }};
 layout (location = 0) in vec2 Frag_UV;
 layout (location = 0) out vec4 Out_Color;
-const vec2 texture_size = vec2({}, {});
+vec2 texture_size = vec2(GameWidth, {});
 ",
-            PlaneTexture::SIZE.0,
             PlaneTexture::SIZE.1,
         );
         let fragment_header_screen = format!(
@@ -470,14 +502,14 @@ const vec2 texture_size = vec2({}, {});
 precision mediump float;
 uniform sampler2D CurTexture;
 uniform float iTime;
+uniform float GameWidth;
 layout (std140) uniform common_uniforms {{
 vec4 palette[64];
 }};
 layout (location = 0) in vec2 Frag_UV;
 layout (location = 0) out vec4 Out_Color;
-const vec2 texture_size = vec2({}, {});
+vec2 texture_size = vec2(GameWidth, {});
 ",
-            PlaneTexture::SIZE.0,
             PlaneTexture::SIZE.1,
         );
         for frag_shader in FRAG_SHADERS_PLANE {
@@ -520,13 +552,6 @@ const vec2 texture_size = vec2({}, {});
             }
             shader_cache_screen.push(program);
         }
-        let plane_b_low_tex = PlaneTexture::new(&gl_context, true);
-        let plane_a_low_tex = PlaneTexture::new(&gl_context, true);
-        let plane_s_low_tex = PlaneTexture::new(&gl_context, true);
-        let plane_b_high_tex = PlaneTexture::new(&gl_context, true);
-        let plane_a_high_tex = PlaneTexture::new(&gl_context, true);
-        let plane_s_high_tex = PlaneTexture::new(&gl_context, true);
-        let plane_s_extra_tex = PlaneTexture::new(&gl_context, false);
         let (vertex_buffer, vertex_array) = Self::create_vertex_buffer(&gl_context);
         Self {
             vertex_array,
@@ -566,6 +591,7 @@ const vec2 texture_size = vec2({}, {});
             plane_s_extra_tex,
             shader_selection_plane: [0; 7],
             shader_selection_screen: 0,
+            prev_width: width,
         }
     }
 
@@ -595,10 +621,63 @@ const vec2 texture_size = vec2({}, {});
         plane_a_high: &[u32],
         plane_s_high: &[u32],
         time: f32,
+        width: u16,
         bg_color_f32: [f32; 4],
         palette: &[f32; 64 * 4],
     ) {
         unsafe {
+            gl.bind_buffer(glow::UNIFORM_BUFFER, Some(self.common_uniforms));
+            gl.buffer_sub_data_u8_slice(
+                glow::UNIFORM_BUFFER,
+                0,
+                std::mem::transmute::<&[f32; 64 * 4], &[u8; COMMON_UNIFORMS_SIZE]>(palette),
+            );
+            gl.bind_buffer(glow::UNIFORM_BUFFER, None);
+            gl.bind_framebuffer(glow::FRAMEBUFFER, Some(self.composite_fb));
+
+            if self.prev_width != width {
+                gl.bind_texture(glow::TEXTURE_2D, Some(self.fb_tex));
+                gl.tex_image_2d(
+                    glow::TEXTURE_2D,
+                    0,
+                    glow::RGB as i32,
+                    width as i32 * PlaneTexture::SCALE as i32,
+                    PlaneTexture::SIZE.1 as i32,
+                    0,
+                    glow::RGB,
+                    glow::UNSIGNED_BYTE,
+                    None,
+                );
+                gl.bind_framebuffer(glow::FRAMEBUFFER, Some(self.fb));
+                gl.framebuffer_texture(
+                    glow::FRAMEBUFFER,
+                    glow::COLOR_ATTACHMENT0,
+                    Some(self.fb_tex),
+                    0,
+                );
+                gl.bind_texture(glow::TEXTURE_2D, Some(self.composite_tex));
+                gl.tex_image_2d(
+                    glow::TEXTURE_2D,
+                    0,
+                    glow::RGB as i32,
+                    width as i32 * PlaneTexture::SCALE as i32,
+                    PlaneTexture::SIZE.1 as i32,
+                    0,
+                    glow::RGB,
+                    glow::UNSIGNED_BYTE,
+                    None,
+                );
+                gl.bind_framebuffer(glow::FRAMEBUFFER, Some(self.composite_fb));
+                gl.framebuffer_texture(
+                    glow::FRAMEBUFFER,
+                    glow::COLOR_ATTACHMENT0,
+                    Some(self.composite_tex),
+                    0,
+                );
+                gl.bind_texture(glow::TEXTURE_2D, None);
+                gl.bind_framebuffer(glow::FRAMEBUFFER, None);
+            }
+            self.prev_width = width;
             gl.bind_framebuffer(glow::FRAMEBUFFER, Some(self.composite_fb));
             gl.clear_color(
                 bg_color_f32[0],
@@ -608,19 +687,11 @@ const vec2 texture_size = vec2({}, {});
             );
             gl.clear(glow::COLOR_BUFFER_BIT);
             gl.bind_framebuffer(glow::FRAMEBUFFER, None);
-
-            gl.bind_buffer(glow::UNIFORM_BUFFER, Some(self.common_uniforms));
-            gl.buffer_sub_data_u8_slice(
-                glow::UNIFORM_BUFFER,
-                0,
-                std::mem::transmute::<&[f32; 64 * 4], &[u8; COMMON_UNIFORMS_SIZE]>(palette),
-            );
-            gl.bind_buffer(glow::UNIFORM_BUFFER, None);
-            gl.bind_framebuffer(glow::FRAMEBUFFER, Some(self.composite_fb));
         }
         self.plane_b_low_tex.draw_plane(plane_b_low);
         self.plane_b_low_tex.render(
             &gl,
+            width,
             time as f32,
             bg_color_f32,
             self.composite_fb,
@@ -632,6 +703,7 @@ const vec2 texture_size = vec2({}, {});
         self.plane_a_low_tex.draw_plane(plane_a_low);
         self.plane_a_low_tex.render(
             &gl,
+            width,
             time as f32,
             bg_color_f32,
             self.composite_fb,
@@ -643,6 +715,7 @@ const vec2 texture_size = vec2({}, {});
         self.plane_s_low_tex.draw_plane(plane_s_low);
         self.plane_s_low_tex.render(
             &gl,
+            width,
             time as f32,
             bg_color_f32,
             self.composite_fb,
@@ -654,6 +727,7 @@ const vec2 texture_size = vec2({}, {});
         self.plane_b_high_tex.draw_plane(plane_b_high);
         self.plane_b_high_tex.render(
             &gl,
+            width,
             time as f32,
             bg_color_f32,
             self.composite_fb,
@@ -665,6 +739,7 @@ const vec2 texture_size = vec2({}, {});
         self.plane_a_high_tex.draw_plane(plane_a_high);
         self.plane_a_high_tex.render(
             &gl,
+            width,
             time as f32,
             bg_color_f32,
             self.composite_fb,
@@ -676,6 +751,7 @@ const vec2 texture_size = vec2({}, {});
         self.plane_s_high_tex.draw_plane(plane_s_high);
         self.plane_s_high_tex.render(
             &gl,
+            width,
             time as f32,
             bg_color_f32,
             self.composite_fb,
@@ -690,6 +766,7 @@ const vec2 texture_size = vec2({}, {});
         // self.plane_s_extra_tex.draw_line(0, 0, 100, 100);
         self.plane_s_extra_tex.render(
             &gl,
+            width,
             time as f32,
             bg_color_f32,
             self.composite_fb,
@@ -702,7 +779,7 @@ const vec2 texture_size = vec2({}, {});
             gl.viewport(
                 0,
                 0,
-                PlaneTexture::SIZE.0 as i32,
+                width as i32 * PlaneTexture::SCALE as i32,
                 PlaneTexture::SIZE.1 as i32,
             );
             let program = self.shader_cache_screen[self.shader_selection_screen];
@@ -718,6 +795,12 @@ const vec2 texture_size = vec2({}, {});
                 gl.uniform_1_i32(cur_location.as_ref(), 0);
             }
             set_uniform_float(&gl, program, "iTime", time);
+            set_uniform_float(
+                &gl,
+                program,
+                "GameWidth",
+                width as f32 * PlaneTexture::SCALE as f32,
+            );
             gl.draw_arrays(glow::TRIANGLES, 0, 6);
             gl.bind_framebuffer(glow::FRAMEBUFFER, None);
         }

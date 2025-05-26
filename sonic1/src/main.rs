@@ -1,4 +1,4 @@
-#![feature(const_vec_string_slice)]
+#![feature(const_vec_string_slice, int_roundings)]
 mod periodic_timer;
 mod renderer;
 
@@ -24,7 +24,7 @@ use glow::{
     HasContext, NativeFramebuffer, NativeProgram, NativeTexture, PixelPackData, PixelUnpackData,
 };
 use image::ExtendedColorType;
-use imgui::{Context, Image, TextureId, Ui, WindowFlags};
+use imgui::{Context, Image, SliderFlags, TextureId, Ui, WindowFlags};
 use imgui_glow_renderer::{AutoRenderer, Renderer};
 use imgui_sdl2_support::SdlPlatform;
 use itertools::Itertools;
@@ -38,7 +38,8 @@ use sdl2::{
 use smps::driver::SoundDriver;
 use sonic1::{get_data_defs, patch_rom, read_as_symbols};
 use speedshoes::{
-    DataSize, GAME_HEIGHT, GAME_WIDTH,
+    DataSize, GAME_HEIGHT,
+    gamesettings::GameSettings,
     system::{self, Input, System},
 };
 
@@ -81,6 +82,7 @@ fn main() -> Result<(), String> {
         fs::read(REPRO_INPUTS_PATH)
             .and_then(|bs| Ok(bs.iter().map(|b| (*b).into()).collect_vec()))
             .unwrap_or_default(),
+        &GameSettings { screen_width: 320 },
     )
 }
 
@@ -95,6 +97,7 @@ fn run_simulation(
     system_input: Input,
     should_draw: bool,
     sound_driver_sender: Arc<Sender<i16>>,
+    default_settings: &GameSettings,
 ) -> Result<bool, String> {
     if *should_reset {
         if game.is_none() {
@@ -114,6 +117,7 @@ fn run_simulation(
                     test_mode,
                     true,
                     sound_driver_sender,
+                    Arc::new(RwLock::new(default_settings.clone())),
                 )?,
                 debug_pause: false,
                 current_playing_music: 0,
@@ -175,7 +179,12 @@ fn save_screenshot(name: &str, frame: &Vec<u8>, width: i32, height: i32) {
     .unwrap();
 }
 
-fn run_window(rom: Vec<u8>, test_mode: bool, repro_inputs: Vec<Input>) -> Result<(), String> {
+fn run_window(
+    rom: Vec<u8>,
+    test_mode: bool,
+    repro_inputs: Vec<Input>,
+    default_settings: &GameSettings,
+) -> Result<(), String> {
     let mut capture_video = false;
     let mut capture_video_prev = false;
     let mut capture_video_audio = None;
@@ -210,7 +219,11 @@ fn run_window(rom: Vec<u8>, test_mode: bool, repro_inputs: Vec<Input>) -> Result
 
     /* create a new window, be sure to call opengl method on the builder when using glow! */
     let window = video_subsystem
-        .window("Sonic the Hedgehog", GAME_WIDTH, GAME_HEIGHT)
+        .window(
+            "Sonic the Hedgehog",
+            default_settings.screen_width as u32,
+            GAME_HEIGHT,
+        )
         .allow_highdpi()
         .maximized()
         .opengl()
@@ -254,7 +267,8 @@ fn run_window(rom: Vec<u8>, test_mode: bool, repro_inputs: Vec<Input>) -> Result
         Renderer::new(&gl, &mut imgui, &mut texture_map, false).map_err(|e| e.to_string())?;
     let gl_handle = Arc::new(gl);
 
-    let mut plane_renderer = renderer::Renderer::new(gl_handle.clone());
+    let mut working_game_width = default_settings.screen_width;
+    let mut plane_renderer = renderer::Renderer::new(gl_handle.clone(), working_game_width);
 
     let mut game: Option<Sonic1> = None;
 
@@ -453,8 +467,9 @@ fn run_window(rom: Vec<u8>, test_mode: bool, repro_inputs: Vec<Input>) -> Result
             }
         }
 
-        if let Some(game) = game.as_ref() {
+        if let Some(game) = game.as_mut() {
             should_speed_up |= game.frame_counter < initial_repro_input_size;
+            game.our_system.game_settings.write().unwrap().screen_width = working_game_width;
         }
 
         let sim_result = match error_string {
@@ -472,6 +487,7 @@ fn run_window(rom: Vec<u8>, test_mode: bool, repro_inputs: Vec<Input>) -> Result
                     system_input,
                     should_draw,
                     sound_driver_id_sender.clone(),
+                    default_settings,
                 );
                 sim_frame_timer.finish();
                 ret
@@ -542,6 +558,7 @@ fn run_window(rom: Vec<u8>, test_mode: bool, repro_inputs: Vec<Input>) -> Result
                             game.our_system.fb_plane_a_high(),
                             game.our_system.fb_plane_s_high(),
                             time,
+                            working_game_width,
                             bg_color_f32,
                             &game
                                 .our_system
@@ -567,12 +584,16 @@ fn run_window(rom: Vec<u8>, test_mode: bool, repro_inputs: Vec<Input>) -> Result
         }
 
         let output_aspect: f32 = window.drawable_size().0 as f32 / window.drawable_size().1 as f32;
-        const PREFERRED_ASPECT: f32 = GAME_WIDTH as f32 / GAME_HEIGHT as f32;
+        let preferred_aspect: f32 = game
+            .as_ref()
+            .map(|s1| s1.our_system.game_settings.read().unwrap().screen_width)
+            .unwrap_or(320) as f32
+            / GAME_HEIGHT as f32;
 
         let mut game_view_rect = (0f32, 0f32, 0f32, 0f32);
 
-        if output_aspect <= PREFERRED_ASPECT {
-            let present_height = window.drawable_size().0 as f32 / PREFERRED_ASPECT + 0.5;
+        if output_aspect <= preferred_aspect {
+            let present_height = window.drawable_size().0 as f32 / preferred_aspect + 0.5;
             let bar_height = (window.drawable_size().1 as f32 - present_height) / 2.0;
 
             game_view_rect = (
@@ -582,7 +603,7 @@ fn run_window(rom: Vec<u8>, test_mode: bool, repro_inputs: Vec<Input>) -> Result
                 present_height,
             );
         } else {
-            let present_width = window.drawable_size().1 as f32 * PREFERRED_ASPECT + 0.5;
+            let present_width = window.drawable_size().1 as f32 * preferred_aspect + 0.5;
             let bar_width = (window.drawable_size().0 as f32 - present_width) / 2.0;
 
             game_view_rect = (
@@ -680,6 +701,19 @@ fn run_window(rom: Vec<u8>, test_mode: bool, repro_inputs: Vec<Input>) -> Result
                             "Render time ms: {:.2}",
                             render_frame_timer.get_average_duration() * 100.0,
                         ));
+                    });
+                ui.window("Game Settings")
+                    .no_decoration()
+                    .position([0.0, 64.0], imgui::Condition::Always)
+                    .always_auto_resize(true)
+                    .nav_inputs(false)
+                    .nav_focus(false)
+                    .build(|| {
+                        if !test_mode {
+                            let mut tmp = working_game_width as i32;
+                            ui.slider("Game Width", 320, 432, &mut tmp);
+                            working_game_width = tmp.next_multiple_of(8) as u16;
+                        }
                     });
             }
         }

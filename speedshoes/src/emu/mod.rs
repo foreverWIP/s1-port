@@ -3,10 +3,10 @@ use std::{cell::RefCell, fmt::Display, num::Wrapping, rc::Rc};
 use r68k_emu::{
     cpu::{ConfiguredCore, ProcessingState},
     interrupts::AutoInterruptController,
-    ram::{AddressBus, ADDRBUS_MASK},
+    ram::{ADDRBUS_MASK, AddressBus},
 };
 
-use crate::{system::Input, vdp::Vdp, DataSize, GAME_HEIGHT, GAME_WIDTH};
+use crate::{DataSize, GAME_HEIGHT, system::Input, vdp::Vdp};
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub enum SystemEmulatorDataSize {
@@ -160,12 +160,12 @@ impl SystemEmulator for SpeedShoesCore {
                 rom: rom.clone(),
                 ram,
                 vdp,
-                fb_plane_a_low: vec![0u32; (GAME_WIDTH * GAME_HEIGHT) as usize].into_boxed_slice(),
-                fb_plane_b_low: vec![0u32; (GAME_WIDTH * GAME_HEIGHT) as usize].into_boxed_slice(),
-                fb_plane_b_high: vec![0u32; (GAME_WIDTH * GAME_HEIGHT) as usize].into_boxed_slice(),
-                fb_plane_s_low: vec![0u32; (GAME_WIDTH * GAME_HEIGHT) as usize].into_boxed_slice(),
-                fb_plane_a_high: vec![0u32; (GAME_WIDTH * GAME_HEIGHT) as usize].into_boxed_slice(),
-                fb_plane_s_high: vec![0u32; (GAME_WIDTH * GAME_HEIGHT) as usize].into_boxed_slice(),
+                fb_plane_a_low: vec![0u32; (432 * GAME_HEIGHT) as usize].into_boxed_slice(),
+                fb_plane_b_low: vec![0u32; (432 * GAME_HEIGHT) as usize].into_boxed_slice(),
+                fb_plane_b_high: vec![0u32; (432 * GAME_HEIGHT) as usize].into_boxed_slice(),
+                fb_plane_s_low: vec![0u32; (432 * GAME_HEIGHT) as usize].into_boxed_slice(),
+                fb_plane_a_high: vec![0u32; (432 * GAME_HEIGHT) as usize].into_boxed_slice(),
+                fb_plane_s_high: vec![0u32; (432 * GAME_HEIGHT) as usize].into_boxed_slice(),
                 current_input: Input::default(),
                 input_th_toggle: false,
             },
@@ -385,7 +385,7 @@ impl SpeedShoesBus {
         }
     }
 
-    pub fn render(&mut self) -> Result<(), String> {
+    pub fn render(&mut self, width: u16) -> Result<(), String> {
         if self.vdp.as_ref().borrow().display_enabled() {
             let mut vdp = self.vdp.as_ref().borrow_mut();
             if vdp.hw_planes_mode {
@@ -405,14 +405,15 @@ impl SpeedShoesBus {
                 self.fb_plane_s_high.fill(0);
             }
             let stride = if vdp.hw_planes_mode {
-                GAME_WIDTH / 4
+                width as usize / 4
             } else {
-                GAME_WIDTH
+                width as usize
             };
             for y in 0usize..(GAME_HEIGHT as usize) {
-                let fb_range = (y * stride as usize)..((y * stride as usize) + GAME_WIDTH as usize);
+                let fb_range = (y * stride as usize)..((y * stride as usize) + width as usize);
                 vdp.render_screen_line(
                     y as u16,
+                    width,
                     &mut self.fb_plane_b_low[fb_range.clone()],
                     &mut self.fb_plane_b_high[fb_range.clone()],
                     &mut self.fb_plane_a_low[fb_range.clone()],

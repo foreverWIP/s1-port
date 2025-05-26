@@ -39,6 +39,7 @@ typedef struct {
   bool (*synchronize)(u32 pc);
   void (*play_sound)(void *emu, u8 sound);
   void (*play_sound_special)(void *emu, u8 sound);
+  u16 (*get_game_width)(void *emu);
 } FFIInfo;
 
 #ifndef CHECK_STUFF
@@ -183,6 +184,9 @@ extern void sonic1__print(const char *msg, ...);
     }                                                                          \
   }                                                                            \
   rom_##loc##_colon
+
+u16 speedshoes__get_game_width(void);
+#define GAME_WIDTH speedshoes__get_game_width()
 
 #include "game.h"
 

@@ -32,6 +32,7 @@ void (*speedshoes__write_32_cb)(void *emu, u32 loc, u32 value);
 bool (*speedshoes__synchronize_cb)(u32 pc);
 void (*speedshoes__play_sound_cb)(void *emu, u8 sound);
 void (*speedshoes__play_sound_special_cb)(void *emu, u8 sound);
+u16 (*speedshoes__get_game_width_cb)(void *emu);
 
 void *speedshoes__emu;
 bool speedshoes__dirtymem = false;
@@ -116,6 +117,11 @@ void speedshoes__play_sound_special(void) {
   speedshoes__play_sound_special_cb(speedshoes__emu, D0);
 }
 
+u16 speedshoes__get_game_width(void) {
+  CHECK_EMU() 320;
+  speedshoes__get_game_width_cb(speedshoes__emu);
+}
+
 EXPORT void speedshoes__bind_functions(FFIInfo *ffiinfo) {
   print("Binding functions...");
   speedshoes__emu = ffiinfo->emu;
@@ -128,6 +134,7 @@ EXPORT void speedshoes__bind_functions(FFIInfo *ffiinfo) {
   speedshoes__synchronize_cb = ffiinfo->synchronize;
   speedshoes__play_sound_cb = ffiinfo->play_sound;
   speedshoes__play_sound_special_cb = ffiinfo->play_sound_special;
+  speedshoes__get_game_width_cb = ffiinfo->get_game_width;
 }
 
 bool speedshoes__synchronize(u32 pc) {
