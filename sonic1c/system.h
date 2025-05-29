@@ -52,7 +52,9 @@ typedef struct {
 #define TEST_MEM (1 << 2)
 #define TEST_PER_INSTRUCTION (1 << 3)
 
+#ifndef TEST_LEVEL
 #define TEST_LEVEL (TEST_REGS | TEST_MEM | TEST_PER_INSTRUCTION)
+#endif
 
 #define ROMFUNC(funcname) EXPORT void funcname(void)
 
