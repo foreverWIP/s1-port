@@ -58,12 +58,46 @@ typedef struct {
 
 #define ROMFUNC(funcname) EXPORT void funcname(void)
 
-extern u32 speedshoes__read_8(u32 loc);
-extern u32 speedshoes__read_16(u32 loc);
-extern u32 speedshoes__read_32(u32 loc);
-extern void speedshoes__write_8(u32 loc, u8 value);
-extern void speedshoes__write_16(u32 loc, u16 value);
-extern void speedshoes__write_32(u32 loc, u32 value);
+extern u8 (*speedshoes__read_8_cb)(void *emu, u32 loc);
+extern u16 (*speedshoes__read_16_cb)(void *emu, u32 loc);
+extern u32 (*speedshoes__read_32_cb)(void *emu, u32 loc);
+extern void (*speedshoes__write_8_cb)(void *emu, u32 loc, u8 value);
+extern void (*speedshoes__write_16_cb)(void *emu, u32 loc, u16 value);
+extern void (*speedshoes__write_32_cb)(void *emu, u32 loc, u32 value);
+extern void *speedshoes__emu;
+extern bool speedshoes__dirtymem;
+
+#define CHECK_EMU()                                                            \
+  if (!speedshoes__emu)                                                        \
+  return
+
+INLINE u32 speedshoes__read_8(u32 loc) {
+  CHECK_EMU() 0;
+  return speedshoes__read_8_cb(speedshoes__emu, loc);
+}
+INLINE u32 speedshoes__read_16(u32 loc) {
+  CHECK_EMU() 0;
+  return speedshoes__read_16_cb(speedshoes__emu, loc);
+}
+INLINE u32 speedshoes__read_32(u32 loc) {
+  CHECK_EMU() 0;
+  return speedshoes__read_32_cb(speedshoes__emu, loc);
+}
+INLINE void speedshoes__write_8(u32 loc, u8 value) {
+  CHECK_EMU();
+  speedshoes__dirtymem |= true;
+  speedshoes__write_8_cb(speedshoes__emu, loc, value);
+}
+INLINE void speedshoes__write_16(u32 loc, u16 value) {
+  CHECK_EMU();
+  speedshoes__dirtymem |= true;
+  speedshoes__write_16_cb(speedshoes__emu, loc, value);
+}
+INLINE void speedshoes__write_32(u32 loc, u32 value) {
+  CHECK_EMU();
+  speedshoes__dirtymem |= true;
+  speedshoes__write_32_cb(speedshoes__emu, loc, value);
+}
 extern void speedshoes__play_sound();
 extern void speedshoes__play_sound_special();
 
@@ -138,11 +172,23 @@ void write_joy2(u8 value);
 #define VDP_DATA_PORT 0xC00000
 #define VDP_CONTROL_PORT 0xC00004
 
-void write_vdp_data_16(u16 value);
-void write_vdp_control_16(u16 value);
+INLINE void write_vdp_data_16(u16 value) {
+  CHECK_EMU();
+  speedshoes__write_16_cb(speedshoes__emu, VDP_DATA_PORT, value);
+}
+INLINE void write_vdp_control_16(u16 value) {
+  CHECK_EMU();
+  speedshoes__write_16_cb(speedshoes__emu, VDP_CONTROL_PORT, value);
+}
 u16 read_vdp_control_16(void);
-void write_vdp_data_32(u32 value);
-void write_vdp_control_32(u32 value);
+INLINE void write_vdp_data_32(u32 value) {
+  CHECK_EMU();
+  speedshoes__write_32_cb(speedshoes__emu, VDP_DATA_PORT, value);
+}
+INLINE void write_vdp_control_32(u32 value) {
+  CHECK_EMU();
+  speedshoes__write_32_cb(speedshoes__emu, VDP_CONTROL_PORT, value);
+}
 void set_vdp_register(u8 reg, u8 value);
 void fill_vram(u8 value, u16 start, u16 end);
 void write_vram_dma(u32 source, u32 source_end, u16 destination);

@@ -38,37 +38,6 @@ void *speedshoes__emu;
 bool speedshoes__dirtymem = false;
 void (*speedshoes__print_cb)(char *buf);
 
-#define CHECK_EMU()                                                            \
-  if (!speedshoes__emu)                                                        \
-  return
-
-u32 speedshoes__read_8(u32 loc) {
-  CHECK_EMU() 0;
-  return speedshoes__read_8_cb(speedshoes__emu, loc);
-}
-u32 speedshoes__read_16(u32 loc) {
-  CHECK_EMU() 0;
-  return speedshoes__read_16_cb(speedshoes__emu, loc);
-}
-u32 speedshoes__read_32(u32 loc) {
-  CHECK_EMU() 0;
-  return speedshoes__read_32_cb(speedshoes__emu, loc);
-}
-void speedshoes__write_8(u32 loc, u8 value) {
-  CHECK_EMU();
-  speedshoes__dirtymem |= true;
-  speedshoes__write_8_cb(speedshoes__emu, loc, value);
-}
-void speedshoes__write_16(u32 loc, u16 value) {
-  CHECK_EMU();
-  speedshoes__dirtymem |= true;
-  speedshoes__write_16_cb(speedshoes__emu, loc, value);
-}
-void speedshoes__write_32(u32 loc, u32 value) {
-  CHECK_EMU();
-  speedshoes__dirtymem |= true;
-  speedshoes__write_32_cb(speedshoes__emu, loc, value);
-}
 u8 read_joy1(void) {
   CHECK_EMU() 0;
   return speedshoes__read_8_cb(speedshoes__emu, 0xa10003);
@@ -85,28 +54,12 @@ void write_joy2(u8 value) {
   CHECK_EMU();
   speedshoes__write_8_cb(speedshoes__emu, 0xa10005, value);
 }
-void write_vdp_data_16(u16 value) {
-  CHECK_EMU();
-  speedshoes__write_16_cb(speedshoes__emu, VDP_DATA_PORT, value);
-}
-void write_vdp_control_16(u16 value) {
-  CHECK_EMU();
-  speedshoes__write_16_cb(speedshoes__emu, VDP_CONTROL_PORT, value);
-}
 void set_vdp_register(u8 reg, u8 value) {
   write_vdp_control_16((((u16)reg) << 8) | value);
 }
 u16 read_vdp_control_16(void) {
   CHECK_EMU() 0;
   return speedshoes__read_16_cb(speedshoes__emu, VDP_CONTROL_PORT);
-}
-void write_vdp_data_32(u32 value) {
-  CHECK_EMU();
-  speedshoes__write_32_cb(speedshoes__emu, VDP_DATA_PORT, value);
-}
-void write_vdp_control_32(u32 value) {
-  CHECK_EMU();
-  speedshoes__write_32_cb(speedshoes__emu, VDP_CONTROL_PORT, value);
 }
 void speedshoes__play_sound(void) {
   CHECK_EMU();
