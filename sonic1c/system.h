@@ -128,6 +128,8 @@ extern bool speedshoes__dirtymem;
     dst = ((dst << 16) | (dst >> 16));                                         \
   }
 
+#define BTST(bit, value) ((value) & (1 << (bit)))
+
 u8 read_joy1(void);
 u8 read_joy2(void);
 void write_joy1(u8 value);
