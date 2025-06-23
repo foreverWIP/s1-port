@@ -5,7 +5,7 @@ This is a work-in-progress full port of Sonic the Hedgehog for the Mega Drive (r
 What's ported:
 - All "core" game code (graphics management, collision handling (object/level and object/object), level-specific code)
 - All game objects, including the entire Sonic object
-- Sound driver, integrating code from [CKDEV's reimplementation of the sound driver](https://github.dev/cuckydev/Sonic1C) (used with permission)
+- Sound driver, integrating code from [CKDEV's reimplementation of the sound driver](https://github.com/cuckydev/Sonic1C) (used with permission)
 
 What's not ported:
 - Horizontal blank handling (tile drawing will be corrupted when interrupting demo playback and while Labyrinth Zone's water surface is onscreen)
