@@ -3,6 +3,8 @@
 #include "system.h"
 #include "vramlocs.h"
 
+#define SS_BLOCK_SIZE_PIXELS 24
+
 ROMFUNC(rom_45EA);
 
 ROMFUNC(rom_45DE) {
@@ -652,19 +654,19 @@ ROMFUNC(rom_1B904) {
   DEF_ROMLOC(1B91A) : rom_29D2();                   // JSR	$000029D2
   DEF_ROMLOC(1B920) : move_toreg_16(D0, &D4);       // MOVE.W	D0,D4
   DEF_ROMLOC(1B922) : move_toreg_16(D1, &D5);       // MOVE.W	D1,D5
-  DEF_ROMLOC(1B924) : muls_toreg_16(0x18, &D4);     // MULS.W	#$0018,D4
-  DEF_ROMLOC(1B928) : muls_toreg_16(0x18, &D5);     // MULS.W	#$0018,D5
+  DEF_ROMLOC(1B924) : muls_toreg_16(SS_BLOCK_SIZE_PIXELS, &D4);     // MULS.W	#$0018,D4
+  DEF_ROMLOC(1B928) : muls_toreg_16(SS_BLOCK_SIZE_PIXELS, &D5);     // MULS.W	#$0018,D5
   DEF_ROMLOC(1B92C) : move_toreg_32(0x0, &D2);      // MOVEQ.L	$00,D2
   DEF_ROMLOC(1B92E)
       : move_toreg_16(read_16(v_screenposx), &D2);   // MOVE.W	$F700,D2
-  DEF_ROMLOC(1B932) : divu_toreg_16(0x18, &D2);      // DIVU.W	#$0018,D2
+  DEF_ROMLOC(1B932) : divu_toreg_16(SS_BLOCK_SIZE_PIXELS, &D2);      // DIVU.W	#$0018,D2
   DEF_ROMLOC(1B936) : SWAPWORDS(D2);                 // SWAP.W	D2
   DEF_ROMLOC(1B938) : neg_reg_16(&D2);               // NEG.W	D2
   DEF_ROMLOC(1B93A) : add_toreg_16(0xFFFFFF4C, &D2); // ADDI.W	#$FF4C,D2
   DEF_ROMLOC(1B93E) : move_toreg_32(0x0, &D3);       // MOVEQ.L	$00,D3
   DEF_ROMLOC(1B940)
       : move_toreg_16(read_16(0xFFFFF704), &D3);     // MOVE.W	$F704,D3
-  DEF_ROMLOC(1B944) : divu_toreg_16(0x18, &D3);      // DIVU.W	#$0018,D3
+  DEF_ROMLOC(1B944) : divu_toreg_16(SS_BLOCK_SIZE_PIXELS, &D3);      // DIVU.W	#$0018,D3
   DEF_ROMLOC(1B948) : SWAPWORDS(D3);                 // SWAP.W	D3
   DEF_ROMLOC(1B94A) : neg_reg_16(&D3);               // NEG.W	D3
   DEF_ROMLOC(1B94C) : add_toreg_16(0xFFFFFF4C, &D3); // ADDI.W	#$FF4C,D3
@@ -712,7 +714,7 @@ ROMFUNC(rom_1B954) {
   D1 = (s32)((s16)d1backupouter);
   D2 = (s32)((s16)d2backup);
   // TODO; // MOVEM.W	(A7)+,D0-D2
-  DEF_ROMLOC(1B98E) : add_toreg_16(0x18, &D3); // ADDI.W	#$0018,D3
+  DEF_ROMLOC(1B98E) : add_toreg_16(SS_BLOCK_SIZE_PIXELS, &D3); // ADDI.W	#$0018,D3
   DEF_ROMLOC(1B992) : dec_reg_16(&D7);
   if ((D7 & 0xffff) != 0xffff)
     goto rom_1B954; // DBF.W	D7,$1B954
@@ -722,13 +724,13 @@ ROMFUNC(rom_1B954) {
   DEF_ROMLOC(1B99E) : move_toreg_32(0x0, &D0);          // MOVEQ.L	$00,D0
   DEF_ROMLOC(1B9A0)
       : move_toreg_16(read_16(0xFFFFF704), &D0); // MOVE.W	$F704,D0
-  DEF_ROMLOC(1B9A4) : divu_toreg_16(0x18, &D0);  // DIVU.W	#$0018,D0
+  DEF_ROMLOC(1B9A4) : divu_toreg_16(SS_BLOCK_SIZE_PIXELS, &D0);  // DIVU.W	#$0018,D0
   DEF_ROMLOC(1B9A8) : mulu_toreg_16(0x80, &D0);  // MULU.W	#$0080,D0
   DEF_ROMLOC(1B9AC) : add_toreg_32(D0, &A0);     // ADDA.L	D0,A0
   DEF_ROMLOC(1B9AE) : move_toreg_32(0x0, &D0);   // MOVEQ.L	$00,D0
   DEF_ROMLOC(1B9B0)
       : move_toreg_16(read_16(v_screenposx), &D0);    // MOVE.W	$F700,D0
-  DEF_ROMLOC(1B9B4) : divu_toreg_16(0x18, &D0);       // DIVU.W	#$0018,D0
+  DEF_ROMLOC(1B9B4) : divu_toreg_16(SS_BLOCK_SIZE_PIXELS, &D0);       // DIVU.W	#$0018,D0
   DEF_ROMLOC(1B9B8) : add_toreg_16(D0, &A0);          // ADDA.W	D0,A0
   DEF_ROMLOC(1B9BA) : move_toreg_32(0xFFFF8000, &A4); // LEA.L	$8000,A4
   DEF_ROMLOC(1B9BE) : move_toreg_16(0xF, &D7);        // MOVE.W	#$000F,D7
@@ -739,14 +741,14 @@ ROMFUNC(rom_1B954) {
   DEF_ROMLOC(1B9CC) : cmp_toreg_8(0x4E, &D0);          // CMPI.B	#$4E,D0
   DEF_ROMLOC(1B9D0) : if (CCR_HI) goto rom_1BA1E;      // BHI.B	$1BA1E
   DEF_ROMLOC(1B9D2) : move_toreg_16(read_16(A4), &D3); // MOVE.W	(A4),D3
-  DEF_ROMLOC(1B9D4) : add_toreg_16(0x120, &D3);        // ADDI.W	#$0120,D3
+  DEF_ROMLOC(1B9D4) : add_toreg_16(0x80 + (320 / 2), &D3);        // ADDI.W	#$0120,D3
   DEF_ROMLOC(1B9D8) : cmp_toreg_16(0x70, &D3);         // CMPI.W	#$0070,D3
   DEF_ROMLOC(1B9DC) : if (CCR_CS) goto rom_1BA1E;      // BCS.B	$1BA1E
   DEF_ROMLOC(1B9DE) : cmp_toreg_16(0x1D0, &D3);        // CMPI.W	#$01D0,D3
   DEF_ROMLOC(1B9E2) : if (CCR_CC) goto rom_1BA1E;      // BCC.B	$1BA1E
   DEF_ROMLOC(1B9E4)
       : move_toreg_16(read_16(A4 + 0x2), &D2);      // MOVE.W	2(A4),D2
-  DEF_ROMLOC(1B9E8) : add_toreg_16(0xF0, &D2);      // ADDI.W	#$00F0,D2
+  DEF_ROMLOC(1B9E8) : add_toreg_16(0x80 + (224 / 2), &D2);      // ADDI.W	#$00F0,D2
   DEF_ROMLOC(1B9EC) : cmp_toreg_16(0x70, &D2);      // CMPI.W	#$0070,D2
   DEF_ROMLOC(1B9F0) : if (CCR_CS) goto rom_1BA1E;   // BCS.B	$1BA1E
   DEF_ROMLOC(1B9F2) : cmp_toreg_16(0x170, &D2);     // CMPI.W	#$0170,D2
@@ -1169,7 +1171,7 @@ ROMFUNC(rom_1C36C) {
       : move_toreg_16(read_16(A0 + 0x8), &D3); // MOVE.W	8(A0),D3
   DEF_ROMLOC(1C374)
       : move_toreg_16(read_16(v_screenposx), &D0);    // MOVE.W	$F700,D0
-  DEF_ROMLOC(1C378) : sub_toreg_16(160, &D3);         // SUBI.W	#$00A0,D3
+  DEF_ROMLOC(1C378) : sub_toreg_16(320 / 2, &D3);         // SUBI.W	#$00A0,D3
   DEF_ROMLOC(1C37C) : if (CCR_CS) goto rom_1C384;     // BCS.B	$1C384
   DEF_ROMLOC(1C37E) : sub_toreg_16(D3, &D0);          // SUB.W	D3,D0
   DEF_ROMLOC(1C380) : sub_tomem_16(D0, v_screenposx); // SUB.W	D0,$F700
@@ -1287,7 +1289,7 @@ ROMFUNC(rom_1C49E) {
   DEF_ROMLOC(1C4A8) : move_toreg_16(D2, &D4);          // MOVE.W	D2,D4
   DEF_ROMLOC(1C4AA) : SWAPWORDS(D2);                   // SWAP.W	D2
   DEF_ROMLOC(1C4AC) : add_toreg_16(0x44, &D4);         // ADDI.W	#$0044,D4
-  DEF_ROMLOC(1C4B0) : divu_toreg_16(0x18, &D4);        // DIVU.W	#$0018,D4
+  DEF_ROMLOC(1C4B0) : divu_toreg_16(SS_BLOCK_SIZE_PIXELS, &D4);        // DIVU.W	#$0018,D4
   DEF_ROMLOC(1C4B4) : mulu_toreg_16(0x80, &D4);        // MULU.W	#$0080,D4
   DEF_ROMLOC(1C4B8) : add_toreg_32(D4, &A1);           // ADDA.L	D4,A1
   DEF_ROMLOC(1C4BA) : move_toreg_32(0x0, &D4);         // MOVEQ.L	$00,D4
@@ -1295,7 +1297,7 @@ ROMFUNC(rom_1C49E) {
   DEF_ROMLOC(1C4BE) : move_toreg_16(D3, &D4);          // MOVE.W	D3,D4
   DEF_ROMLOC(1C4C0) : SWAPWORDS(D3);                   // SWAP.W	D3
   DEF_ROMLOC(1C4C2) : add_toreg_16(0x14, &D4);         // ADDI.W	#$0014,D4
-  DEF_ROMLOC(1C4C6) : divu_toreg_16(0x18, &D4);        // DIVU.W	#$0018,D4
+  DEF_ROMLOC(1C4C6) : divu_toreg_16(SS_BLOCK_SIZE_PIXELS, &D4);        // DIVU.W	#$0018,D4
   DEF_ROMLOC(1C4CA) : add_toreg_16(D4, &A1);           // ADDA.W	D4,A1
   DEF_ROMLOC(1C4CC) : move_toreg_32(0x0, &D5);         // MOVEQ.L	$00,D5
   DEF_ROMLOC(1C4CE) : move_toreg_8(read_8(A1++), &D4); // MOVE.B	(A1)+,D4
@@ -1330,13 +1332,13 @@ ROMFUNC(rom_1C508) {
   DEF_ROMLOC(1C510)
       : move_toreg_16(read_16(A0 + 0xC), &D4);               // MOVE.W	12(A0),D4
   DEF_ROMLOC(1C514) : add_toreg_16(0x50, &D4);               // ADDI.W	#$0050,D4
-  DEF_ROMLOC(1C518) : divu_toreg_16(0x18, &D4);              // DIVU.W	#$0018,D4
+  DEF_ROMLOC(1C518) : divu_toreg_16(SS_BLOCK_SIZE_PIXELS, &D4);              // DIVU.W	#$0018,D4
   DEF_ROMLOC(1C51C) : mulu_toreg_16(0x80, &D4);              // MULU.W	#$0080,D4
   DEF_ROMLOC(1C520) : add_toreg_32(D4, &A1);                 // ADDA.L	D4,A1
   DEF_ROMLOC(1C522) : move_toreg_32(0x0, &D4);               // MOVEQ.L	$00,D4
   DEF_ROMLOC(1C524) : move_toreg_16(read_16(A0 + 0x8), &D4); // MOVE.W	8(A0),D4
   DEF_ROMLOC(1C528) : add_toreg_16(0x20, &D4);               // ADDI.W	#$0020,D4
-  DEF_ROMLOC(1C52C) : divu_toreg_16(0x18, &D4);              // DIVU.W	#$0018,D4
+  DEF_ROMLOC(1C52C) : divu_toreg_16(SS_BLOCK_SIZE_PIXELS, &D4);              // DIVU.W	#$0018,D4
   DEF_ROMLOC(1C530) : add_toreg_16(D4, &A1);                 // ADDA.W	D4,A1
   DEF_ROMLOC(1C532) : move_toreg_8(read_8(A1), &D4);         // MOVE.B	(A1),D4
   DEF_ROMLOC(1C534) : if (!CCR_EQ) goto rom_1C542;           // BNE.B	$1C542
@@ -1448,11 +1450,11 @@ ROMFUNC(rom_1C644) {
   DEF_ROMLOC(1C66E) : sub_toreg_32(0xFF0001, &D1); // SUBI.L	#$00FF0001,D1
   DEF_ROMLOC(1C674) : move_toreg_16(D1, &D2);      // MOVE.W	D1,D2
   DEF_ROMLOC(1C676) : and_toreg_16(0x7F, &D1);     // ANDI.W	#$007F,D1
-  DEF_ROMLOC(1C67A) : mulu_toreg_16(0x18, &D1);    // MULU.W	#$0018,D1
+  DEF_ROMLOC(1C67A) : mulu_toreg_16(SS_BLOCK_SIZE_PIXELS, &D1);    // MULU.W	#$0018,D1
   DEF_ROMLOC(1C67E) : sub_toreg_16(0x14, &D1);     // SUBI.W	#$0014,D1
   DEF_ROMLOC(1C682) : lsr_toreg_16(0x7, &D2);      // LSR.W	#$07,D2
   DEF_ROMLOC(1C684) : and_toreg_16(0x7F, &D2);     // ANDI.W	#$007F,D2
-  DEF_ROMLOC(1C688) : mulu_toreg_16(0x18, &D2);    // MULU.W	#$0018,D2
+  DEF_ROMLOC(1C688) : mulu_toreg_16(SS_BLOCK_SIZE_PIXELS, &D2);    // MULU.W	#$0018,D2
   DEF_ROMLOC(1C68C) : sub_toreg_16(0x44, &D2);     // SUBI.W	#$0044,D2
   DEF_ROMLOC(1C690) : sub_toreg_16(read_16(A0 + 0x8), &D1); // SUB.W	8(A0),D1
   DEF_ROMLOC(1C694)
