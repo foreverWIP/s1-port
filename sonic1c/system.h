@@ -223,8 +223,9 @@ extern void sonic1__print(const char *msg, ...);
 #define PRINTMEM16(mem) print("u16[" #mem "] = 0x%X", read_16(mem))
 #define PRINTMEM32(mem) print("u32[" #mem "] = 0x%X", read_32(mem))
 
+#if (TEST_LEVEL & TEST_PER_INSTRUCTION)
 #define DEF_ROMLOC(loc)                                                        \
-  rom_##loc : if (CHECK_STUFF && (TEST_LEVEL & TEST_PER_INSTRUCTION)) {        \
+  rom_##loc : if (CHECK_STUFF) {                                               \
     if (speedshoes__dirtymem) {                                                \
       print("synching to romloc " #loc);                                       \
       if (!speedshoes__synchronize(0x##loc)) {                                 \
@@ -234,6 +235,9 @@ extern void sonic1__print(const char *msg, ...);
     }                                                                          \
   }                                                                            \
   rom_##loc##_colon
+#else
+#define DEF_ROMLOC(loc) rom_##loc
+#endif
 
 u16 speedshoes__get_game_width(void);
 #define GAME_WIDTH speedshoes__get_game_width()
