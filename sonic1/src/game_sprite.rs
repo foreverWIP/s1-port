@@ -274,7 +274,7 @@ mod tests {
 
     #[test]
     fn render_sprite() {
-        let rom = fs::read("../s1built.bin").unwrap();
+        let rom = fs::read("../sonic1.bin").unwrap();
         let test_map = 0xAF12;
         let test_art_ptr = 0x1FD8C;
         let test_art = bpp_4_to_8(&mdcomp::nemesis::decompress(&rom[test_art_ptr..]).unwrap());

@@ -52,7 +52,7 @@ mod tests {
 
     use crate::{FM_SAMPLE_RATE, driver::SoundDriver};
 
-    const ROM: &[u8; 0x80000] = include_bytes!("../../s1built.bin");
+    const ROM: &[u8; 0x80000] = include_bytes!("../../sonic1.bin");
 
     #[test]
     fn parse_smps() {

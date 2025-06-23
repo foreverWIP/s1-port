@@ -12,7 +12,7 @@ use r68k_tools::{
 };
 use sonic1::{DataDef, get_data_defs, patch_rom, read_as_symbols};
 
-const ROM: &[u8; 0x80000] = include_bytes!("../../s1built.bin");
+const ROM: &[u8; 0x80000] = include_bytes!("../../sonic1.bin");
 
 fn write_line(file: &mut Vec<String>, line: &str) -> Result<(), String> {
     let mut bytes = line.bytes().collect::<Vec<_>>();

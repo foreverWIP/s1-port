@@ -44,9 +44,9 @@ use speedshoes::{
 };
 
 const ROM_PATH: &str = if cfg!(debug_assertions) {
-    "../s1built.bin"
+    "../sonic1.bin"
 } else {
-    "s1built.bin"
+    "sonic1.bin"
 };
 
 const REV01_MD5: &str = "09dadb5071eb35050067a32462e39c5f";

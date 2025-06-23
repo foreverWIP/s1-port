@@ -10,7 +10,7 @@ What's not ported:
 - Horizontal blank handling (the water in Labyrinth Zone displays wrong)
 - The sound driver (not the focus of the project; digital music support will be added later, other audio playback methods will be considered eventually)
 
-A REV01 ROM of the original game is required, for reading data from it. Place it in the same folder as the executable and name it `s1built.bin`.
+A REV01 ROM of the original game is required, for reading data from it. Place it in the same folder as the executable and name it `sonic1.bin`.
 
 I accomplished this by writing a [program](./asmconverter) that generates "nearly-correct" C code from all the code it can find in the original ROM, assisted by a symbol map from [a disassembly](https://github.com/sonicretro/s1disasm) and a few heuristics. Then, I go through all the generated code and manually fix any issues from the generator that would be too complex to fix automatically (dynamic jumps, complex control flow, code that wasn't picked up by the converter). I compile the resulting C with TCC (though other compilers will probably work), and load it through a [separate program](./sonic1) written in Rust.
 
