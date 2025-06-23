@@ -185,6 +185,10 @@ u8 SoundPriorities[0xE5 - 0x81] = {
     0x90, 0x90, 0x90, 0x90};
 
 void smps_update(void) { UpdateMusic(); }
+u8 smps_get_tempo(void) { return v_snddriver_ram.state.v_main_tempo; }
+u8 smps_get_tempo_divisor(void) {
+  return v_snddriver_ram.state.v_main_tempo_divisor;
+}
 
 void UpdateMusic(void) {
   SoundDriverTrack *track;

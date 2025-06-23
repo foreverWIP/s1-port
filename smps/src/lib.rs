@@ -54,6 +54,11 @@ mod tests {
 
     const ROM: &[u8; 0x80000] = include_bytes!("../../sonic1.bin");
 
+    unsafe extern "C" {
+        fn smps_get_tempo() -> u8;
+        fn smps_get_tempo_divisor() -> u8;
+    }
+
     #[test]
     fn parse_smps() {
         const OUTPUT_FREQ: usize = 44100;
@@ -73,9 +78,27 @@ mod tests {
             // println!("rendering frame {}", frame);
             let now = Instant::now();
             driver.update();
+            if frame == 0 {
+                let tempo = unsafe { smps_get_tempo() };
+                println!(
+                    "tempo is {:X} (wait performed every {} frames)",
+                    tempo, tempo
+                );
+                let tempo_float = tempo as f64;
+                let update_freq = ((tempo_float - 1.0) / tempo_float) * 60.0;
+                let max_possible_tempo = update_freq * 60.0;
+                println!("update frequency ~{:.2}hz", update_freq);
+                println!("max possible tempo = {:.2}", max_possible_tempo);
+                let possible_divider = (unsafe { smps_get_tempo_divisor() } + 1) * 8;
+                println!(
+                    "guessed tempo: {:.2} (possible divider = {})",
+                    max_possible_tempo / possible_divider as f64,
+                    possible_divider
+                );
+            }
             let after = Instant::now();
             time_buf.push((after - now).as_secs_f64());
-            println!("update took {}s", time_buf.last().unwrap());
+            // println!("update took {}s", time_buf.last().unwrap());
             let sound_buffer = &driver.safe_audio_buffer;
             for i in 0..driver.safe_audio_buffer.len().min(44100 * 2) {
                 writer
