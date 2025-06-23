@@ -732,9 +732,6 @@ ROMFUNC(rom_1B954) {
   DEF_ROMLOC(1B9B8) : add_toreg_16(D0, &A0);          // ADDA.W	D0,A0
   DEF_ROMLOC(1B9BA) : move_toreg_32(0xFFFF8000, &A4); // LEA.L	$8000,A4
   DEF_ROMLOC(1B9BE) : move_toreg_16(0xF, &D7);        // MOVE.W	#$000F,D7
-  rom_1B9C2(); // Detected flow into next function
-}
-ROMFUNC(rom_1B9C2) {
   DEF_ROMLOC(1B9C2) : move_toreg_16(0xF, &D6);         // MOVE.W	#$000F,D6
   DEF_ROMLOC(1B9C6) : move_toreg_32(0x0, &D0);         // MOVEQ.L	$00,D0
   DEF_ROMLOC(1B9C8) : move_toreg_8(read_8(A0++), &D0); // MOVE.B	(A0)+,D0
