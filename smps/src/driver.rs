@@ -25,7 +25,6 @@ pub struct SoundDriver {
     fm_buf: Vec<i32>,
     psg_buf: Vec<i32>,
     pub safe_audio_buffer: Vec<i16>,
-    ram: Vec<u8>,
     fm_resampler: RESMPL_STATE,
     psg_resampler: RESMPL_STATE,
     fm: DEV_INFO,
@@ -112,7 +111,6 @@ impl SoundDriver {
 
             let ret = Self {
                 rom: rom.clone(),
-                ram: vec![0; 0x1000],
                 safe_audio_buffer: vec![0; (sample_rate as usize * 2) / 60],
                 sample_rate,
                 fm_resampler,
@@ -130,7 +128,6 @@ impl SoundDriver {
     fn set_up_ffi(&mut self) {
         unsafe {
             smps_rom_ptr = self.rom.as_ptr();
-            smps_ram_ptr = self.ram.as_mut_ptr();
             devinf_fm = self.fm.clone();
             devinf_psg = self.psg.clone();
         }
@@ -138,12 +135,16 @@ impl SoundDriver {
 
     pub fn play_sound(&mut self, id: u8) {
         self.set_up_ffi();
-        self.ram[0xa] = id;
+        unsafe {
+            smps_set_next_sound(id);
+        }
     }
 
     pub fn play_sound_special(&mut self, id: u8) {
         self.set_up_ffi();
-        self.ram[0xb] = id;
+        unsafe {
+            smps_set_next_sound_special(id);
+        }
     }
 
     pub fn update(&mut self) {
@@ -212,9 +213,10 @@ static mut devinf_psg: DEV_INFO = DEV_INFO::default();
 
 unsafe extern "C" {
     static mut smps_rom_ptr: *const u8;
-    static mut smps_ram_ptr: *mut u8;
 
     fn smps_update() -> ();
+    fn smps_set_next_sound(sound: u8) -> ();
+    fn smps_set_next_sound_special(sound: u8) -> ();
 }
 fn get_write_func(devinf: *const DEV_INFO) -> Option<DEVFUNC_WRITE_A8D8> {
     unsafe {

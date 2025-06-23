@@ -185,6 +185,15 @@ u8 SoundPriorities[0xE5 - 0x81] = {
     0x90, 0x90, 0x90, 0x90};
 
 void smps_update(void) { UpdateMusic(); }
+
+void smps_set_next_sound(u8 sound) {
+  v_snddriver_ram.state.v_soundqueue[0] = sound;
+}
+
+void smps_set_next_sound_special(u8 sound) {
+  v_snddriver_ram.state.v_soundqueue[1] = sound;
+}
+
 u8 smps_get_tempo(void) { return v_snddriver_ram.state.v_main_tempo; }
 u8 smps_get_tempo_divisor(void) {
   return v_snddriver_ram.state.v_main_tempo_divisor;
@@ -690,7 +699,10 @@ static int Sound_E0toE4(u8 sound_id) {
   return Sound_ExIndex[sound_id - flg__First]();
 }
 
-static int PlaySegaSound(void) { return 1; }
+static int PlaySegaSound(void) {
+  set_dac_sample(0x88);
+  return 1;
+}
 
 static int Sound_PlayBGM(u8 sound_id) {
   u8 *sound_base, *sound_p;
@@ -750,7 +762,8 @@ static int Sound_PlayBGM(u8 sound_id) {
   v_snddriver_ram.state.v_voice_ptr = voice_ptr;
 
   tempo = sound_p[5];
-  v_snddriver_ram.state.v_tempo_mod = sound_p[tempo];
+  v_snddriver_ram.state.v_tempo_mod = tempo;
+  v_snddriver_ram.state.v_main_tempo_divisor = sound_p[4];
 
   if (v_snddriver_ram.state.f_speedup)
     tempo = v_snddriver_ram.state.v_speeduptempo;
@@ -2169,6 +2182,8 @@ static void SendVoiceTL(SoundDriverTrack *track) {
     if (!(v_snddriver_ram.state.f_voice_selector & 0x80))
       voice_ptr = v_snddriver_ram.state.v_special_voice_ptr;
   }
+  if (!voice_ptr)
+    return;
 
   /* Attenuate voice operator volumes */
   voice_ptr += (voice * 25) + 21;
@@ -2294,6 +2309,8 @@ static int cfStopTrack(SoundDriverTrack *track, u8 **data) {
 
       voice_ptr = v_snddriver_ram.state.v_voice_ptr;
     }
+    if (!voice_ptr)
+      return 1;
 
     track->PlaybackControl &= ~PLAYBACKCONTROL_SFX_OVERRIDE;
     track->PlaybackControl |= PLAYBACKCONTROL_AT_REST;
