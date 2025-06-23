@@ -62,10 +62,13 @@ fn glow_context(window: &Window) -> glow::Context {
 
 fn main() -> Result<(), String> {
     let mut test_mode = false;
+    let mut wide_mode = false;
     for arg in args() {
         if arg == "--test" {
             test_mode = true;
-            break;
+        }
+        if arg == "--wide" {
+            wide_mode = true;
         }
     }
 
@@ -82,7 +85,9 @@ fn main() -> Result<(), String> {
         fs::read(REPRO_INPUTS_PATH)
             .and_then(|bs| Ok(bs.iter().map(|b| (*b).into()).collect_vec()))
             .unwrap_or_default(),
-        &GameSettings { screen_width: 320 },
+        &GameSettings {
+            screen_width: if wide_mode { 432 } else { 320 },
+        },
     )
 }
 
