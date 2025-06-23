@@ -72,7 +72,7 @@ void speedshoes__play_sound_special(void) {
 
 u16 speedshoes__get_game_width(void) {
   CHECK_EMU() 320;
-  speedshoes__get_game_width_cb(speedshoes__emu);
+  return speedshoes__get_game_width_cb(speedshoes__emu);
 }
 
 EXPORT void speedshoes__bind_functions(FFIInfo *ffiinfo) {
