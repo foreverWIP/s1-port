@@ -64,8 +64,10 @@ fn main() -> Result<(), String> {
     let mut test_mode = false;
     let mut wide_mode = false;
     for arg in args() {
-        if arg == "--test" {
-            test_mode = true;
+        if cfg!(debug_assertions) {
+            if arg == "--test" {
+                test_mode = true;
+            }
         }
         if arg == "--wide" {
             wide_mode = true;
@@ -314,7 +316,9 @@ fn run_window(
         let mut should_step = false;
         let mut should_speed_up = false;
 
-        capture_video_prev = capture_video;
+        if cfg!(debug_assertions) {
+            capture_video_prev = capture_video;
+        }
 
         for event in event_pump.poll_iter() {
             /* pass all events to imgui platfrom */
@@ -365,21 +369,27 @@ fn run_window(
                                 let res = take_screenshot(&gl_handle, &plane_renderer);
                                 save_screenshot("screenshot.png", &res.0, res.1, res.2);
                             }
-                            Scancode::Minus => capture_video = !capture_video,
-                            Scancode::Equals => {
-                                if fs::exists(REPRO_INPUTS_PATH).map_err(|e| e.to_string())? {
-                                    fs::remove_file(REPRO_INPUTS_PATH)
-                                        .map_err(|e| e.to_string())?;
+                            Scancode::Minus => {
+                                if cfg!(debug_assertions) {
+                                    capture_video = !capture_video
                                 }
-                                fs::write(
-                                    REPRO_INPUTS_PATH,
-                                    game.as_ref()
-                                        .unwrap()
-                                        .input_history
-                                        .iter()
-                                        .map(|i| (*i).into())
-                                        .collect_vec(),
-                                );
+                            }
+                            Scancode::Equals => {
+                                if cfg!(debug_assertions) {
+                                    if fs::exists(REPRO_INPUTS_PATH).map_err(|e| e.to_string())? {
+                                        fs::remove_file(REPRO_INPUTS_PATH)
+                                            .map_err(|e| e.to_string())?;
+                                    }
+                                    fs::write(
+                                        REPRO_INPUTS_PATH,
+                                        game.as_ref()
+                                            .unwrap()
+                                            .input_history
+                                            .iter()
+                                            .map(|i| (*i).into())
+                                            .collect_vec(),
+                                    );
+                                }
                             }
                             _ => {}
                         }
@@ -423,52 +433,54 @@ fn run_window(
             }
         }
 
-        if capture_video != capture_video_prev {
-            if capture_video {
-                _ = fs::remove_dir_all("movie");
-                _ = fs::create_dir("movie");
+        if cfg!(debug_assertions) {
+            if capture_video != capture_video_prev {
+                if capture_video {
+                    _ = fs::remove_dir_all("movie");
+                    _ = fs::create_dir("movie");
 
-                capture_video_audio = Some(
-                    hound::WavWriter::create(
-                        "movie/movie.wav",
-                        hound::WavSpec {
-                            channels: 2,
-                            sample_rate: 44100,
-                            bits_per_sample: 16,
-                            sample_format: hound::SampleFormat::Int,
-                        },
-                    )
-                    .unwrap(),
-                );
-                (capture_video_sender, capture_video_reciever) = {
-                    let ret = std::sync::mpsc::channel::<Option<(Vec<u8>, i32, i32)>>();
-                    (Some(ret.0), Some(ret.1))
-                };
+                    capture_video_audio = Some(
+                        hound::WavWriter::create(
+                            "movie/movie.wav",
+                            hound::WavSpec {
+                                channels: 2,
+                                sample_rate: 44100,
+                                bits_per_sample: 16,
+                                sample_format: hound::SampleFormat::Int,
+                            },
+                        )
+                        .unwrap(),
+                    );
+                    (capture_video_sender, capture_video_reciever) = {
+                        let ret = std::sync::mpsc::channel::<Option<(Vec<u8>, i32, i32)>>();
+                        (Some(ret.0), Some(ret.1))
+                    };
 
-                capture_video_thread = Some(std::thread::spawn(move || {
-                    let mut frame_count = 0;
-                    loop {
-                        if let Ok(frame) = capture_video_reciever.as_ref().unwrap().try_recv() {
-                            if let Some((frame, width, height)) = frame {
-                                save_screenshot(
-                                    &format!("movie/movie{}.qoi", frame_count),
-                                    &frame,
-                                    width,
-                                    height,
-                                );
-                                frame_count += 1;
-                            } else {
-                                break;
+                    capture_video_thread = Some(std::thread::spawn(move || {
+                        let mut frame_count = 0;
+                        loop {
+                            if let Ok(frame) = capture_video_reciever.as_ref().unwrap().try_recv() {
+                                if let Some((frame, width, height)) = frame {
+                                    save_screenshot(
+                                        &format!("movie/movie{}.qoi", frame_count),
+                                        &frame,
+                                        width,
+                                        height,
+                                    );
+                                    frame_count += 1;
+                                } else {
+                                    break;
+                                }
                             }
                         }
-                    }
-                }));
-            } else {
-                capture_video_audio = None;
-                capture_video_sender.as_ref().unwrap().send(None).unwrap();
-                capture_video_thread.unwrap().join().unwrap();
-                capture_video_thread = None;
-                (capture_video_sender, capture_video_reciever) = (None, None);
+                    }));
+                } else {
+                    capture_video_audio = None;
+                    capture_video_sender.as_ref().unwrap().send(None).unwrap();
+                    capture_video_thread.unwrap().join().unwrap();
+                    capture_video_thread = None;
+                    (capture_video_sender, capture_video_reciever) = (None, None);
+                }
             }
         }
 
@@ -641,50 +653,52 @@ fn run_window(
                 native_percent_store.pop_front();
             }
 
-            if test_mode {
-                ui.window("Debug Info")
-                    .no_decoration()
-                    .position([0.0, 0.0], imgui::Condition::Always)
-                    .always_auto_resize(true)
-                    .no_inputs()
-                    .build(|| {
-                        ui.text(format!("Frame {}", game.frame_counter()));
-                        /*ui.text(format!(
-                            "Instructions emulated w/ scripts: {}",
-                            script_inst_count,
-                        ));
-                        ui.text(format!(
-                            "Instructions to emulate w/o scripts: {}",
-                            emu_inst_count,
-                        ));
-                        ui.text(format!(
-                            "{}% native code",
-                            native_percent_store.iter().sum::<f64>() / (MAX_AVERAGE_COUNT as f64)
-                        ));*/
-                    });
-                /*ui.window("Input display")
-                    .no_decoration()
-                    .position([0.0, 80.0], imgui::Condition::Always)
-                    .always_auto_resize(true)
-                    .no_inputs()
-                    .build(|| {
-                        ui.text(
-                            (game.input_history.get(game.frame_counter))
-                                .map(|i| i.clone())
-                                .unwrap_or_default()
-                                .to_string(),
-                        )
-                    });
-                ui.window("Unimplemented funcs")
-                    .no_decoration()
-                    .position([0.0, 120.0], imgui::Condition::Always)
-                    .always_auto_resize(true)
-                    .no_inputs()
-                    .build(|| {
-                        for sub in &game.our_system.unimplemented_subs_frame {
-                            ui.text(format!("{:X}", sub));
-                        }
-                    });*/
+            if cfg!(debug_assertions) {
+                if test_mode {
+                    ui.window("Debug Info")
+                        .no_decoration()
+                        .position([0.0, 0.0], imgui::Condition::Always)
+                        .always_auto_resize(true)
+                        .no_inputs()
+                        .build(|| {
+                            ui.text(format!("Frame {}", game.frame_counter()));
+                            /*ui.text(format!(
+                                "Instructions emulated w/ scripts: {}",
+                                script_inst_count,
+                            ));
+                            ui.text(format!(
+                                "Instructions to emulate w/o scripts: {}",
+                                emu_inst_count,
+                            ));
+                            ui.text(format!(
+                                "{}% native code",
+                                native_percent_store.iter().sum::<f64>() / (MAX_AVERAGE_COUNT as f64)
+                            ));*/
+                        });
+                    /*ui.window("Input display")
+                        .no_decoration()
+                        .position([0.0, 80.0], imgui::Condition::Always)
+                        .always_auto_resize(true)
+                        .no_inputs()
+                        .build(|| {
+                            ui.text(
+                                (game.input_history.get(game.frame_counter))
+                                    .map(|i| i.clone())
+                                    .unwrap_or_default()
+                                    .to_string(),
+                            )
+                        });
+                    ui.window("Unimplemented funcs")
+                        .no_decoration()
+                        .position([0.0, 120.0], imgui::Condition::Always)
+                        .always_auto_resize(true)
+                        .no_inputs()
+                        .build(|| {
+                            for sub in &game.our_system.unimplemented_subs_frame {
+                                ui.text(format!("{:X}", sub));
+                            }
+                        });*/
+                }
             }
 
             if cfg!(debug_assertions) {
@@ -738,12 +752,14 @@ fn run_window(
 
         render_frame_timer.finish();
 
-        if capture_video {
-            capture_video_sender
-                .as_ref()
-                .unwrap()
-                .send(Some(take_screenshot(&gl_handle, &plane_renderer)))
-                .unwrap();
+        if cfg!(debug_assertions) {
+            if capture_video {
+                capture_video_sender
+                    .as_ref()
+                    .unwrap()
+                    .send(Some(take_screenshot(&gl_handle, &plane_renderer)))
+                    .unwrap();
+            }
         }
 
         const SOUND_DRIVER_PLAY_SOUND: i16 = 0x02;
@@ -767,9 +783,11 @@ fn run_window(
                 .unwrap();
         }
 
-        if let Some(capture_video_audio) = &mut capture_video_audio {
-            for sample in &sound_driver.safe_audio_buffer {
-                capture_video_audio.write_sample(*sample);
+        if cfg!(debug_assertions) {
+            if let Some(capture_video_audio) = &mut capture_video_audio {
+                for sample in &sound_driver.safe_audio_buffer {
+                    capture_video_audio.write_sample(*sample);
+                }
             }
         }
 
@@ -783,9 +801,11 @@ fn run_window(
         }
     }
 
-    if capture_video {
-        capture_video_sender.unwrap().send(None).unwrap();
-        capture_video_thread.unwrap().join().unwrap();
+    if cfg!(debug_assertions) {
+        if capture_video {
+            capture_video_sender.unwrap().send(None).unwrap();
+            capture_video_thread.unwrap().join().unwrap();
+        }
     }
 
     Ok(())
