@@ -687,7 +687,7 @@ fn run_window(
                     });*/
             }
 
-            {
+            if cfg!(debug_assertions) {
                 ui.window("Stats")
                     .no_decoration()
                     .position([0.0, 0.0], imgui::Condition::Always)
