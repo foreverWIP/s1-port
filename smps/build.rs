@@ -17,6 +17,8 @@ fn main() {
         .flag("-DSNDDEV_YM2612")
         .flag("-DEC_YM2612_GPGX")
         .flag("-DEC_SN76496_MAXIM")
+        .flag("-DSONIC1C_FIX_BUGS")
+        .flag("-DSONIC1C_FIX_MAJOR_UB")
         .compile("smps");
-    println!("cargo::rerun-if-changed=libvgm");
+    println!("cargo::rerun-if-changed=libvgm,src/*.c");
 }
